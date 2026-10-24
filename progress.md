@@ -12,7 +12,7 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 ## Current state
 
 - **Last updated:** 2026-10-24
-- **Now working on:** waiting on user for Vivado run (T3.1); T1.6 seeds running in background
+- **Now working on:** paused by user (25 Oct). Tier-1 plan written (`docs/tier1_plan.md`). T1.6 seed sweep stopped at its time limit after 3/9 runs; re-run `scripts/sweep_seeds.sh` to resume.
 - **GitHub:** pushes to `creagic11/SNN_BTP` work (enabled 2026-10-24).
 
 ## Phase 0 — Setup, literature, feasibility (target gate G0: 8 Nov 2026)
@@ -92,3 +92,7 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 | T4.1 | Spiker+ on same topologies, same device | TODO |
 | T4.2 | Sweeps: activity, B_env, θ_h, T | TODO |
 | T5.1 | TCAS-II brief draft | TODO |
+
+## Tier-1 plan (25 Oct 2026)
+
+See `docs/tier1_plan.md` and the Claude Doc. Phases P1–P6 with gates GA–GE replace Phases 3–5 above once approved.
