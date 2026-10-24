@@ -63,6 +63,8 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] Mean-field hibernation: asleep neurons add the shared sub-block drive Q_jc = floor(mean_i W_ij) without fetching their own weights; prove Q ≤ P keeps U ≤ Ê < θ.
 - [ ] The control experiment logic: an ungated network trained to the same low firing rate separates "sparser firing" from "gating" as the cause of accuracy loss.
 
+- [ ] The G0 decision and its evidence: why rate-coded MNIST is a negative regime and SHD / N-MNIST are positive ones. [`results/G0_report.md`]
+
 ## Phase 1 — Training co-design (added at T1.x)
 - [ ] Straight-through estimator for the gate; subgradient through max for P. How the trainer's gated forward pass was checked bit-exact against the golden model (`scripts/check_bitexact_gated.py`).
 - [ ] The envelope-drive loss mean_c Σ_j r_j·relu(P_jc)/θ: what it penalises and why its gradient only reaches the arg-max neuron.

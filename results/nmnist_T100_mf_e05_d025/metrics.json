@@ -1,0 +1,85 @@
+{
+  "args": {
+    "dataset": "nmnist",
+    "sizes": [
+      578,
+      256,
+      10
+    ],
+    "T": 100,
+    "k": 4,
+    "theta": 64,
+    "gain": 1,
+    "t_max": 0.3,
+    "epochs": 6,
+    "bs": 128,
+    "lr": 0.02,
+    "rate_target": 0.05,
+    "rate_lam": 5.0,
+    "env_lam": 0.25,
+    "env_benv": 8,
+    "gate_benv": 8,
+    "asleep_drive": "mean",
+    "exc_lam": 0.5,
+    "init": "results/nmnist_T100/weights.npz",
+    "seed": 0,
+    "limit": 0,
+    "tag": "nmnist_T100_mf_e05_d025"
+  },
+  "log": [
+    {
+      "epoch": 1,
+      "loss": 1.7512666734059652,
+      "test_acc": 0.9515,
+      "hidden_rate": 0.016783953085541724,
+      "sec": 164.2,
+      "read_frac": 0.49132373337183427,
+      "env_drive_theta": 2.747633218765259
+    },
+    {
+      "epoch": 2,
+      "loss": 0.9120847683588664,
+      "test_acc": 0.948,
+      "hidden_rate": 0.01460228506475687,
+      "sec": 169.8,
+      "read_frac": 0.25769976715511056,
+      "env_drive_theta": 1.9734035730361938
+    },
+    {
+      "epoch": 3,
+      "loss": 0.6720937720616659,
+      "test_acc": 0.9501,
+      "hidden_rate": 0.01388160944916308,
+      "sec": 165.1,
+      "read_frac": 0.1876958988943248,
+      "env_drive_theta": 1.5402027368545532
+    },
+    {
+      "epoch": 4,
+      "loss": 0.5636772947311401,
+      "test_acc": 0.9531,
+      "hidden_rate": 0.01432097665965557,
+      "sec": 162.8,
+      "read_frac": 0.16815626468374623,
+      "env_drive_theta": 1.2992498874664307
+    },
+    {
+      "epoch": 5,
+      "loss": 0.5136441310246785,
+      "test_acc": 0.9562,
+      "hidden_rate": 0.013725504046306014,
+      "sec": 161.8,
+      "read_frac": 0.16232151954346635,
+      "env_drive_theta": 1.203447699546814
+    },
+    {
+      "epoch": 6,
+      "loss": 0.49583517570495605,
+      "test_acc": 0.9532,
+      "hidden_rate": 0.013224394526332617,
+      "sec": 164.3,
+      "read_frac": 0.15500456664395562,
+      "env_drive_theta": 1.1769413948059082
+    }
+  ]
+}

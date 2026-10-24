@@ -12,7 +12,7 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 ## Current state
 
 - **Last updated:** 2026-10-24
-- **Now working on:** T0.9 regime study — ρ vs active inputs per timestep (MNIST low-rate, SHD, N-MNIST)
+- **Now working on:** Phase 1 — T1.6 seeds/error bars, then T1.7 bin-size sweep, T1.5 heuristic-gate comparison, T1.8 energy model
 - **GitHub:** pushes to `creagic11/SNN_BTP` work (enabled 2026-10-24).
 
 ## Phase 0 — Setup, literature, feasibility (target gate G0: 8 Nov 2026)
@@ -27,8 +27,8 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 | T0.6 | Train ungated INT8 baseline (MNIST 784-400-10 first), export integer weights | DONE | `train/`, `results/baseline_*` |
 | T0.7 | Measure ρ before clustering: ORACLE vs HUSH-32 vs HUSH-8/32 | DONE (MNIST) | `results/rho_unclustered.md` |
 | T0.8 | Co-inactivity clustering; re-measure ρ; write G0 report | DONE (MNIST); G0 report after T0.9 | `results/rho_unclustered.md` |
-| T0.9 | Regime study: ρ and envelope gap vs active inputs per timestep; SHD and N-MNIST at fine time bins; firing-rate regularisation | IN PROGRESS | `results/regime_study.md` |
-| T0.10 | G0 report and go / pivot decision | TODO | `results/G0_report.md` |
+| T0.9 | Regime study: ρ and envelope gap vs active inputs per timestep; SHD and N-MNIST at fine time bins; firing-rate regularisation | DONE | `results/regime_study.md` |
+| T0.10 | G0 report and go / pivot decision | DONE — GO, narrowed scope | `results/G0_report.md` |
 
 ### Subtask log
 
@@ -44,14 +44,18 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 - 2026-10-24 · T0.9 · SHD baseline 70.8%. Vanilla HUSH-8/32: read frac 0.97, 1.01×; ORACLE costs 11 pts accuracy (drop semantics). Gate-in-the-loop training (`QLinearLIF.gate_benv`, exceedance + envelope-drive losses, `scripts/check_bitexact_gated.py` passes): HUSH-8/32 64.9% full test, read frac 0.26, 1.70× cycles. Sweep running: `scripts/sweep_shd.sh` (4 runs: λ variants, ungated at 1.3% rate, gate without losses). See `results/regime_study.md`.
 - 2026-10-24 · T0.9 · Sweep done: reads 0.86/0.68/0.26 at 68.8/68.7/64.9%; gate alone 70.5% at 0.97; control ungated 2.2% rate 69.5% → loss is from gating. Mean-field hibernation (`LIFParams.asleep_drive='mean'`, Q=floor(mean W) ≤ P, test added, trainer bit-exact) does not help at inference only; training runs launched (`scripts/sweep_shd_mf.sh`).
 - 2026-10-24 · T0.9 · Mean-field results: mf_e05_d025 70.8% at reads 0.64 (no loss vs baseline); mf_e2_d1 64.4% at reads 0.18, 2.05× cycles. Next: N-MNIST baseline + gated runs (hidden 256, T=100 over 300 ms), then G0 report.
+- 2026-10-24 · T0.9/T0.10 · N-MNIST 578-256-10 T=100 k=4: baseline 97.59%; mean-field gentle 95.32% reads 0.155, 2.17× cycles; aggressive 92.72% reads 0.058, 3.86×; vanilla HUSH on baseline 0.98 reads. Gated bit-exact check passes. G0 report written: GO with narrowed scope (`results/G0_report.md`).
 
 ## Phase 1 — Gated training (gate G1: 29 Nov 2026)
 
 | ID | Task | Status |
 | --- | --- | --- |
-| T1.1 | Gate-in-the-loop trainer (STE on g_c, exceedance + dispersion losses) | TODO |
+| T1.1 | Gate-in-the-loop trainer (STE on g_c, exceedance + envelope-drive losses, mean-field option) | DONE |
 | T1.2 | θ_h sweep, accuracy vs ρ Pareto per dataset | TODO |
-| T1.3 | N-MNIST and SHD feed-forward baselines | TODO |
+| T1.3 | N-MNIST and SHD feed-forward baselines | DONE (SHD 70.8%, N-MNIST 97.59%) |
+| T1.6 | 3 seeds per Pareto point (SHD, N-MNIST); gentler N-MNIST points | TODO |
+| T1.7 | Bin-size sweep (SHD T=500/1000, N-MNIST T=200) | TODO |
+| T1.8 | Energy model: reads + cycles + envelope overhead → dynamic energy estimate | TODO |
 | T1.4 | G1 report | TODO |
 | T1.5 | Heuristic-gate comparison: SITRA-style and Early-style gates at equal skip rate, count false-negative spikes vs HUSH | TODO |
 
