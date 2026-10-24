@@ -28,11 +28,11 @@ module hush_layer #(
     parameter int GATE     = 1,       // 1 = HUSH, 0 = BASE (dense output side)
     parameter int MF       = 0,       // 1 = mean-field hibernation for asleep sub-blocks
     parameter int NEV      = 1024,    // event memory depth
-    parameter string W_FILE  = "w.hex",
-    parameter string P_FILE  = "p.hex",
-    parameter string Q_FILE  = "q.hex",
-    parameter string EV_FILE = "ev.hex",
-    parameter string TS_FILE = "ts.hex"
+    parameter W_FILE = "w.hex",
+    parameter P_FILE = "p.hex",
+    parameter Q_FILE = "q.hex",
+    parameter EV_FILE = "ev.hex",
+    parameter TS_FILE = "ts.hex"
 ) (
     input  logic                 clk,
     input  logic                 rst,

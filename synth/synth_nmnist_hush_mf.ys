@@ -1,0 +1,4 @@
+read_verilog -sv /home/claude/snn_btp/rtl/hush_arith.sv /home/claude/snn_btp/rtl/hush_layer.sv
+chparam -set M 578 -set N 256 -set T 100 -set K 4 -set THETA 64 -set THETA_H 64 -set GATE 1 -set MF 1 -set NEV 4096 hush_layer
+synth_xilinx -family xc7 -top hush_layer -flatten
+tee -o util.txt stat

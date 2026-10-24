@@ -12,7 +12,7 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 ## Current state
 
 - **Last updated:** 2026-10-24
-- **Now working on:** T2.5 Yosys synth_xilinx resource estimate; T1.6 seeds running in background
+- **Now working on:** T2.6 area optimisation; T1.6 seeds running in background
 - **GitHub:** pushes to `creagic11/SNN_BTP` work (enabled 2026-10-24).
 
 ## Phase 0 — Setup, literature, feasibility (target gate G0: 8 Nov 2026)
@@ -49,6 +49,7 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 - 2026-10-24 · T2.1/T2.2 · Tools installed in workspace: iverilog 12, verilator 5.020, yosys 0.33, cocotb 2.1, z3, boolector, SymbiYosys (from source, /usr/local/bin/sby). RTL v1 `rtl/hush_layer.sv` (GATE/MF params; double-buffered ETU overlapped with block loop; 4 sub-block column enables; counters). Bit-exact vs golden: 40/40 random regression cases (GATE/MF/k/θ/rates/partial gating) and real nets — N-MNIST mf (3 samples) and BASE, SHD mf — all PASS including counters (word reads, column reads, awake sub-blocks). RTL cycles N-MNIST sample: HUSH 7.9k–14.3k vs BASE 26.5k.
 - 2026-10-25 · T2.1 · Regression found a bug: event-pointer width EAW = clog2(NEV) truncated the end pointer when NEV is a power of two; fixed to clog2(NEV+1); 60/60 new random cases pass. Safety arithmetic factored into `rtl/hush_arith.sv` (hush_envelope, hush_lane), used by both hush_layer and the formal harness `formal/fv_hush.sv`. SMT engines failed (boolector unroll crash, z3 4.8.12 stalls); ABC PDR proves the mean-field variant unbounded (PASS, 1,128 s); mutation with an unsafe mean proxy fails BMC immediately (non-vacuous); drop variant also PASS. User's laptop (Windows, `~/.Xilinx` present) likely has Vivado for Phase 3.
 - 2026-10-25 · T2.4 · Exact RTL cycle model (fitted ETU constants n+3 / 1, start +1, ETU0 +2; 0 mismatches on 30 fresh random cases and N-MNIST). Whole-network RTL latency at 100 MHz (300 test samples): N-MNIST baseline BASE 286 µs; mf gentle HUSH 140 µs (2.04× vs baseline net), column reads 0.167; mf aggressive 86.7 µs (3.3×), reads 0.066. SHD baseline 815 µs; mf gentle 745 µs, reads 0.64; aggressive 402 µs (2.0×), reads 0.19.
+- 2026-10-25 · T2.5 · Yosys 0.33 cannot parse the SV; yowasp-yosys 0.70 can (changed `parameter string` to untyped). N-MNIST layer: BASE 6.6k LUT/6.2k FF/36 RAMB36+3 RAMB18; HUSH-drop 12.1k/8.5k/+15 RAMB18; HUSH-MF 16.1k/11.0k/+30 RAMB18; 1 DSP (address multiply).
 
 ## Phase 1 — Gated training (gate G1: 29 Nov 2026)
 
@@ -70,7 +71,8 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 | T2.1 | RTL: ETU, combine, scheduler, PE array, max trees, leak sweep | DONE v1 (`rtl/hush_layer.sv`; asleep pass 2 cycles/block, not yet a parallel sweep engine) |
 | T2.2 | Testbench against GATED golden model | DONE (Icarus: `rtl/sim/run_case.py`, `rtl/sim/regress.py`) |
 | T2.3 | SymbiYosys proof of the invariant at small sizes | DONE — PDR PASS for mean-field and drop; mutation FAIL as expected (`formal/README.md`) |
-| T2.5 | Yosys synth_xilinx resource estimate before Vivado | IN PROGRESS |
+| T2.5 | Yosys synth_xilinx resource estimate before Vivado | DONE (`results/synth_yosys.md`) |
+| T2.6 | Area optimisation: 18-bit accumulators, LUTRAM state, optional multiplexed ETU | TODO |
 | T2.4 | Performance counters, cycle model match within 1% | DONE — exact (0 mismatches, 30 random + real nets), `rtl/sim/cycle_model.py`, `scripts/rtl_perf.py` |
 
 ## Phase 3 — Implementation and power (gate G3: 24 Jan 2027)
