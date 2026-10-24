@@ -45,6 +45,7 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 - 2026-10-24 · T0.9 · Sweep done: reads 0.86/0.68/0.26 at 68.8/68.7/64.9%; gate alone 70.5% at 0.97; control ungated 2.2% rate 69.5% → loss is from gating. Mean-field hibernation (`LIFParams.asleep_drive='mean'`, Q=floor(mean W) ≤ P, test added, trainer bit-exact) does not help at inference only; training runs launched (`scripts/sweep_shd_mf.sh`).
 - 2026-10-24 · T0.9 · Mean-field results: mf_e05_d025 70.8% at reads 0.64 (no loss vs baseline); mf_e2_d1 64.4% at reads 0.18, 2.05× cycles. Next: N-MNIST baseline + gated runs (hidden 256, T=100 over 300 ms), then G0 report.
 - 2026-10-24 · T0.9/T0.10 · N-MNIST 578-256-10 T=100 k=4: baseline 97.59%; mean-field gentle 95.32% reads 0.155, 2.17× cycles; aggressive 92.72% reads 0.058, 3.86×; vanilla HUSH on baseline 0.98 reads. Gated bit-exact check passes. G0 report written: GO with narrowed scope (`results/G0_report.md`).
+- 2026-10-24 · T1.5 · Heuristic gates at equal reads: N-MNIST HUSH 95.5%/0 FN, SITRA-style 66.0%/15,121 FN, Early-style 93.5%/36 FN; SHD HUSH 70.7%/0, SITRA 48.0%/7,576, Early 65.3%/2. Caveats (Early predictor read cost uncharged; nets co-trained with HUSH) recorded.
 
 ## Phase 1 — Gated training (gate G1: 29 Nov 2026)
 
@@ -53,11 +54,11 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 | T1.1 | Gate-in-the-loop trainer (STE on g_c, exceedance + envelope-drive losses, mean-field option) | DONE |
 | T1.2 | θ_h sweep, accuracy vs ρ Pareto per dataset | TODO |
 | T1.3 | N-MNIST and SHD feed-forward baselines | DONE (SHD 70.8%, N-MNIST 97.59%) |
-| T1.6 | 3 seeds per Pareto point (SHD, N-MNIST); gentler N-MNIST points | TODO |
+| T1.6 | 3 seeds per Pareto point (SHD, N-MNIST); gentler N-MNIST points | IN PROGRESS (`scripts/sweep_seeds.sh`, resumable: re-run it to continue) |
 | T1.7 | Bin-size sweep (SHD T=500/1000, N-MNIST T=200) | TODO |
 | T1.8 | Energy model: reads + cycles + envelope overhead → dynamic energy estimate | TODO |
 | T1.4 | G1 report | TODO |
-| T1.5 | Heuristic-gate comparison: SITRA-style and Early-style gates at equal skip rate, count false-negative spikes vs HUSH | TODO |
+| T1.5 | Heuristic-gate comparison: SITRA-style and Early-style gates at equal skip rate, count false-negative spikes vs HUSH | DONE (`results/heuristic_gates.md`) |
 
 ## Phase 2 — RTL and verification (gate G2: 27 Dec 2026)
 

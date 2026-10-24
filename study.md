@@ -84,6 +84,7 @@ Work through this in order. Each item says what you must be able to do at the bo
 ## Presentation drills
 - [ ] 3-minute elevator pitch with one figure.
 - [ ] Answer: "Isn't this just SnaPEA for SNNs?"
+- [ ] Quote the T1.5 table (`results/heuristic_gates.md`) and its two caveats.
 - [ ] Answer: "SITRA already skips weight fetches for silent outputs. What is new?" (guarantee, carried state bound, BRAM-matched blocks, FPGA silicon)
 - [ ] Answer: "Your gated network is not the network you trained — so what is your accuracy claim?"
 - [ ] Answer: "Why should energy fall if the envelope unit runs every timestep?"

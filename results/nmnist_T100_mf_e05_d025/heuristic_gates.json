@@ -1,0 +1,24 @@
+{
+  "n": 200,
+  "asleep_drive": "mean",
+  "results": {
+    "HUSH": {
+      "acc": 0.955,
+      "read_frac": 0.1574818011609002,
+      "suppressed_spikes": 0,
+      "thr": null
+    },
+    "SITRA": {
+      "acc": 0.66,
+      "read_frac": 0.1490997827910159,
+      "suppressed_spikes": 15121,
+      "thr": 5.999755859375
+    },
+    "EARLY": {
+      "acc": 0.935,
+      "read_frac": 0.15339206267610297,
+      "suppressed_spikes": 36,
+      "thr": 2.0751953125
+    }
+  }
+}
