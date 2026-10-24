@@ -1,0 +1,69 @@
+# HUSH v2 — Study Checklist for Defense and Conference
+
+Work through this in order. Each item says what you must be able to do at the board without notes. Items are added as the project reaches each phase; the repo file that holds the material is given in brackets.
+
+## Phase 0 — Foundations and the core idea
+
+### A. SNN basics
+- [ ] Write the discrete-time LIF update with soft reset (reset by subtraction) and explain why soft reset preserves supra-threshold residue. [`docs/proposal_v2.md` § Formulation]
+- [ ] Explain the shift-subtract leak L(x) = x − (x >> k): which λ it implements, why it needs no multiplier, and what floor rounding does to negative values.
+- [ ] Explain rate coding vs event (DVS / cochlea) inputs: what MNIST, N-MNIST and SHD each look like as spike rasters.
+- [ ] Explain surrogate-gradient training (BPTT, fast-sigmoid / arctan surrogates) in two minutes.
+- [ ] Explain INT8 weight quantization and why the trained network and the hardware must share one integer kernel.
+
+### B. The three sparsity axes (the positioning slide)
+- [ ] Draw the taxonomy: static weight sparsity, dynamic input-spike sparsity, dynamic output-state sparsity. Name one paper per axis.
+- [ ] Explain why pruning membrane-state *memory traffic* is useless (O(N) vs O(N·M)), and why using state to skip *weight fetch* is not.
+- [ ] Explain why unstructured per-neuron skipping collapses at block level: ρ = 1 − (1 − q)^B, with a worked number.
+
+### C. The HUSH envelope and its proof (the heart of the defense)
+- [ ] Define the signed proxy P_{j,c} = max_{i∈c} W_ij and the envelope Ê_c(t) = sat(L(R_c(t−1)) + max(0, D_c(t))).
+- [ ] Prove Lemma 1 (L is non-decreasing on integers) in two lines.
+- [ ] Prove Theorem 1 (V_i ≤ R_c and U_i ≤ Ê_c) by induction, covering the awake case, the gated case and saturation.
+- [ ] State precisely what "exact mode" guarantees and what it does **not** (gated model ≠ plain LIF; dropped sub-threshold drive).
+- [ ] Prove Corollary 2: max(0, ΣP) ≤ Σ max(0, P), i.e. signed proxies are tighter than v1.
+- [ ] Explain Corollary 3 (hierarchy, 8-neuron sub-blocks inside 32-neuron blocks).
+- [ ] Explain the predictive mode (θ_h > θ) and its link to SnaPEA's predictive mode.
+- [ ] Be ready for the reviewer question: "Why not gate per neuron?" (routing, BRAM word width, scheduler cost).
+
+### D. Prior art you must be able to compare against
+- [ ] Spiker / Spiker+: dense clock-driven LIF on Zynq-7020; numbers for MNIST and SHD; why clock-driven won at small scale.
+- [ ] Cerebron: two-step spike-bitmap × weight masking; channel-wise workload scheduling.
+- [ ] FireFly-S: bitmap dual-side sparsity detector; 4-bit weights.
+- [ ] DeepFire2: dense, deeply pipelined, multi-die mapping; no sparsity.
+- [ ] NPTD (Lew et al. 2023): membrane-threshold neuron pruning on a 65 nm ASIC; why it is lossy.
+- [ ] SPARSH: hashed sparse weights, Bloom filter, refractory-neuron skipping.
+- [ ] SnaPEA: sign-sorted early termination for ReLU CNNs; exact vs predictive.
+- [ ] Early (ICCD 2024) and C-STEP (DATE 2026): what they skip and how HUSH differs. [`docs/literature/novelty_check.md`, pending T0.2]
+
+### E. Artix-7 hardware facts used in the design
+- [ ] RAMB36 geometry: 36 Kb, aspect ratios, 512×72 SDP mode; why 8 INT8 weights + 8 spare bits fit one column.
+- [ ] Why one 256-bit weight word = four RAMB36 columns = four 8-neuron sub-blocks.
+- [ ] Count the BRAM budget for 784×400 INT8 weights (80 RAMB36) and the proxy table (12 RAMB36) on an XC7A100T (135 RAMB36).
+- [ ] Explain BRAM enable gating vs clock-enable vs BUFGCE clock gating, and which saves dynamic power on Xilinx parts.
+- [ ] Explain why Fmax drops with deep BRAM cascades and why 100 MHz is the target.
+
+## Phase 0 — Feasibility results (added after T0.4–T0.8)
+- [ ] How the golden models REF, GATED and ORACLE differ, and why ORACLE is a lower bound on ρ.
+- [ ] Your measured ρ numbers before and after clustering, and what envelope efficiency ρ_ORACLE/ρ means.
+
+## Phase 1 — Training co-design (added at T1.x)
+- [ ] Straight-through estimator for the gate; subgradient through max for P.
+- [ ] The exceedance and dispersion losses: what each pushes and why it lowers ρ.
+- [ ] Reading an accuracy-vs-ρ Pareto front.
+
+## Phase 2 — Microarchitecture and verification (added at T2.x)
+- [ ] Draw the datapath from memory, including the overlap of envelope(t+1) with PE(t).
+- [ ] Derive the cycle model C_HUSH = Σ max(n_{t+1}, A_t·n_t) + c and the speedup min(G, 1/ρ).
+- [ ] Explain why HUSH is never slower in cycles than BASE but can cost more energy at ρ ≈ 1.
+- [ ] Explain bounded model checking vs k-induction, and what the SymbiYosys proof covers.
+
+## Phase 3 — Power methodology (added at T3.x)
+- [ ] SAIF-based power estimation: what it captures, what it misses.
+- [ ] Differential board measurement: why static power cancels; error bars.
+
+## Presentation drills
+- [ ] 3-minute elevator pitch with one figure.
+- [ ] Answer: "Isn't this just SnaPEA for SNNs?"
+- [ ] Answer: "Your gated network is not the network you trained — so what is your accuracy claim?"
+- [ ] Answer: "Why should energy fall if the envelope unit runs every timestep?"
