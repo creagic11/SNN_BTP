@@ -1,0 +1,15 @@
+[options]
+mode bmc
+depth 8
+
+[engines]
+abc bmc3
+
+[script]
+read -formal -sv hush_arith.sv
+read -formal -sv fv_hush_mut.sv
+prep -top fv_hush
+
+[files]
+../rtl/hush_arith.sv
+fv_hush_mut.sv
