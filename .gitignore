@@ -5,3 +5,5 @@ __pycache__/
 results/*.npz
 results/ckpt/
 data_cache/
+formal/fv_hush_*/
+formal/fv_hush/

@@ -64,7 +64,7 @@ def simulate(d: Path, M, N, T, k, theta, theta_h, gate, mf, nev):
     for kname, v in params.items():
         cmd += ["-P", f"tb_hush_layer.{kname}={v}"]
     cmd += ["-P", 'tb_hush_layer.OUT_FILE="rtl_out.txt"',
-            str(RTL / "hush_layer.sv"), str(RTL / "tb_hush_layer.sv")]
+            str(RTL / "hush_arith.sv"), str(RTL / "hush_layer.sv"), str(RTL / "tb_hush_layer.sv")]
     subprocess.run(cmd, check=True)
     r = subprocess.run(["vvp", "-n", str(exe)], cwd=d, capture_output=True, text=True)
     if "TIMEOUT" in r.stdout or r.returncode:

@@ -1,0 +1,24 @@
+[tasks]
+prove_mf   prove mf
+prove_drop prove drop
+bmc_mf     bmc mf
+
+[options]
+prove: mode prove
+bmc: mode bmc
+bmc: depth 24
+
+[engines]
+abc pdr
+
+[script]
+read -formal -sv hush_arith.sv
+mf: read -formal -sv fv_hush.sv
+mf: chparam -set MF 1 fv_hush
+drop: read -formal -sv fv_hush.sv
+drop: chparam -set MF 0 fv_hush
+prep -top fv_hush
+
+[files]
+../rtl/hush_arith.sv
+fv_hush.sv

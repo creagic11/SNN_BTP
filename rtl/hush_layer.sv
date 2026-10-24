@@ -58,7 +58,7 @@ module hush_layer #(
     localparam int AB  = 26;                       // accumulator width (exact sums before the clip)
     localparam int IW  = $clog2(M) > 0 ? $clog2(M) : 1;
     localparam int WAW = $clog2(G * M) > 0 ? $clog2(G * M) : 1;
-    localparam int EAW = $clog2(NEV) > 0 ? $clog2(NEV) : 1;
+    localparam int EAW = $clog2(NEV + 1);             // pointers reach NEV (one past the last event)
     localparam int TW  = $clog2(T + 1) > 0 ? $clog2(T + 1) : 1;
     localparam logic signed [AB-1:0] VMAX = (1 <<< (VB - 1)) - 1;
     localparam logic signed [AB-1:0] VMIN = -(1 <<< (VB - 1));
@@ -164,21 +164,17 @@ module hush_layer #(
 
     assign blk_gate = gate[4*b +: 4];
 
-    // finalize combinational for the current block
+    // finalize: one hush_lane per lane (shared with the formal harness)
     logic signed [VB-1:0]    lv   [32];
     logic signed [AB-1:0]    usat [32];
     logic                    spk  [32];
     logic signed [VB-1:0]    vnew [32];
-    always_comb begin
-        for (int l = 0; l < 32; l++) begin
-            lv[l] = leakf($signed(st_rd[VB*l +: VB]));
-            if (st == S_BLK_FIN && blk_gate[l/8])
-                usat[l] = sat(acc[l]);                                  // awake lane: exact drive
-            else
-                usat[l] = sat(AB'(lv[l]) + (MF ? qs_cur[4*b + l/8] : AB'(0)));  // asleep lane
-            spk[l]  = (st == S_BLK_FIN) && blk_gate[l/8] && (usat[l] >= THETA);
-            vnew[l] = VB'(usat[l] - (spk[l] ? THETA : 0));
-        end
+    for (genvar l = 0; l < 32; l++) begin : g_lane
+        hush_lane #(.VB(VB), .AB(AB), .K(K), .THETA(THETA)) u_lane (
+            .v(st_rd[VB*l +: VB]), .usum(acc[l]),
+            .qs(MF ? qs_cur[4*b + l/8] : AB'(0)),
+            .awake((st == S_BLK_FIN) && blk_gate[l/8]), .valid(st == S_BLK_FIN),
+            .lv(lv[l]), .u(usat[l]), .spk(spk[l]), .vnew(vnew[l]));
     end
 
     logic signed [VB-1:0] rnew [4];
@@ -190,15 +186,13 @@ module hush_layer #(
         end
     end
 
-    // combine (envelope + gate) for all sub-blocks
-    logic [C-1:0] gate_next;
-    always_comb begin
-        for (int c = 0; c < C; c++) begin
-            logic signed [AB-1:0] dpos, e;
-            dpos = (dacc[cur_bank][c] > 0) ? dacc[cur_bank][c] : AB'(0);
-            e    = sat(AB'(leakf(R[c])) + dpos);
-            gate_next[c] = GATE ? (e >= THETA_H) : 1'b1;
-        end
+    // combine: one hush_envelope per sub-block (shared with the formal harness)
+    logic [C-1:0] gate_next, env_gate;
+    for (genvar c = 0; c < C; c++) begin : g_env
+        logic signed [AB-1:0] e_unused;
+        hush_envelope #(.VB(VB), .AB(AB), .K(K), .THETA_H(THETA_H)) u_env (
+            .R(R[c]), .D(dacc[cur_bank][c]), .E(e_unused), .gate(env_gate[c]));
+        assign gate_next[c] = GATE ? env_gate[c] : 1'b1;
     end
 
     always_ff @(posedge clk) begin
