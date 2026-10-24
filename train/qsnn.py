@@ -72,18 +72,49 @@ class QLinearLIF(nn.Module):
     def w_int(self):
         return RoundClampSTE.apply(self.w, self.lo, self.hi)
 
+    gate_benv = 0          # >0: run HUSH envelope-gated dynamics with sub-blocks of this size
+    theta_h = None         # gate threshold (None = theta, exact mode)
+
     def forward(self, S):
-        """S: (T, B, n_in) spikes. Returns spikes (T, B, n_out) and pre-reset potentials U."""
+        """S: (T, B, n_in) spikes. Returns spikes (T, B, n_out) and pre-reset potentials U.
+
+        With gate_benv > 0 the forward pass matches golden.hush.run_gated (resync=True): a sub-block
+        whose envelope L(max V) + relu(sum_j s_j P_jc) is below theta_h drops this step's drive.
+        Also records self.exceed (mean relu(E - theta_h)/theta, differentiable) and self.work
+        (fraction of sub-block column reads kept, weighted by active inputs)."""
         T, B, _ = S.shape
         W = self.w_int()
-        V = torch.zeros(B, W.shape[1], device=S.device)
+        N = W.shape[1]
+        V = torch.zeros(B, N, device=S.device)
         spikes, Us = [], []
+        gb = self.gate_benv
+        if gb:
+            C = N // gb
+            P = W.reshape(W.shape[0], C, gb).max(dim=2).values
+            th_h = self.theta if self.theta_h is None else self.theta_h
+            exc, kept, tot = [], 0.0, 0.0
         for t in range(T):
-            U = leak(V, self.k) + S[t] @ W
-            s = SpikeFn.apply(U - self.theta, self.sscale)
+            LV = leak(V, self.k)
+            U = LV + S[t] @ W
+            if gb:
+                R = V.reshape(B, C, gb).max(dim=2).values
+                E = leak(R, self.k) + torch.relu(S[t] @ P)
+                g = (E >= th_h).detach()
+                exc.append(torch.relu(E - th_h).mean() / self.theta)
+                n_t = S[t].sum(dim=1, keepdim=True)
+                kept += float((g.float() * n_t).sum())
+                tot += float(n_t.sum()) * C
+                gn = g.repeat_interleave(gb, dim=1).to(U.dtype)
+                U = gn * U + (1 - gn) * LV
+                s = SpikeFn.apply(U - self.theta, self.sscale) * gn
+            else:
+                s = SpikeFn.apply(U - self.theta, self.sscale)
             V = U - self.theta * s
             spikes.append(s)
             Us.append(U)
+        if gb:
+            self.exceed = torch.stack(exc).mean()
+            self.work = kept / max(1.0, tot)
         return torch.stack(spikes), torch.stack(Us)
 
 

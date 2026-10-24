@@ -99,7 +99,7 @@ def envelope_drive_loss(model, S, hid, benv, theta):
 
 def evaluate(model, data, bs=500):
     model.eval()
-    correct, rh, n = 0, 0.0, data.n(False)
+    correct, rh, n, wk = 0, 0.0, data.n(False), 0.0
     with torch.no_grad():
         for i in range(0, n, bs):
             idx = torch.arange(i, min(n, i + bs))
@@ -107,6 +107,9 @@ def evaluate(model, data, bs=500):
             So, Uo, hid = model(S)
             correct += (predict_torch(So, Uo) == Y).sum().item()
             rh += hid[0][0].mean().item() * len(idx)
+            if model.layers[0].gate_benv:
+                wk += np.mean([l.work for l in model.layers[:-1]]) * len(idx)
+    model.eval_read_frac = wk / n
     return correct / n, rh / n
 
 
@@ -126,6 +129,8 @@ def main():
     ap.add_argument("--rate_lam", type=float, default=0.0)
     ap.add_argument("--env_lam", type=float, default=0.0, help="weight of the envelope drive loss")
     ap.add_argument("--env_benv", type=int, default=8)
+    ap.add_argument("--gate_benv", type=int, default=0, help="train with HUSH-gated dynamics in hidden layers")
+    ap.add_argument("--exc_lam", type=float, default=0.0, help="weight of the envelope exceedance loss")
     ap.add_argument("--init", default="", help="initialise from a weights.npz")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--limit", type=int, default=0)
@@ -134,6 +139,8 @@ def main():
     torch.manual_seed(a.seed)
     data = Data(a.dataset, a.T, a.gain, a.limit, a.t_max)
     model = QSNN(a.sizes, theta=a.theta, k=a.k)
+    for layer in model.layers[:-1]:
+        layer.gate_benv = a.gate_benv
     if a.init:
         z0 = np.load(a.init)
         with torch.no_grad():
@@ -159,6 +166,8 @@ def main():
             if a.rate_lam:
                 rate = torch.stack([h[0].mean() for h in hid[:-1]]).mean()
                 loss = loss + a.rate_lam * F.relu(rate - a.rate_target)
+            if a.exc_lam and a.gate_benv:
+                loss = loss + a.exc_lam * torch.stack([l.exceed for l in model.layers[:-1]]).mean()
             if a.env_lam:
                 loss = loss + a.env_lam * envelope_drive_loss(model, S, hid, a.env_benv, a.theta)
             opt.zero_grad()
@@ -169,6 +178,8 @@ def main():
             n += len(idx)
         acc, rate = evaluate(model, data)
         rec = {"epoch": ep + 1, "loss": tot / n, "test_acc": acc, "hidden_rate": rate, "sec": round(time.time() - t0, 1)}
+        if a.gate_benv:
+            rec["read_frac"] = float(model.eval_read_frac)
         if a.env_lam:
             with torch.no_grad():
                 S0, _ = data.batch(torch.arange(min(256, data.n(False))), False)
