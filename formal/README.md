@@ -12,7 +12,7 @@ Properties (assertions on every reachable state):
 | Task | Engine | Result |
 | --- | --- | --- |
 | `prove_mf` (mean-field) | ABC PDR (unbounded) | **PASS**, 1,128 s |
-| `prove_drop` (drop semantics) | ABC PDR (unbounded) | running |
+| `prove_drop` (drop semantics) | ABC PDR (unbounded) | **PASS** |
 | `fv_hush_mut.sby` (proxy replaced by the sub-block mean: unsafe) | ABC BMC3, depth 8 | **FAIL** found immediately: the properties are not vacuous |
 
 Run: `sby -f fv_hush.sby prove_mf` (needs SymbiYosys at tag `yosys-0.33` to match Yosys 0.33; SMT engines boolector 1.5 and z3 4.8 did not finish here).

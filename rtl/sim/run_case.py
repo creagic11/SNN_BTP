@@ -20,6 +20,8 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from golden.hush import LIFParams, mean_table, proxy_table, run_gated, run_ref  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from cycle_model import rtl_cycles  # noqa: E402
 
 RTL = ROOT / "rtl"
 
@@ -100,10 +102,11 @@ def check(W, S, k, theta, gate, mf, theta_h=None, verbose=True):
     exp_word = int((tr.awake_blk.sum(axis=1) * n).sum())
     exp_col = int(sum(tr.awake_sub[t].reshape(G, 4)[tr.awake_blk[t]].sum() * n[t] for t in range(T)))
     exp_awk = int(tr.awake_sub.sum())
+    model_cyc = rtl_cycles(n, tr.awake_blk, envelope=bool(gate or mf))
     ok = mism == 0 and wordr == exp_word and colr == exp_col and awk == exp_awk
     if verbose:
         print(f"M={M} N={N} T={T} gate={gate} mf={mf}: block mismatches={mism}/{T * G}, "
-              f"word reads {wordr}/{exp_word}, col reads {colr}/{exp_col}, awake sub {awk}/{exp_awk}, cycles {cyc} "
+              f"word reads {wordr}/{exp_word}, col reads {colr}/{exp_col}, awake sub {awk}/{exp_awk}, cycles {cyc}/model {model_cyc} "
               f"-> {'PASS' if ok else 'FAIL'}")
     return ok, cyc
 
