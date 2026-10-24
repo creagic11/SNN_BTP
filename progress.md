@@ -12,7 +12,7 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 ## Current state
 
 - **Last updated:** 2026-10-24
-- **Now working on:** T0.2 novelty check (Early, SPARSH, C-STEP)
+- **Now working on:** T0.4 integer golden kernel and property tests
 - **Blocker:** pushes to GitHub are refused (Claude GitHub App not installed on `creagic11/SNN_BTP`). Work is committed locally in the cloud workspace and pushed once access is granted.
 
 ## Phase 0 — Setup, literature, feasibility (target gate G0: 8 Nov 2026)
@@ -20,9 +20,9 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 | ID | Task | Status | Output |
 | --- | --- | --- | --- |
 | T0.1 | Repo scaffold, progress.md, study.md, proposal copy | DONE | this file, `study.md`, `docs/proposal_v2.md` |
-| T0.2 | Novelty check: read Early (ICCD 2024), SPARSH (ICCAD 2025), C-STEP (DATE 2026); update literature table | IN PROGRESS | `docs/literature/novelty_check.md` |
-| T0.3 | Confirm Spiker+ source availability (external baseline) | TODO | note in `docs/literature/novelty_check.md` |
-| T0.4 | Integer golden kernel: REF, GATED, ORACLE + property tests of Lemma 1 and Theorem 1 | TODO | `golden/hush.py`, `tests/test_hush.py` |
+| T0.2 | Novelty check: read Early (ICCD 2024), SPARSH (ICCAD 2025), C-STEP (DATE 2026); update literature table | DONE | `docs/literature/novelty_check.md` |
+| T0.3 | Confirm Spiker+ source availability (external baseline) | DONE | note in `docs/literature/novelty_check.md` |
+| T0.4 | Integer golden kernel: REF, GATED, ORACLE + property tests of Lemma 1 and Theorem 1 | IN PROGRESS | `golden/hush.py`, `tests/test_hush.py` |
 | T0.5 | Dataset access in the workspace (MNIST, N-MNIST, SHD) | TODO | `scripts/get_data.py` |
 | T0.6 | Train ungated INT8 baseline (MNIST 784-400-10 first), export integer weights | TODO | `train/`, `results/baseline_*` |
 | T0.7 | Measure ρ before clustering: ORACLE vs HUSH-32 vs HUSH-8/32 | TODO | `results/rho_unclustered.md` |
@@ -31,6 +31,8 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 ### Subtask log
 
 - 2026-10-24 · T0.1 · Cloned repo (was empty except README). Created folders `docs/ golden/ tests/ train/ rtl/ scripts/ results/`. Wrote progress.md, study.md, proposal copy. Push test: refused (no GitHub App access).
+- 2026-10-24 · T0.2 · Read full texts via IEEE Xplore (IIT KGP access) in the browser pane: Early, SPARSH, C-STEP, plus newly found close prior art PS4 (ICCD 2024), SITRA (ISLPED 2025), TCAS-I 2025 DVS accelerator, GustavSNN (HPCA 2026). Added 4 items to Zotero. Verdict: output-side skipping exists (SITRA, Early, PS4) but all heuristic, per neuron, ASIC simulation; HUSH's claim narrows to provable bound + state carried across steps + BRAM-matched blocks + FPGA silicon. Written to docs/literature/novelty_check.md.
+- 2026-10-24 · T0.3 · Spiker+ is public: github.com/smilies-polito/Spiker, PyPI `spikerplus`; MNIST, SHD and Vivado tutorials. No LICENSE file: use as baseline only.
 
 ## Phase 1 — Gated training (gate G1: 29 Nov 2026)
 
@@ -40,6 +42,7 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 | T1.2 | θ_h sweep, accuracy vs ρ Pareto per dataset | TODO |
 | T1.3 | N-MNIST and SHD feed-forward baselines | TODO |
 | T1.4 | G1 report | TODO |
+| T1.5 | Heuristic-gate comparison: SITRA-style and Early-style gates at equal skip rate, count false-negative spikes vs HUSH | TODO |
 
 ## Phase 2 — RTL and verification (gate G2: 27 Dec 2026)
 

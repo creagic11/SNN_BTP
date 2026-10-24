@@ -34,7 +34,11 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] NPTD (Lew et al. 2023): membrane-threshold neuron pruning on a 65 nm ASIC; why it is lossy.
 - [ ] SPARSH: hashed sparse weights, Bloom filter, refractory-neuron skipping.
 - [ ] SnaPEA: sign-sorted early termination for ReLU CNNs; exact vs predictive.
-- [ ] Early (ICCD 2024) and C-STEP (DATE 2026): what they skip and how HUSH differs. [`docs/literature/novelty_check.md`, pending T0.2]
+- [ ] Early (ICCD 2024): magnitude-sorted weights, early fire and early exit against V_sth; heuristic, 0.54% loss. [`docs/literature/novelty_check.md`]
+- [ ] SITRA (ISLPED 2025): weight-MSB PIM score predicts silent outputs and skips their weight fetch; detection overlapped with the previous token. **The closest prior art — know it cold.**
+- [ ] PS4 (ICCD 2024): time-window popcount speculation plus error recovery; why it is composable with HUSH.
+- [ ] C-STEP (DATE 2026) and the TCAS-I 2025 DVS accelerator: temporal early exit, i.e. stopping the whole inference, which is a different axis from neuron gating.
+- [ ] Be able to fill the mechanism table (predictor, guarantee, granularity, state use, platform) for Early, SITRA, PS4 and HUSH from memory.
 
 ### E. Artix-7 hardware facts used in the design
 - [ ] RAMB36 geometry: 36 Kb, aspect ratios, 512×72 SDP mode; why 8 INT8 weights + 8 spare bits fit one column.
@@ -65,5 +69,6 @@ Work through this in order. Each item says what you must be able to do at the bo
 ## Presentation drills
 - [ ] 3-minute elevator pitch with one figure.
 - [ ] Answer: "Isn't this just SnaPEA for SNNs?"
+- [ ] Answer: "SITRA already skips weight fetches for silent outputs. What is new?" (guarantee, carried state bound, BRAM-matched blocks, FPGA silicon)
 - [ ] Answer: "Your gated network is not the network you trained — so what is your accuracy claim?"
 - [ ] Answer: "Why should energy fall if the envelope unit runs every timestep?"
