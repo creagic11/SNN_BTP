@@ -12,7 +12,7 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 ## Current state
 
 - **Last updated:** 2026-10-24
-- **Now working on:** T0.6 MNIST INT8 baseline training (running), T0.7 ρ measurement script
+- **Now working on:** T0.9 regime study — ρ vs active inputs per timestep (MNIST low-rate, SHD, N-MNIST)
 - **Blocker:** pushes to GitHub are refused (Claude GitHub App not installed on `creagic11/SNN_BTP`). Work is committed locally in the cloud workspace and pushed once access is granted.
 
 ## Phase 0 — Setup, literature, feasibility (target gate G0: 8 Nov 2026)
@@ -24,9 +24,11 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 | T0.3 | Confirm Spiker+ source availability (external baseline) | DONE | note in `docs/literature/novelty_check.md` |
 | T0.4 | Integer golden kernel: REF, GATED, ORACLE + property tests of Lemma 1 and Theorem 1 | DONE | `golden/hush.py`, `tests/test_hush.py` |
 | T0.5 | Dataset access in the workspace (MNIST, N-MNIST, SHD) | DONE | `scripts/get_data.py` |
-| T0.6 | Train ungated INT8 baseline (MNIST 784-400-10 first), export integer weights | IN PROGRESS | `train/`, `results/baseline_*` |
-| T0.7 | Measure ρ before clustering: ORACLE vs HUSH-32 vs HUSH-8/32 | TODO | `results/rho_unclustered.md` |
-| T0.8 | Co-inactivity clustering; re-measure ρ; write G0 report | TODO | `results/G0_report.md` |
+| T0.6 | Train ungated INT8 baseline (MNIST 784-400-10 first), export integer weights | DONE | `train/`, `results/baseline_*` |
+| T0.7 | Measure ρ before clustering: ORACLE vs HUSH-32 vs HUSH-8/32 | DONE (MNIST) | `results/rho_unclustered.md` |
+| T0.8 | Co-inactivity clustering; re-measure ρ; write G0 report | DONE (MNIST); G0 report after T0.9 | `results/rho_unclustered.md` |
+| T0.9 | Regime study: ρ and envelope gap vs active inputs per timestep; SHD and N-MNIST at fine time bins; firing-rate regularisation | IN PROGRESS | `results/regime_study.md` |
+| T0.10 | G0 report and go / pivot decision | TODO | `results/G0_report.md` |
 
 ### Subtask log
 
@@ -36,6 +38,8 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 - 2026-10-24 · T0.4 · `golden/hush.py`: REF, GATED (signed-proxy envelope, per-sub-block gates, monotone clip to vbits), ORACLE, layer-major `run_network`, integer `predict`. `tests/test_hush.py`: 13 tests, all pass (Lemma 1 exhaustive over ±65536 for k=1..8; Theorem 1, Corollary 1, oracle⇒envelope dominance, register range, gate-on ≡ REF, Corollaries 2–3, saturation) using Hypothesis with 200–400 random layers each. Mutation check: an unsafe mean-proxy gives 6,340 suppressed spikes over 200 layers, so the tests do detect broken gates. Proof note: the clip must be the same monotone function on U and Ê; added to the proof.
 - 2026-10-24 · T0.5 · Workspace network reaches PyPI, PyTorch, Hugging Face, zenkelab, S3. Installed torch 2.14.1+cpu, snntorch 1.0.0, tonic 1.7.0. `scripts/get_data.py` downloads to `~/data` (= /root/data, not in git): MNIST 60k/10k; SHD 8,156/2,264, 700 channels, 20 classes; N-MNIST 60k/10k, 34×34×2 (keep the zip files: tonic re-downloads if they are missing).
 - 2026-10-24 · T0.6 · `golden/encode.py` (deterministic integer IF rate encoder), `train/qsnn.py` (integer-unit LIF: INT8 STE weights, floor-STE leak, soft reset, fast-sigmoid surrogate), `train/train_mnist.py`. Smoke test: 6k samples, 1 epoch, 76.5% in 5 s. Full run 15 epochs launched; log in `results/train_mnist_400.log`.
+- 2026-10-24 · T0.6 · MNIST 784-400-10 INT8: 97.53% test (PyTorch); golden REF bit-exact on 2,000 images (0 mismatches), max |U| 3,415. Input activity 11.8% (~90 inputs/step), hidden rate 18.7%.
+- 2026-10-24 · T0.7/T0.8 · `scripts/measure_rho.py`, `scripts/cluster.py` (balanced k-means by weight or co-activity), `scripts/envelope_gap.py`. Result: HUSH gates nothing on rate-coded MNIST (awake every step except t=0). ORACLE ρ_blk 0.80–0.95. Drive gap ≈ 8θ (5.8 units per active input × 90 inputs). G0 FAILS on this workload; see `results/rho_unclustered.md`. Next: regime study (T0.9).
 
 ## Phase 1 — Gated training (gate G1: 29 Nov 2026)
 

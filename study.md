@@ -51,7 +51,9 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] How the golden models REF, GATED and ORACLE differ, and why ORACLE is a lower bound on ρ. [`golden/hush.py`]
 - [ ] Why saturating (clipping) registers does not break Theorem 1: the same non-decreasing clip on U and Ê preserves ≤. [`tests/test_hush.py::test_saturation_never_wraps`]
 - [ ] What property-based testing (Hypothesis) checks and why a mutation test (unsafe mean proxy → violations) shows the tests have teeth.
-- [ ] Your measured ρ numbers before and after clustering, and what envelope efficiency ρ_ORACLE/ρ means.
+- [ ] Your measured ρ numbers before and after clustering, and what envelope efficiency ρ_ORACLE/ρ means. [`results/rho_unclustered.md`]
+- [ ] Why the envelope failed on rate-coded MNIST: the drive gap Σ_{j∈S}(max_i W_ij − W_ij) grows linearly with active inputs per step (≈5.8 units × 90 inputs ≈ 8θ); and why the ORACLE itself keeps most 32-neuron blocks awake at an 18.7% hidden firing rate.
+- [ ] The block-occupancy formula ρ_blk = 1 − (1 − q)^B applied to your own measured firing rate.
 
 ## Phase 1 — Training co-design (added at T1.x)
 - [ ] Straight-through estimator for the gate; subgradient through max for P.
