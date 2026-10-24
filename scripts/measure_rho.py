@@ -1,16 +1,15 @@
-"""T0.7 / T0.8: measure awake fractions (rho) of REF, ORACLE and HUSH gates on a trained network.
+"""T0.7 / T0.9: awake fractions (rho), accuracy and cycle speedup of REF, ORACLE and HUSH gates.
 
-    python scripts/measure_rho.py results/mnist_400/weights.npz --n 2000 [--perm results/.../perm.npy]
+    python scripts/measure_rho.py results/shd_T250/weights.npz --n 500 [--perm perm.npy]
 
-Checks first that the golden REF model reproduces the PyTorch network bit for bit (accuracy and
-hidden spikes), then runs the hidden layer with each gate and reports:
-
-* rho_sub  : fraction of (sub-block, timestep) pairs awake, real sub-blocks only
-* rho_blk  : fraction of (block, timestep) pairs awake (incl. the partially filled last block)
-* rho_blk_w: work-weighted block awake fraction = HUSH cycles / BASE cycles for the PE pass
-* speedup  : BASE PE cycles / HUSH cycles with the overlapped envelope, sum_t max(n_{t+1}, A_t n_t)
-* acc      : accuracy of the whole network with that gate on the hidden layer
-* eff      : envelope efficiency rho_ORACLE / rho (1.0 = as tight as any exact gate can be)
+Gates applied to every hidden layer (the output layer is always ungated). Reported per mode:
+  acc       : accuracy of the whole network with that gate
+  rho_sub   : awake fraction of (sub-block, timestep), real sub-blocks only
+  rho_blk   : awake fraction of (block, timestep), incl. a partially filled last block
+  speedup   : BASE cycles / HUSH cycles for the hidden layer(s), cycle model:
+                BASE = sum_t G*(n_t + 1)                         (load+leak+threshold per block, n_t weight words)
+                HUSH = sum_t max(n_{t+1}, A_t*(n_t + 1), G)      (envelope of t+1 | PE pass | leak sweep, overlapped)
+  read_frac : weight-BRAM column reads relative to BASE (sub-block gating also disables columns)
 """
 
 from __future__ import annotations
@@ -24,105 +23,126 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from golden.encode import if_encode  # noqa: E402
 from golden.hush import LIFParams, predict, run_gated, run_oracle, run_ref  # noqa: E402
 
 
-def pad_hidden(W0, W1, b_blk):
-    """Pad the hidden layer to a multiple of b_blk with dummy neurons that never fire."""
-    M, N = W0.shape
+def pad_hidden(W_in, W_out, b_blk):
+    """Pad a hidden layer to a multiple of b_blk with dummy neurons that never fire."""
+    M, N = W_in.shape
     Np = -(-N // b_blk) * b_blk
     if Np == N:
-        return W0, W1, N
-    W0p = np.full((M, Np), -128, np.int64)
-    W0p[:, :N] = W0
-    W1p = np.zeros((Np, W1.shape[1]), np.int64)
-    W1p[:N] = W1
-    return W0p, W1p, N
+        return W_in, W_out, N
+    Wi = np.full((M, Np), -128, np.int64)
+    Wi[:, :N] = W_in
+    Wo = np.zeros((Np, W_out.shape[1]), np.int64)
+    Wo[:N] = W_out
+    return Wi, Wo, N
 
 
 def load_test(dataset):
-    if dataset == "mnist":
-        import torchvision
-        te = torchvision.datasets.MNIST(Path.home() / "data", train=False, download=False)
-        return te.data.reshape(-1, 784).numpy(), te.targets.numpy()
-    raise ValueError(dataset)
+    """Back-compat helper for MNIST arrays."""
+    from golden.datasets import mnist_arrays
+    return mnist_arrays(False)
 
 
-def overlapped_cycles(n, A):
-    """sum_t max(n_{t+1}, A_t * n_t): envelope of step t+1 overlaps the PE pass of step t."""
+def test_rasters(z, n):
+    ds = str(z["dataset"]) if "dataset" in z else "mnist"
+    T, gain = int(z["T"]), int(z["gain"])
+    if ds == "mnist":
+        from golden.datasets import mnist_spikes
+        S, Y = mnist_spikes(False, T, gain, n)
+        return list(S), Y
+    if ds == "shd":
+        from golden.datasets import SHD
+        d = SHD(False, float(z["t_max"]))
+        idx = np.random.default_rng(0).permutation(len(d))[:n]
+        return [d.raster(i, T) for i in idx], d.labels[idx]
+    if ds == "nmnist":
+        from golden.datasets import NMNIST
+        d = NMNIST(False, int(float(z["t_max"]) * 1e6))
+        idx = np.random.default_rng(0).permutation(len(d))[:n]
+        rs = [d.raster(i, T) for i in idx]
+        return [r for r, _ in rs], np.array([y for _, y in rs])
+    raise ValueError(ds)
+
+
+def cycles(n, A, G):
+    base = int((G * (n + 1)).sum())
     n_next = np.append(n[1:], 0)
-    return int(np.maximum(n_next, A * n).sum() + n[0])  # + first envelope pass, not overlapped
+    hush = int(np.maximum(np.maximum(n_next, A * (n + 1)), G).sum() + n[0])
+    return base, hush
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("weights")
-    ap.add_argument("--dataset", default="mnist")
-    ap.add_argument("--n", type=int, default=2000)
-    ap.add_argument("--perm", default="", help="hidden-neuron permutation (.npy) from clustering")
-    ap.add_argument("--benv", type=int, nargs="+", default=[4, 8, 32])
+    ap.add_argument("--n", type=int, default=500)
+    ap.add_argument("--perm", default="", help="permutation (.npy) of the first hidden layer")
+    ap.add_argument("--benv", type=int, nargs="+", default=[8])
+    ap.add_argument("--carried", action="store_true", help="also run the v1 carried-bound envelope")
+    ap.add_argument("--theta_h", type=int, nargs="*", default=[], help="extra predictive-mode gate thresholds")
     ap.add_argument("--out", default="")
-    args = ap.parse_args()
+    a = ap.parse_args()
 
-    z = np.load(args.weights)
-    W0, W1 = z["W0"].astype(np.int64), z["W1"].astype(np.int64)
-    T, k, theta, gain = int(z["T"]), int(z["k"]), int(z["theta"]), int(z["gain"])
-    if args.perm:
-        perm = np.load(args.perm)
-        W0, W1 = W0[:, perm], W1[perm]
-    W0, W1, n_real = pad_hidden(W0, W1, 32)
-    N = W0.shape[1]
-    X, Y = load_test(args.dataset)
-    X, Y = X[:args.n], Y[:args.n]
-    S_all = if_encode(X, T, gain)            # (n, T, M)
+    z = np.load(a.weights)
+    Ws = [z[f"W{i}"].astype(np.int64) for i in range(10) if f"W{i}" in z]
+    T, k, theta = int(z["T"]), int(z["k"]), int(z["theta"])
+    if a.perm:
+        pm = np.load(a.perm)
+        Ws[0], Ws[1] = Ws[0][:, pm], Ws[1][pm]
+    n_real = []
+    for li in range(len(Ws) - 1):
+        Ws[li], Ws[li + 1], nr = pad_hidden(Ws[li], Ws[li + 1], 32)
+        n_real.append(nr)
+    rasters, Y = test_rasters(z, a.n)
 
-    p_out = LIFParams(k=k, theta=theta, b_env=W1.shape[1], b_blk=W1.shape[1])
-    modes = [("REF", None, None)]
-    modes += [("ORACLE", "oracle", 8)]
-    modes += [(f"HUSH-{b}" if b == 32 else f"HUSH-{b}/32", "gated", b) for b in args.benv]
-    agg = {}
-    for name, kind, benv in modes:
-        p = LIFParams(k=k, theta=theta, b_env=benv or 8, b_blk=32)
-        real_sub = n_real // p.b_env  # sub-blocks fully made of real neurons come first
-        correct, aw_sub, aw_blk, base_cyc, hush_cyc, sub_tot, blk_tot, in_spk, hid_spk = 0, 0, 0, 0, 0, 0, 0, 0, 0
-        for i in range(args.n):
-            S = S_all[i]
-            if kind is None:
-                h = run_ref(W0, S, p)
-            elif kind == "oracle":
-                h = run_oracle(W0, S, p)
-            else:
-                h = run_gated(W0, S, p, shadow=False)
-            o = run_ref(W1, h.spikes, p_out)
-            correct += predict(o) == Y[i]
-            n = h.n_active.astype(np.int64)
-            A = h.awake_blk.sum(axis=1)
-            G = h.awake_blk.shape[1]
-            base_cyc += int((G * n).sum())
-            hush_cyc += overlapped_cycles(n, A) if kind else int((G * n).sum())
-            aw_sub += int(h.awake_sub[:, :real_sub].sum())
-            sub_tot += T * real_sub
-            aw_blk += int(A.sum())
-            blk_tot += T * G
-            in_spk += int(n.sum())
-            hid_spk += int(h.spikes[:, :n_real].sum())
-        agg[name] = {
-            "acc": correct / args.n,
-            "rho_sub": aw_sub / sub_tot,
-            "rho_blk": aw_blk / blk_tot,
-            "speedup_pe": base_cyc / max(1, hush_cyc),
-            "in_rate": in_spk / (args.n * T * W0.shape[0]),
-            "hid_rate": hid_spk / (args.n * T * n_real),
+    modes = [("REF", "ref", 8, True, None), ("ORACLE-8", "oracle", 8, True, None)]
+    for b in a.benv:
+        modes.append((f"HUSH-{b}" + ("" if b == 32 else "/32"), "gated", b, True, None))
+        if a.carried:
+            modes.append((f"HUSH-{b}-carried", "gated", b, False, None))
+    for th in a.theta_h:
+        modes.append((f"HUSH-8/32 th_h={th}", "gated", 8, True, th))
+    p_out = LIFParams(k=k, theta=theta, b_env=Ws[-1].shape[1], b_blk=Ws[-1].shape[1])
+    res = {}
+    for name, kind, benv, resync, th in modes:
+        p = LIFParams(k=k, theta=theta, b_env=benv, b_blk=32, resync=resync, theta_h=th)
+        acc = 0
+        aw_sub = sub_tot = aw_blk = blk_tot = base = hush = reads = in_spk = hid_spk = hid_tot = 0
+        for S, y in zip(rasters, Y):
+            for li in range(len(Ws) - 1):
+                fn = {"ref": run_ref, "oracle": run_oracle}.get(kind)
+                h = fn(Ws[li], S, p) if fn else run_gated(Ws[li], S, p, shadow=False)
+                n = h.n_active.astype(np.int64)
+                G = h.awake_blk.shape[1]
+                A = h.awake_blk.sum(axis=1)
+                b, hc = cycles(n, A, G)
+                base += b
+                hush += hc if kind != "ref" else b
+                real_sub = n_real[li] // benv
+                aw_sub += int(h.awake_sub[:, :real_sub].sum())
+                sub_tot += T * real_sub
+                aw_blk += int(A.sum())
+                blk_tot += T * G
+                reads += int((h.awake_sub.sum(axis=1) * n).sum()) * benv // 8
+                if li == 0:
+                    in_spk += int(n.sum())
+                hid_spk += int(h.spikes[:, :n_real[li]].sum())
+                hid_tot += T * n_real[li]
+                S = h.spikes
+            o = run_ref(Ws[-1], S, p_out)
+            acc += predict(o) == y
+        res[name] = {
+            "acc": acc / len(Y), "rho_sub": aw_sub / sub_tot, "rho_blk": aw_blk / blk_tot,
+            "speedup": base / max(1, hush), "in_per_step": in_spk / (len(Y) * T),
+            "hid_rate": hid_spk / hid_tot, "col_reads": reads,
         }
-        print(name, json.dumps({k2: round(v, 4) for k2, v in agg[name].items()}), flush=True)
-    o_rho = agg["ORACLE"]["rho_sub"]
-    for name in agg:
-        if name.startswith("HUSH"):
-            agg[name]["eff_vs_oracle8"] = o_rho / max(1e-9, agg[name]["rho_sub"])
-    out = Path(args.out) if args.out else Path(args.weights).with_name(
-        "rho_" + ("clustered" if args.perm else "unclustered") + ".json")
-    json.dump({"n": args.n, "T": T, "k": k, "theta": theta, "modes": agg}, open(out, "w"), indent=2)
+    ref_reads = res["REF"]["col_reads"]
+    for name in res:
+        res[name]["read_frac"] = res[name]["col_reads"] / max(1, ref_reads)
+        print(f"{name:22s}", json.dumps({k2: round(v, 4) if isinstance(v, float) else v for k2, v in res[name].items()}), flush=True)
+    out = Path(a.out) if a.out else Path(a.weights).with_name("rho_" + ("clustered" if a.perm else "unclustered") + ".json")
+    json.dump({"n": len(Y), "T": T, "k": k, "theta": theta, "modes": res}, open(out, "w"), indent=2)
     print("saved", out)
 
 

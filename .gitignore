@@ -4,3 +4,4 @@ __pycache__/
 .hypothesis/
 results/*.npz
 results/ckpt/
+data_cache/

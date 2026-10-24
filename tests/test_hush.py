@@ -56,7 +56,8 @@ def layer_case(draw):
     k = draw(st.integers(1, 6))
     vbits = draw(st.sampled_from([8, 10, 16]))
     theta = min(theta, (1 << (vbits - 1)) - 1)
-    return W, S, LIFParams(k=k, theta=theta, vbits=vbits, b_env=b_env, b_blk=b_blk)
+    resync = draw(st.booleans())
+    return W, S, LIFParams(k=k, theta=theta, vbits=vbits, b_env=b_env, b_blk=b_blk, resync=resync)
 
 
 @settings(max_examples=400, deadline=None)
@@ -107,7 +108,7 @@ def test_values_stay_in_register_range(case):
 def test_gate_always_on_equals_ref(case):
     """With theta_h at the bottom of the range every sub-block is awake, so GATED == REF."""
     W, S, p = case
-    p_on = LIFParams(k=p.k, theta=p.theta, theta_h=p.vmin, vbits=p.vbits, b_env=p.b_env, b_blk=p.b_blk)
+    p_on = LIFParams(k=p.k, theta=p.theta, theta_h=p.vmin, vbits=p.vbits, b_env=p.b_env, b_blk=p.b_blk, resync=p.resync)
     g, r = run_gated(W, S, p_on), run_ref(W, S, p)
     assert np.array_equal(g.spikes, r.spikes) and np.array_equal(g.V, r.V)
 
@@ -161,3 +162,14 @@ def test_clip_is_monotone():
     p = LIFParams(vbits=8)
     x = np.arange(-1000, 1000)
     assert (np.diff(clip(x, p)) >= 0).all()
+
+
+@settings(max_examples=300, deadline=None)
+@given(layer_case())
+def test_resync_never_looser_than_carried_bound(case):
+    """Single-step check along the carried-bound trajectory: the exact max V never exceeds the carried R."""
+    W, S, p = case
+    pc = LIFParams(k=p.k, theta=p.theta, vbits=p.vbits, b_env=p.b_env, b_blk=p.b_blk, resync=False)
+    tr = run_gated(W, S, pc)
+    Vmax = tr.V.reshape(len(S), -1, p.b_env).max(axis=2)
+    assert (Vmax <= tr.R).all()

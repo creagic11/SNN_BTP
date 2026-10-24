@@ -37,6 +37,8 @@ class LIFParams:
     vbits: int = 16       # width of membrane and envelope registers
     b_env: int = 8        # neurons per envelope sub-block
     b_blk: int = 32       # neurons per scheduling block (one 256-bit weight word)
+    resync: bool = True   # True: R_c = exact max V every step (the leak sweep sees asleep neurons);
+                          # False: v1-style carried bound, R_c = E_c while asleep (error accumulates)
 
     @property
     def th_gate(self) -> int:
@@ -166,7 +168,7 @@ def run_gated(W: np.ndarray, S: np.ndarray, p: LIFParams, P: np.ndarray | None =
         s = (U >= p.theta) & gn
         V = U - p.theta * s
         Vmax = V.reshape(C, p.b_env).max(axis=1)
-        R = np.where(g, Vmax, E)
+        R = Vmax if p.resync else np.where(g, Vmax, E)
         out.U[t], out.V[t], out.spikes[t] = U, V, s
         out.awake_sub[t], out.E_hat[t], out.R[t] = g, E, R
         if shadow:
