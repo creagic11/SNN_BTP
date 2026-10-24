@@ -12,7 +12,7 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 ## Current state
 
 - **Last updated:** 2026-10-24
-- **Now working on:** T2.6 area optimisation; T1.6 seeds running in background
+- **Now working on:** waiting on user for Vivado run (T3.1); T1.6 seeds running in background
 - **GitHub:** pushes to `creagic11/SNN_BTP` work (enabled 2026-10-24).
 
 ## Phase 0 — Setup, literature, feasibility (target gate G0: 8 Nov 2026)
@@ -51,6 +51,7 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 - 2026-10-25 · T2.4 · Exact RTL cycle model (fitted ETU constants n+3 / 1, start +1, ETU0 +2; 0 mismatches on 30 fresh random cases and N-MNIST). Whole-network RTL latency at 100 MHz (300 test samples): N-MNIST baseline BASE 286 µs; mf gentle HUSH 140 µs (2.04× vs baseline net), column reads 0.167; mf aggressive 86.7 µs (3.3×), reads 0.066. SHD baseline 815 µs; mf gentle 745 µs, reads 0.64; aggressive 402 µs (2.0×), reads 0.19.
 - 2026-10-25 · T2.5 · Yosys 0.33 cannot parse the SV; yowasp-yosys 0.70 can (changed `parameter string` to untyped). N-MNIST layer: BASE 6.6k LUT/6.2k FF/36 RAMB36+3 RAMB18; HUSH-drop 12.1k/8.5k/+15 RAMB18; HUSH-MF 16.1k/11.0k/+30 RAMB18; 1 DSP (address multiply).
 - 2026-10-25 · T2.6 · AB = clog2(2^15 + 128M + 1) + 1 (18 bits for M=578); state array to LUTRAM via st_valid bits (reset loop removed); state and R also cleared on every start. Yosys: BASE 3.9k/1.9k, drop 8.2k/3.7k, MF 10.9k/5.4k LUT/FF. Regression 40/40 + N-MNIST pass.
+- 2026-10-25 · T3.1 prep · Board top with autorun, Nexys A7-100T XDC, non-project Vivado TCL (synth, place, phys_opt, route, utilization, timing, vectorless power, bitstream). iverilog compile and Yosys synth of the top pass.
 
 ## Phase 1 — Gated training (gate G1: 29 Nov 2026)
 
@@ -80,7 +81,7 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 
 | ID | Task | Status |
 | --- | --- | --- |
-| T3.1 | Vivado synthesis and P&R at 100 MHz on XC7A100T (needs your machine) | TODO |
+| T3.1 | Vivado synthesis and P&R at 100 MHz on XC7A100T (needs your machine) | READY TO RUN (`fpga/build.tcl`, `fpga/top_hush.sv`, `fpga/nexys_a7_100t.xdc`); waiting for folder access / Vivado version |
 | T3.2 | SAIF power over ≥100 samples per dataset | TODO |
 | T3.3 | Board ΔP measurement, BASE vs HUSH | TODO |
 
