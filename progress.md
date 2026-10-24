@@ -13,7 +13,7 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 
 - **Last updated:** 2026-10-24
 - **Now working on:** T0.9 regime study — ρ vs active inputs per timestep (MNIST low-rate, SHD, N-MNIST)
-- **Blocker:** pushes to GitHub are refused (Claude GitHub App not installed on `creagic11/SNN_BTP`). Work is committed locally in the cloud workspace and pushed once access is granted.
+- **GitHub:** pushes to `creagic11/SNN_BTP` work (enabled 2026-10-24).
 
 ## Phase 0 — Setup, literature, feasibility (target gate G0: 8 Nov 2026)
 
