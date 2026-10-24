@@ -79,6 +79,7 @@ def main():
     ap.add_argument("--n", type=int, default=500)
     ap.add_argument("--perm", default="", help="permutation (.npy) of the first hidden layer")
     ap.add_argument("--benv", type=int, nargs="+", default=[8])
+    ap.add_argument("--asleep_drive", default="none", choices=["none", "mean", "both"])
     ap.add_argument("--carried", action="store_true", help="also run the v1 carried-bound envelope")
     ap.add_argument("--theta_h", type=int, nargs="*", default=[], help="extra predictive-mode gate thresholds")
     ap.add_argument("--out", default="")
@@ -97,8 +98,10 @@ def main():
     rasters, Y = test_rasters(z, a.n)
 
     modes = [("REF", "ref", 8, True, None), ("ORACLE-8", "oracle", 8, True, None)]
+    drives = ["none", "mean"] if a.asleep_drive == "both" else [a.asleep_drive]
     for b in a.benv:
-        modes.append((f"HUSH-{b}" + ("" if b == 32 else "/32"), "gated", b, True, None))
+        for dr in drives:
+            modes.append((f"HUSH-{b}" + ("" if b == 32 else "/32") + ("-mf" if dr == "mean" else ""), "gated", b, True, None))
         if a.carried:
             modes.append((f"HUSH-{b}-carried", "gated", b, False, None))
     for th in a.theta_h:
@@ -106,7 +109,8 @@ def main():
     p_out = LIFParams(k=k, theta=theta, b_env=Ws[-1].shape[1], b_blk=Ws[-1].shape[1])
     res = {}
     for name, kind, benv, resync, th in modes:
-        p = LIFParams(k=k, theta=theta, b_env=benv, b_blk=32, resync=resync, theta_h=th)
+        p = LIFParams(k=k, theta=theta, b_env=benv, b_blk=32, resync=resync, theta_h=th,
+                      asleep_drive="mean" if name.endswith("-mf") else "none")
         acc = 0
         aw_sub = sub_tot = aw_blk = blk_tot = base = hush = reads = in_spk = hid_spk = hid_tot = 0
         for S, y in zip(rasters, Y):

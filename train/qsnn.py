@@ -74,6 +74,7 @@ class QLinearLIF(nn.Module):
 
     gate_benv = 0          # >0: run HUSH envelope-gated dynamics with sub-blocks of this size
     theta_h = None         # gate threshold (None = theta, exact mode)
+    asleep_drive = "none"  # "mean": asleep neurons integrate the sub-block mean drive (mean-field hibernation)
 
     def forward(self, S):
         """S: (T, B, n_in) spikes. Returns spikes (T, B, n_out) and pre-reset potentials U.
@@ -91,6 +92,7 @@ class QLinearLIF(nn.Module):
         if gb:
             C = N // gb
             P = W.reshape(W.shape[0], C, gb).max(dim=2).values
+            Q = FloorSTE.apply(W.reshape(W.shape[0], C, gb).sum(dim=2) / gb) if self.asleep_drive == "mean" else None
             th_h = self.theta if self.theta_h is None else self.theta_h
             exc, kept, tot = [], 0.0, 0.0
         for t in range(T):
@@ -105,7 +107,8 @@ class QLinearLIF(nn.Module):
                 kept += float((g.float() * n_t).sum())
                 tot += float(n_t.sum()) * C
                 gn = g.repeat_interleave(gb, dim=1).to(U.dtype)
-                U = gn * U + (1 - gn) * LV
+                U_sleep = LV if Q is None else LV + (S[t] @ Q).repeat_interleave(gb, dim=1)
+                U = gn * U + (1 - gn) * U_sleep
                 s = SpikeFn.apply(U - self.theta, self.sscale) * gn
             else:
                 s = SpikeFn.apply(U - self.theta, self.sscale)

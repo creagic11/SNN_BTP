@@ -23,6 +23,7 @@ def main():
     ap.add_argument("weights")
     ap.add_argument("--benv", type=int, default=8)
     ap.add_argument("--n", type=int, default=200)
+    ap.add_argument("--asleep_drive", default="none")
     a = ap.parse_args()
     z = np.load(a.weights)
     Ws = [z[f"W{i}"].astype(np.int64) for i in range(10) if f"W{i}" in z]
@@ -35,12 +36,13 @@ def main():
             l.w.copy_(torch.tensor(W, dtype=torch.float32))
     for l in model.layers[:-1]:
         l.gate_benv = a.benv
+        l.asleep_drive = a.asleep_drive
     rasters, Y = test_rasters(z, a.n)
     S = torch.tensor(np.stack(rasters)).float().transpose(0, 1)
     with torch.no_grad():
         So, Uo, hid = model(S)
     pred_t = predict_torch(So, Uo).numpy()
-    p = LIFParams(k=k, theta=theta, b_env=a.benv, b_blk=32)
+    p = LIFParams(k=k, theta=theta, b_env=a.benv, b_blk=32, asleep_drive=a.asleep_drive)
     po = LIFParams(k=k, theta=theta, b_env=Ws[-1].shape[1], b_blk=Ws[-1].shape[1])
     spk_mis = pred_mis = 0
     for i, r in enumerate(rasters):

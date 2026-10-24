@@ -55,8 +55,17 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] Why the envelope failed on rate-coded MNIST: the drive gap Σ_{j∈S}(max_i W_ij − W_ij) grows linearly with active inputs per step (≈5.8 units × 90 inputs ≈ 8θ); and why the ORACLE itself keeps most 32-neuron blocks awake at an 18.7% hidden firing rate.
 - [ ] The block-occupancy formula ρ_blk = 1 − (1 − q)^B applied to your own measured firing rate.
 
+## Phase 0 — Regime study lessons (T0.9)
+- [ ] Why awake fraction per (block, timestep) misleads and why savings must be weighted by active inputs (column reads, cycles). [`results/regime_study.md`]
+- [ ] The cycle model with three overlapped engines: envelope of t+1, PE pass of t, leak sweep: max(n_{t+1}, A_t(n_t+1), G).
+- [ ] Why dropping sub-threshold drive costs accuracy on temporal tasks (SHD: the oracle alone loses 11 points).
+- [ ] Exact resync vs carried bound: why the carried v1 bound accumulates up to 2^k × the per-step drive error while asleep, and why the leak sweep makes the exact max V available for free.
+- [ ] Mean-field hibernation: asleep neurons add the shared sub-block drive Q_jc = floor(mean_i W_ij) without fetching their own weights; prove Q ≤ P keeps U ≤ Ê < θ.
+- [ ] The control experiment logic: an ungated network trained to the same low firing rate separates "sparser firing" from "gating" as the cause of accuracy loss.
+
 ## Phase 1 — Training co-design (added at T1.x)
-- [ ] Straight-through estimator for the gate; subgradient through max for P.
+- [ ] Straight-through estimator for the gate; subgradient through max for P. How the trainer's gated forward pass was checked bit-exact against the golden model (`scripts/check_bitexact_gated.py`).
+- [ ] The envelope-drive loss mean_c Σ_j r_j·relu(P_jc)/θ: what it penalises and why its gradient only reaches the arg-max neuron.
 - [ ] The exceedance and dispersion losses: what each pushes and why it lowers ρ.
 - [ ] Reading an accuracy-vs-ρ Pareto front.
 

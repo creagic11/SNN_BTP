@@ -39,6 +39,9 @@ class LIFParams:
     b_blk: int = 32       # neurons per scheduling block (one 256-bit weight word)
     resync: bool = True   # True: R_c = exact max V every step (the leak sweep sees asleep neurons);
                           # False: v1-style carried bound, R_c = E_c while asleep (error accumulates)
+    asleep_drive: str = "none"  # "none": asleep neurons drop the step's drive (leak only);
+                                # "mean": they integrate the sub-block's shared mean drive Q (mean-field
+                                #         hibernation); Q_jc = floor(mean_i W_ij) <= P_jc keeps Theorem 1
 
     @property
     def th_gate(self) -> int:
@@ -61,6 +64,12 @@ def leak(x, k: int):
 
 def clip(x, p: LIFParams):
     return np.clip(x, p.vmin, p.vmax)
+
+
+def mean_table(W: np.ndarray, b_env: int) -> np.ndarray:
+    """Shared drive Q[j, c] = floor(sum_{i in c} W[j, i] / b_env) <= P[j, c]. Shape (M, N // b_env)."""
+    M, N = W.shape
+    return np.floor_divide(W.reshape(M, N // b_env, b_env).sum(axis=2), b_env)
 
 
 def proxy_table(W: np.ndarray, b_env: int) -> np.ndarray:
@@ -149,6 +158,7 @@ def run_gated(W: np.ndarray, S: np.ndarray, p: LIFParams, P: np.ndarray | None =
     if P is None:
         P = proxy_table(W, p.b_env)
     P = np.asarray(P, np.int64)
+    Q = mean_table(W, p.b_env) if p.asleep_drive == "mean" else None
     V = np.zeros(N, np.int64)
     R = np.zeros(C, np.int64)
     out = LayerTrace(
@@ -164,7 +174,11 @@ def run_gated(W: np.ndarray, S: np.ndarray, p: LIFParams, P: np.ndarray | None =
         gn = np.repeat(g, p.b_env)                          # per-neuron gate
         LV = leak(V, p.k)
         U_full = clip(LV + S[t] @ W, p)
-        U = np.where(gn, U_full, LV)                        # gated neurons only leak
+        if Q is None:
+            U_sleep = LV                                    # gated neurons only leak
+        else:
+            U_sleep = clip(LV + np.repeat(S[t] @ Q, p.b_env), p)   # shared mean drive, no weight fetch
+        U = np.where(gn, U_full, U_sleep)
         s = (U >= p.theta) & gn
         V = U - p.theta * s
         Vmax = V.reshape(C, p.b_env).max(axis=1)

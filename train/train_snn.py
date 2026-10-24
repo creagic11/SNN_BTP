@@ -130,6 +130,7 @@ def main():
     ap.add_argument("--env_lam", type=float, default=0.0, help="weight of the envelope drive loss")
     ap.add_argument("--env_benv", type=int, default=8)
     ap.add_argument("--gate_benv", type=int, default=0, help="train with HUSH-gated dynamics in hidden layers")
+    ap.add_argument("--asleep_drive", default="none", choices=["none", "mean"])
     ap.add_argument("--exc_lam", type=float, default=0.0, help="weight of the envelope exceedance loss")
     ap.add_argument("--init", default="", help="initialise from a weights.npz")
     ap.add_argument("--seed", type=int, default=0)
@@ -141,6 +142,7 @@ def main():
     model = QSNN(a.sizes, theta=a.theta, k=a.k)
     for layer in model.layers[:-1]:
         layer.gate_benv = a.gate_benv
+        layer.asleep_drive = a.asleep_drive
     if a.init:
         z0 = np.load(a.init)
         with torch.no_grad():

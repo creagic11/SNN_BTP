@@ -57,7 +57,9 @@ def layer_case(draw):
     vbits = draw(st.sampled_from([8, 10, 16]))
     theta = min(theta, (1 << (vbits - 1)) - 1)
     resync = draw(st.booleans())
-    return W, S, LIFParams(k=k, theta=theta, vbits=vbits, b_env=b_env, b_blk=b_blk, resync=resync)
+    drive = draw(st.sampled_from(["none", "mean"]))
+    return W, S, LIFParams(k=k, theta=theta, vbits=vbits, b_env=b_env, b_blk=b_blk, resync=resync,
+                           asleep_drive=drive)
 
 
 @settings(max_examples=400, deadline=None)
@@ -108,7 +110,7 @@ def test_values_stay_in_register_range(case):
 def test_gate_always_on_equals_ref(case):
     """With theta_h at the bottom of the range every sub-block is awake, so GATED == REF."""
     W, S, p = case
-    p_on = LIFParams(k=p.k, theta=p.theta, theta_h=p.vmin, vbits=p.vbits, b_env=p.b_env, b_blk=p.b_blk, resync=p.resync)
+    p_on = LIFParams(k=p.k, theta=p.theta, theta_h=p.vmin, vbits=p.vbits, b_env=p.b_env, b_blk=p.b_blk, resync=p.resync, asleep_drive=p.asleep_drive)
     g, r = run_gated(W, S, p_on), run_ref(W, S, p)
     assert np.array_equal(g.spikes, r.spikes) and np.array_equal(g.V, r.V)
 
@@ -173,3 +175,15 @@ def test_resync_never_looser_than_carried_bound(case):
     tr = run_gated(W, S, pc)
     Vmax = tr.V.reshape(len(S), -1, p.b_env).max(axis=2)
     assert (Vmax <= tr.R).all()
+
+
+@settings(max_examples=300, deadline=None)
+@given(layer_case())
+def test_mean_field_asleep_neurons_stay_below_threshold(case):
+    """With mean-field hibernation an asleep neuron's new potential is still below theta (V <= E < theta_h)."""
+    W, S, p = case
+    pm = LIFParams(k=p.k, theta=p.theta, vbits=p.vbits, b_env=p.b_env, b_blk=p.b_blk, asleep_drive="mean")
+    tr = run_gated(W, S, pm)
+    asleep = ~np.repeat(tr.awake_sub, p.b_env, axis=1)
+    assert not (asleep & (tr.U >= p.theta)).any()
+    assert (tr.U <= np.repeat(tr.E_hat, p.b_env, axis=1)).all()
