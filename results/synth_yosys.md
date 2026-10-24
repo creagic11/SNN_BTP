@@ -12,3 +12,13 @@ Layer: N-MNIST hidden layer, M = 578 inputs, N = 256 neurons, T = 100, event buf
 HUSH-MF uses 25% of the LUTs and 8.7% of the FFs of an XC7A100T. The envelope unit is the main overhead (+5.5k LUT, +2.3k FF for the proxy path; +4k LUT, +2.5k FF more for mean-field): it holds two banks × 32 sub-blocks × 26-bit accumulators for each of D and Qs, plus 32 parallel adders each. The proxy and mean tables add 15 RAMB18 each.
 
 Planned reductions before Vivado: accumulator width 26 → 18 bits (|D| ≤ 578 × 127 < 2^17); state array mapped to LUTRAM (now 4,096 FFs); optional time-multiplexed envelope adders (8 adders × 4 cycles per event) when the overlap budget allows.
+
+## After T2.6 (accumulator width from M = 18 bits, state in LUTRAM via valid bits)
+
+| Configuration | LUT | FF | CARRY4 | LUTRAM cells | DSP48E1 | RAMB36 | RAMB18 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| BASE | 3,859 | 1,897 | 475 | 64 | 1 | 36 | 3 |
+| HUSH, drop | 8,229 | 3,654 | 1,052 | 64 | 1 | 36 | 18 |
+| HUSH, mean-field | 10,877 (17.2%) | 5,382 (4.2%) | 1,370 | 64 | 1 | 36 | 33 |
+
+Accumulators shrank from 26 to 18 bits and the 4,096-FF state array moved to distributed RAM (the reset loop that blocked RAM inference was replaced by per-block valid bits). Envelope overhead vs BASE: +4.4k LUT / +1.8k FF (drop), +7.0k LUT / +3.5k FF (mean-field). Bit-exact regression re-run: 40/40 random + N-MNIST network pass.

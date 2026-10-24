@@ -3,3 +3,5 @@
 {"epoch": 3, "loss": 0.3140173637390137, "test_acc": 0.9656, "hidden_rate": 0.01898177727125585, "sec": 209.7, "read_frac": 0.4486047792095637}
 {"epoch": 4, "loss": 0.2733937709093094, "test_acc": 0.9651, "hidden_rate": 0.01861281241290271, "sec": 756.7, "read_frac": 0.41378469190045836}
 {"epoch": 5, "loss": 0.25487268425623577, "test_acc": 0.9687, "hidden_rate": 0.01816780078224838, "sec": 1800.1, "read_frac": 0.3983780833190866}
+{"epoch": 6, "loss": 0.24783484112421672, "test_acc": 0.9672, "hidden_rate": 0.017837011814117433, "sec": 853.5, "read_frac": 0.3913264801250552}
+saved /home/claude/snn_btp/results/nmnist_T100_mf_e0.25_d0

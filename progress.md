@@ -50,6 +50,7 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 - 2026-10-25 · T2.1 · Regression found a bug: event-pointer width EAW = clog2(NEV) truncated the end pointer when NEV is a power of two; fixed to clog2(NEV+1); 60/60 new random cases pass. Safety arithmetic factored into `rtl/hush_arith.sv` (hush_envelope, hush_lane), used by both hush_layer and the formal harness `formal/fv_hush.sv`. SMT engines failed (boolector unroll crash, z3 4.8.12 stalls); ABC PDR proves the mean-field variant unbounded (PASS, 1,128 s); mutation with an unsafe mean proxy fails BMC immediately (non-vacuous); drop variant also PASS. User's laptop (Windows, `~/.Xilinx` present) likely has Vivado for Phase 3.
 - 2026-10-25 · T2.4 · Exact RTL cycle model (fitted ETU constants n+3 / 1, start +1, ETU0 +2; 0 mismatches on 30 fresh random cases and N-MNIST). Whole-network RTL latency at 100 MHz (300 test samples): N-MNIST baseline BASE 286 µs; mf gentle HUSH 140 µs (2.04× vs baseline net), column reads 0.167; mf aggressive 86.7 µs (3.3×), reads 0.066. SHD baseline 815 µs; mf gentle 745 µs, reads 0.64; aggressive 402 µs (2.0×), reads 0.19.
 - 2026-10-25 · T2.5 · Yosys 0.33 cannot parse the SV; yowasp-yosys 0.70 can (changed `parameter string` to untyped). N-MNIST layer: BASE 6.6k LUT/6.2k FF/36 RAMB36+3 RAMB18; HUSH-drop 12.1k/8.5k/+15 RAMB18; HUSH-MF 16.1k/11.0k/+30 RAMB18; 1 DSP (address multiply).
+- 2026-10-25 · T2.6 · AB = clog2(2^15 + 128M + 1) + 1 (18 bits for M=578); state array to LUTRAM via st_valid bits (reset loop removed); state and R also cleared on every start. Yosys: BASE 3.9k/1.9k, drop 8.2k/3.7k, MF 10.9k/5.4k LUT/FF. Regression 40/40 + N-MNIST pass.
 
 ## Phase 1 — Gated training (gate G1: 29 Nov 2026)
 
@@ -72,7 +73,7 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 | T2.2 | Testbench against GATED golden model | DONE (Icarus: `rtl/sim/run_case.py`, `rtl/sim/regress.py`) |
 | T2.3 | SymbiYosys proof of the invariant at small sizes | DONE — PDR PASS for mean-field and drop; mutation FAIL as expected (`formal/README.md`) |
 | T2.5 | Yosys synth_xilinx resource estimate before Vivado | DONE (`results/synth_yosys.md`) |
-| T2.6 | Area optimisation: 18-bit accumulators, LUTRAM state, optional multiplexed ETU | TODO |
+| T2.6 | Area optimisation: 18-bit accumulators, LUTRAM state, optional multiplexed ETU | DONE (first two; MF 10.9k LUT / 5.4k FF) |
 | T2.4 | Performance counters, cycle model match within 1% | DONE — exact (0 mismatches, 30 random + real nets), `rtl/sim/cycle_model.py`, `scripts/rtl_perf.py` |
 
 ## Phase 3 — Implementation and power (gate G3: 24 Jan 2027)

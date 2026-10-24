@@ -55,7 +55,8 @@ module hush_layer #(
     localparam int G   = N / 32;
     localparam int C   = N / 8;
     localparam int VB  = 16;
-    localparam int AB  = 26;                       // accumulator width (exact sums before the clip)
+    // accumulator width: exact sums before the clip. |L(V) + sum of up to M INT8 weights| <= 2^15 + 128*M
+    localparam int AB  = $clog2((1 << 15) + 128 * M + 1) + 1;
     localparam int IW  = $clog2(M) > 0 ? $clog2(M) : 1;
     localparam int WAW = $clog2(G * M) > 0 ? $clog2(G * M) : 1;
     localparam int EAW = $clog2(NEV + 1);             // pointers reach NEV (one past the last event)
@@ -69,7 +70,8 @@ module hush_layer #(
     logic [8*C-1:0]     q_mem  [M];
     logic [15:0]        ev_mem [NEV];
     logic [15:0]        ts_mem [T+1];
-    logic [32*VB-1:0]   st_mem [G];
+    (* ram_style = "distributed" *) logic [32*VB-1:0] st_mem [G];
+    logic [G-1:0]       st_valid;                 // block written since start; unwritten blocks read as 0
 
     initial begin
         $readmemh(W_FILE, w_mem);
@@ -200,14 +202,16 @@ module hush_layer #(
             st <= S_IDLE; done <= 0; out_valid <= 0; v_valid <= 0; etu_go <= 0;
             consume_bank_valid <= 0;
             cnt_cycles <= 0; cnt_col_reads <= 0; cnt_word_reads <= 0; cnt_awake_sub <= 0;
-            for (int g = 0; g < G; g++) st_mem[g] <= '0;
+            st_valid <= '0;
             for (int c = 0; c < C; c++) R[c] <= '0;
         end else begin
             out_valid <= 0; v_valid <= 0; etu_go <= 0; consume_bank_valid <= 0;
             if (st != S_IDLE && st != S_DONE) cnt_cycles <= cnt_cycles + 1'b1;
             case (st)
                 S_IDLE: if (start) begin
-                    t <= 0; cur_bank <= 0;
+                    t <= 0; cur_bank <= 0; done <= 0;
+                    st_valid <= '0;                                  // new inference: V = 0, R = 0
+                    for (int c = 0; c < C; c++) R[c] <= '0;
                     if (GATE || MF) begin etu_t <= 0; etu_bank <= 0; etu_go <= 1; st <= S_ETU0; end
                     else st <= S_COMBINE;
                 end
@@ -230,7 +234,7 @@ module hush_layer #(
                 S_BLK_SEL: begin
                     if (b == G) st <= S_STEP_END;
                     else begin
-                        st_rd <= st_mem[b];               // synchronous state read
+                        st_rd <= st_valid[b] ? st_mem[b] : '0;   // synchronous state read
                         st    <= (|blk_gate) ? S_BLK_LOAD : S_SLP_FIN;
                     end
                 end
@@ -258,6 +262,7 @@ module hush_layer #(
                     logic [31:0] spk_w;
                     for (int l = 0; l < 32; l++) begin word[VB*l +: VB] = vnew[l]; spk_w[l] = spk[l]; end
                     st_mem[b] <= word;
+                    st_valid[b] <= 1'b1;
                     for (int s = 0; s < 4; s++) R[4*b + s] <= rnew[s];
                     out_valid <= 1; out_t <= 16'(t); out_blk <= 16'(b); out_spk <= spk_w;
                     v_valid <= 1; v_data <= word;
@@ -268,7 +273,7 @@ module hush_layer #(
                     if (t + 1 == T) st <= S_DONE;
                     else begin t <= t + 1'b1; cur_bank <= ~cur_bank; st <= S_COMBINE; end
                 end
-                S_DONE: done <= 1;
+                S_DONE: begin done <= 1; if (start) st <= S_IDLE; end
                 default: st <= S_IDLE;
             endcase
         end
