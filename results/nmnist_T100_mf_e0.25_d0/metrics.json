@@ -1,0 +1,47 @@
+{
+  "args": {
+    "dataset": "nmnist",
+    "sizes": [
+      578,
+      256,
+      10
+    ],
+    "T": 100,
+    "k": 4,
+    "theta": 64,
+    "gain": 1,
+    "t_max": 0.3,
+    "epochs": 6,
+    "bs": 128,
+    "lr": 0.02,
+    "rate_target": 0.05,
+    "rate_lam": 5.0,
+    "env_lam": 0.0,
+    "env_benv": 8,
+    "gate_benv": 8,
+    "asleep_drive": "mean",
+    "exc_lam": 0.25,
+    "init": "results/nmnist_T100/weights.npz",
+    "seed": 0,
+    "limit": 0,
+    "tag": "nmnist_T100_mf_e0.25_d0"
+  },
+  "log": [
+    {
+      "epoch": 1,
+      "loss": 0.636089040740331,
+      "test_acc": 0.9688,
+      "hidden_rate": 0.025987668056041004,
+      "sec": 502.3,
+      "read_frac": 0.7831967632491205
+    },
+    {
+      "epoch": 2,
+      "loss": 0.40871965910593666,
+      "test_acc": 0.9629,
+      "hidden_rate": 0.020193675812333823,
+      "sec": 286.8,
+      "read_frac": 0.5309605862343374
+    }
+  ]
+}

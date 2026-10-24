@@ -46,6 +46,7 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 - 2026-10-24 · T0.9 · Mean-field results: mf_e05_d025 70.8% at reads 0.64 (no loss vs baseline); mf_e2_d1 64.4% at reads 0.18, 2.05× cycles. Next: N-MNIST baseline + gated runs (hidden 256, T=100 over 300 ms), then G0 report.
 - 2026-10-24 · T0.9/T0.10 · N-MNIST 578-256-10 T=100 k=4: baseline 97.59%; mean-field gentle 95.32% reads 0.155, 2.17× cycles; aggressive 92.72% reads 0.058, 3.86×; vanilla HUSH on baseline 0.98 reads. Gated bit-exact check passes. G0 report written: GO with narrowed scope (`results/G0_report.md`).
 - 2026-10-24 · T1.5 · Heuristic gates at equal reads: N-MNIST HUSH 95.5%/0 FN, SITRA-style 66.0%/15,121 FN, Early-style 93.5%/36 FN; SHD HUSH 70.7%/0, SITRA 48.0%/7,576, Early 65.3%/2. Caveats (Early predictor read cost uncharged; nets co-trained with HUSH) recorded.
+- 2026-10-24 · T2.1/T2.2 · Tools installed in workspace: iverilog 12, verilator 5.020, yosys 0.33, cocotb 2.1, z3, boolector, SymbiYosys (from source, /usr/local/bin/sby). RTL v1 `rtl/hush_layer.sv` (GATE/MF params; double-buffered ETU overlapped with block loop; 4 sub-block column enables; counters). Bit-exact vs golden: 40/40 random regression cases (GATE/MF/k/θ/rates/partial gating) and real nets — N-MNIST mf (3 samples) and BASE, SHD mf — all PASS including counters (word reads, column reads, awake sub-blocks). RTL cycles N-MNIST sample: HUSH 7.9k–14.3k vs BASE 26.5k.
 
 ## Phase 1 — Gated training (gate G1: 29 Nov 2026)
 
@@ -64,8 +65,8 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 
 | ID | Task | Status |
 | --- | --- | --- |
-| T2.1 | RTL: ETU, combine, scheduler, PE array, max trees, leak sweep | TODO |
-| T2.2 | cocotb + Verilator testbench against GATED golden model | TODO |
+| T2.1 | RTL: ETU, combine, scheduler, PE array, max trees, leak sweep | DONE v1 (`rtl/hush_layer.sv`; asleep pass 2 cycles/block, not yet a parallel sweep engine) |
+| T2.2 | Testbench against GATED golden model | DONE (Icarus: `rtl/sim/run_case.py`, `rtl/sim/regress.py`) |
 | T2.3 | SymbiYosys proof of the invariant at small sizes | TODO |
 | T2.4 | Performance counters, cycle model match within 1% | TODO |
 

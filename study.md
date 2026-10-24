@@ -75,6 +75,8 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] Draw the datapath from memory, including the overlap of envelope(t+1) with PE(t).
 - [ ] Derive the cycle model C_HUSH = Σ max(n_{t+1}, A_t·n_t) + c and the speedup min(G, 1/ρ).
 - [ ] Explain why HUSH is never slower in cycles than BASE but can cost more energy at ρ ≈ 1.
+- [ ] Walk through `rtl/hush_layer.sv`: ETU 3-stage pipeline and double-buffered banks; combine; block loop states SEL/LOAD/RUN/FIN and the 2-cycle asleep pass; why accumulators are 26 bits and the clip happens once.
+- [ ] How the RTL is checked bit-exact: `rtl/sim/run_case.py` compares every block write-back (spikes + state) and the counters with the golden model.
 - [ ] Explain bounded model checking vs k-induction, and what the SymbiYosys proof covers.
 
 ## Phase 3 — Power methodology (added at T3.x)
