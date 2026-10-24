@@ -38,3 +38,18 @@ Fine-tuned 15 epochs from the baseline with the HUSH-8/32 gate in the forward pa
 Training with the gate turns HUSH from useless into a **3.8× reduction in weight-column reads and 1.7× fewer cycles**, at **−5.9 accuracy points**. The envelope-drive bound fell from 3.7 θ to 1.1 θ per timestep and hidden firing from 5% to 1.3%. The epoch-to-epoch accuracy is noisy (58–65%), so the final number needs repeat runs.
 
 Running: a λ sweep to trace the accuracy-vs-reads Pareto front, plus an ungated network trained to the same 1.3% firing rate to separate "sparser firing" from "gating" as the cause of the accuracy loss (`scripts/sweep_shd.sh`).
+
+## Pareto sweep, SHD T = 250, HUSH-8/32, single seed each
+
+Accuracy on the full test set (2,264) from the trainer; reads and cycles from the golden model on 300 samples.
+
+| Run | Training | Accuracy | Column reads vs BASE | Cycle speedup | Hidden rate |
+| --- | --- | --- | --- | --- | --- |
+| baseline | ungated, 5% rate target | 70.8% | 0.97 (gate at inference) | 1.01× | 5.0% |
+| g_e0 | gate in loop, no envelope losses | 70.5% | 0.97 | ≈1.01× | 5.1% |
+| g_e025 | gate, exceedance λ 0.25 | 68.8% | 0.86 | 1.01× | 3.8% |
+| g_e05_d025 | gate, exceedance 0.5, drive 0.25 | 68.7% | 0.68 | 1.02× | 2.8% |
+| gated (g_e2_d1) | gate, exceedance 2, drive 1 | 64.9% | 0.26 | 1.70× | 1.3% |
+| ungated_r013 (control) | ungated, 1.3% rate target (reached 2.2%) | 69.5% | — | — | 2.2% |
+
+Reading the front: about 2 points buy a 32% read reduction; 6 points buy 74% and the first real cycle gain. The control network at 2.2% firing keeps 69.5%, so most of the loss at the aggressive end comes from gating (dropped sub-threshold drive), not from sparser firing. That points at the asleep-neuron semantics as the lever: mean-field hibernation training is running (`scripts/sweep_shd_mf.sh`).
