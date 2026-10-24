@@ -1,0 +1,6 @@
+data/
+__pycache__/
+*.pyc
+.hypothesis/
+results/*.npz
+results/ckpt/
