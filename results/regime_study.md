@@ -53,3 +53,16 @@ Accuracy on the full test set (2,264) from the trainer; reads and cycles from th
 | ungated_r013 (control) | ungated, 1.3% rate target (reached 2.2%) | 69.5% | — | — | 2.2% |
 
 Reading the front: about 2 points buy a 32% read reduction; 6 points buy 74% and the first real cycle gain. The control network at 2.2% firing keeps 69.5%, so most of the loss at the aggressive end comes from gating (dropped sub-threshold drive), not from sparser firing. That points at the asleep-neuron semantics as the lever: mean-field hibernation training is running (`scripts/sweep_shd_mf.sh`).
+
+## Mean-field hibernation (asleep neurons integrate the shared sub-block mean drive)
+
+Same co-design recipe, but trained and evaluated with `asleep_drive = mean`.
+
+| Run | Asleep semantics | Accuracy (full test) | Column reads vs BASE | Cycle speedup |
+| --- | --- | --- | --- | --- |
+| g_e05_d025 | drop | 68.7% | 0.68 | 1.02× |
+| **mf_e05_d025** | **mean-field** | **70.8%** | **0.64** | 1.04× |
+| gated (g_e2_d1) | drop | 64.9% | 0.26 | 1.70× |
+| **mf_e2_d1** | **mean-field** | 64.4% | **0.18** | **2.05×** |
+
+Mean-field hibernation moves the whole front: at gentle settings it keeps the baseline accuracy (70.8% vs 70.8%) with 36% fewer weight-column reads; at aggressive settings it reaches 82% fewer reads and 2.05× fewer cycles at the same accuracy as the drop variant. The extra hardware is one more proxy table (the mean, 6 RAMB36 for 700×32 INT8) and one more adder per sub-block; asleep neurons get the same increment, written during the leak sweep that already touches them. Single seed per point: needs repeats.
