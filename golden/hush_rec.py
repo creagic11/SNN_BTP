@@ -64,6 +64,8 @@ class RecLayer:
     b: np.ndarray | None = None        # (N,) int >= 0, spike-triggered adaptation
     kv: np.ndarray | None = None       # (N,) per-neuron leak shift (overrides q.lif.k); heterogeneous tau
     kwv: np.ndarray | None = None      # (N,) per-neuron adaptation leak shift (overrides q.kw)
+    bias: np.ndarray | None = None     # (N,) per-neuron constant input current (folded BatchNorm shift);
+                                       # drive-free, so it is part of B and Theorem 1' is unchanged
 
     @property
     def N(self) -> int:
@@ -154,6 +156,8 @@ def run_rec(L: RecLayer, X: np.ndarray, q: AdLIFParams, mode: str = "ref", shado
         z = np.concatenate([X[t], s]) if rec else X[t]
         tr.n_active[t] = int(z.sum())
         B = leak(V, p.k if L.kv is None else np.asarray(L.kv, np.int64)) - w
+        if L.bias is not None:
+            B = B + np.asarray(L.bias, np.int64)
         U_full = clip(B + z @ Wc, p)
         if mode == "ref":
             g = np.ones(C, bool)

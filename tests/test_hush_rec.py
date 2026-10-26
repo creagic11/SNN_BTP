@@ -173,3 +173,14 @@ def test_delay_events_matches_definition(T, M, seed):
     for t in range(T):
         for j in range(M):
             assert Z[t, j] == (S[t - d[j], j] if t >= d[j] else 0)
+
+
+@settings(max_examples=300, deadline=None)
+@given(rec_case(), st.integers(0, 2**31 - 1))
+def test_theorem1prime_with_bias_current(case, seed):
+    """A per-neuron constant bias current (folded BatchNorm) is drive-free: the gate must still be safe."""
+    L, X, q = case
+    L.bias = np.random.default_rng(seed).integers(-3 * q.lif.theta, 2 * q.lif.theta + 1, size=L.N)
+    tr = run_rec(L, X, q, "gated")
+    gn = np.repeat(tr.awake_sub, q.lif.b_env, axis=1)
+    assert not np.any(~gn & (tr.U_ungated >= q.lif.theta))

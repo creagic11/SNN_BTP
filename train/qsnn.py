@@ -229,6 +229,8 @@ class QRecAdLIF(nn.Module):
         for t in range(T):
             z = torch.cat([S[t], s], 1) if self.recurrent else S[t]
             Bv = V - FloorSTE.apply(V / 2 ** self.kv) - wad
+            if getattr(self, "bias", None) is not None:
+                Bv = Bv + RoundClampSTE.apply(self.bias, self.vmin, self.vmax)
             U = torch.clamp(Bv + (z @ Wc if I_all is None else I_all[t]), self.vmin, self.vmax)
             if gb:
                 Bmax = Bv.reshape(Bs, C, gb).max(dim=2).values
@@ -372,4 +374,12 @@ class QDSNN(nn.Module):
             d[f"W{i}"] = (l.w_int() if isinstance(l, QLinearLIF) else RoundClampSTE.apply(l.w, -128, 127)
                           ).detach().cpu().numpy().astype("int64")
             d[f"D{i}"] = dl.d_int().detach().cpu().numpy().astype("int64")
+            d[f"TH{i}"] = int(l.theta)
+            if getattr(l, "bias", None) is not None:
+                d[f"BI{i}"] = RoundClampSTE.apply(l.bias, l.vmin, l.vmax).detach().cpu().numpy().astype("int64")
+            if getattr(l, "bn", None) is not None:      # inference BN: I*g + c (folded by scripts/fold_bn.py)
+                bn = l.bn
+                g = (bn.weight / torch.sqrt(bn.running_var + bn.eps)).detach().cpu().numpy()
+                d[f"BNg{i}"] = g.astype("float64")
+                d[f"BNc{i}"] = (bn.bias.detach().cpu().numpy() - bn.running_mean.cpu().numpy() * g).astype("float64")
         return d

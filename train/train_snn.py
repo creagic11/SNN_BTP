@@ -338,7 +338,9 @@ def main():
         Ws = model.export_int()
         if isinstance(Ws, list):
             Ws = {f"W{i}": W for i, W in enumerate(Ws)}
-        Ws = {key: (v.astype(np.int8) if key[0] in "WRD" or key.startswith("K") else v.astype(np.int16)) for key, v in Ws.items()}
+        Ws = {key: (v if key.startswith("BN") or key.startswith("TH") or key.startswith("BI") else
+                   v.astype(np.int8) if key[0] in "WRD" or key.startswith("K") else v.astype(np.int16))
+              for key, v in Ws.items()}
         meta = dict(T=a.T, k=a.k, theta=a.theta, gain=a.gain, dataset=a.dataset, t_max=a.t_max,
                     pool=a.pool or (2 if a.dataset == "nmnist" else 1), model=a.model, kw=a.kw, sa=a.sa,
                     readout=a.readout, k_out=a.k_out or a.k, out_theta=model.layers[-1].theta, dmax=a.dmax)

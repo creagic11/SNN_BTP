@@ -36,7 +36,11 @@ def run_delay_network(z, X: np.ndarray, mode: str = "ref", b_env: int = 8, aslee
     traces = []
     for i in range(nl - 1):
         x = delay_events(x, z[f"D{i}"])
-        tr = run_rec(RecLayer(z[f"W{i}"].astype(np.int64)), x, q, mode, shadow=False)
+        th_i = int(z[f"TH{i}"]) if f"TH{i}" in z else theta
+        qi = AdLIFParams(lif=LIFParams(k=k, theta=th_i, b_env=b_env, b_blk=32, asleep_drive=asleep_drive),
+                         signed_drive=True)
+        bias = z[f"BI{i}"].astype(np.int64) if f"BI{i}" in z else None
+        tr = run_rec(RecLayer(z[f"W{i}"].astype(np.int64), bias=bias), x, qi, mode, shadow=False)
         traces.append(tr)
         x = tr.spikes.astype(np.int64)
     Wo = z[f"W{nl - 1}"].astype(np.int64)
