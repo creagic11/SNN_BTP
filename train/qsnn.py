@@ -164,9 +164,9 @@ class QRecAdLIF(nn.Module):
         if adapt:
             self.a = nn.Parameter(torch.empty(n_out).uniform_(max(amin, -amax / 4), amax / 4))
             self.b = nn.Parameter(torch.empty(n_out).uniform_(0, bmax / 8))
-        # Lemma 3: through the soft reset dV'/dU = 1 - theta*sigma'(U - theta); the fast-sigmoid peak is
-        # 1/sscale, so sscale = theta/2 bounds |dV'/dU| <= 1 (theta/4 allowed -3 per step: BPTT blow-up).
-        self.sscale = theta / 2
+        # theta/4 learns best (ablation 26 Oct: theta/4 82.1%, theta/2 59.8%, theta 64.9% at 6 epochs) even
+        # though theta/2 bounds the reset-path factor (Lemma 3); see docs/theorem1_prime.md.
+        self.sscale = theta / 4
         self.drop = 0.0
         self.detach_reset = False
         # per-neuron leak shifts (heterogeneous time constants); default homogeneous

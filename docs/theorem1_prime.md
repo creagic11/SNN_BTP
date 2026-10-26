@@ -83,4 +83,14 @@ With soft reset V′ = U − θ·s and the surrogate s′ = σ′(U − θ), whe
 - With c = θ/2, the factor stays in [−1, 1] and the same seeds give 3e−4 to 7e−4.
 - Detaching the reset also works, giving 4e−3 to 1e−2.
 
-The default for recurrent adLIF layers is now c = θ/2. The first homogeneous baseline used θ/4, and its loss spike at epoch 8 (0.80 → 1.46) is consistent with this.
+**Correction from the controlled ablation (26 Oct, 6 epochs, one change at a time).** The bound helps stability but hurts learning:
+
+| Surrogate scale c | Best test accuracy |
+| --- | --- |
+| θ/4 | 82.1% |
+| θ/2 | 59.8% |
+| θ | 79.4% (ends 64.9%) |
+
+The default stays at θ/4. With homogeneous leaks and the 6–12-epoch schedule, θ/4 trains without blow-up. The collapses happened in long one-cycle schedules (30–40 epochs) and in runs with heterogeneous leaks (k up to 7), where the θ/4 network dies at initialisation on most seeds.
+
+Lemma 3 stays as an explanation of *why* those runs blew up. It is not a recipe. A wider surrogate makes the neuron less sensitive to timing, which is exactly what SHD needs.

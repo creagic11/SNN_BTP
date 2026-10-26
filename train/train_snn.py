@@ -35,7 +35,7 @@ class Data:
             self.te = (torch.tensor(Xte), torch.tensor(Yte))
         elif name == "shd":
             from golden.datasets import SHD
-            self.str_, self.ste = SHD(True, t_max), SHD(False, t_max)
+            self.str_, self.ste = SHD(True, t_max, pool), SHD(False, t_max, pool)
             self.tr = (None, torch.tensor(self.str_.labels))
             self.te = (None, torch.tensor(self.ste.labels))
         elif name == "nmnist":
@@ -63,7 +63,9 @@ class Data:
 
     @property
     def M(self):
-        return {"mnist": 784, "shd": 700}.get(self.name) or 578
+        if self.name == "shd":
+            return self.str_.M
+        return {"mnist": 784}.get(self.name) or 578
 
     def n(self, train):
         return len((self.tr if train else self.te)[1])
@@ -169,6 +171,7 @@ def main():
     ap.add_argument("--u_scale", type=float, default=0.125, help="logit scale for the u readout")
     ap.add_argument("--signed_drive", type=int, default=1)
     ap.add_argument("--threads", type=int, default=2)
+    ap.add_argument("--pool", type=int, default=0, help="input channel pooling (SHD: OR of adjacent channels; 0 = default)")
     ap.add_argument("--clip", type=float, default=0.0, help="gradient-norm clip (0 = off)")
     ap.add_argument("--het", type=int, default=0, help="per-neuron leak shifts k +- het, kw +- het")
     ap.add_argument("--detach_reset", action="store_true")
@@ -176,7 +179,7 @@ def main():
     ap.add_argument("--sscale_div", type=float, default=0.0, help="surrogate scale = theta / div (0: layer default)")
     a = ap.parse_args()
     torch.manual_seed(a.seed)
-    data = Data(a.dataset, a.T, a.gain, a.limit, a.t_max)
+    data = Data(a.dataset, a.T, a.gain, a.limit, a.t_max, pool=a.pool or (2 if a.dataset == "nmnist" else 1))
     torch.set_num_threads(a.threads)
     if a.model == "rec":
         model = QRSNN(a.sizes, theta=a.theta, k=a.k, kw=a.kw, sa=a.sa, recurrent=not a.no_rec,
@@ -268,7 +271,7 @@ def main():
             Ws = {f"W{i}": W for i, W in enumerate(Ws)}
         Ws = {key: (v.astype(np.int8) if key[0] in "WR" or key.startswith("K") else v.astype(np.int16)) for key, v in Ws.items()}
         np.savez(out / "weights.npz", **Ws, T=a.T, k=a.k, theta=a.theta, gain=a.gain, dataset=a.dataset,
-                 t_max=a.t_max, model=a.model, kw=a.kw, sa=a.sa, readout=a.readout,
+                 t_max=a.t_max, pool=a.pool or (2 if a.dataset == "nmnist" else 1), model=a.model, kw=a.kw, sa=a.sa, readout=a.readout,
                  k_out=a.k_out or a.k, out_theta=model.layers[-1].theta)
         json.dump({"args": vars(a), "log": log}, open(out / "metrics.json", "w"), indent=2)
     print("saved", out)

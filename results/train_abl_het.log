@@ -1,0 +1,15 @@
+{"epoch": 1, "loss": 2.9964050291331743, "test_acc": 0.04549469964664311, "hidden_rate": 0.0, "sec": 104.0}
+/home/claude/snn_btp/train/qsnn.py:285: RuntimeWarning: invalid value encountered in cast
+  else RoundClampSTE.apply(l.w, -128, 127).detach().cpu().numpy().astype("int64")
+/home/claude/snn_btp/train/qsnn.py:288: RuntimeWarning: invalid value encountered in cast
+  d[f"R{i}"] = RoundClampSTE.apply(l.wr, -128, 127).detach().cpu().numpy().astype("int64")
+/home/claude/snn_btp/train/qsnn.py:292: RuntimeWarning: invalid value encountered in cast
+  d[f"A{i}"] = a.detach().cpu().numpy().astype("int64")
+/home/claude/snn_btp/train/qsnn.py:293: RuntimeWarning: invalid value encountered in cast
+  d[f"Bad{i}"] = b.detach().cpu().numpy().astype("int64")
+{"epoch": 2, "loss": 2.995731831415428, "test_acc": 0.04549469964664311, "hidden_rate": 0.0, "sec": 104.9}
+{"epoch": 3, "loss": 2.995731831415428, "test_acc": 0.04549469964664311, "hidden_rate": 0.0, "sec": 106.6}
+{"epoch": 4, "loss": 2.995731831415428, "test_acc": 0.04549469964664311, "hidden_rate": 0.0, "sec": 104.6}
+{"epoch": 5, "loss": 2.995731831415428, "test_acc": 0.04549469964664311, "hidden_rate": 0.0, "sec": 101.9}
+{"epoch": 6, "loss": 2.995731831415428, "test_acc": 0.04549469964664311, "hidden_rate": 0.0, "sec": 101.5}
+saved /home/claude/snn_btp/results/abl_het

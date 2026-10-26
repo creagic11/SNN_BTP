@@ -54,7 +54,7 @@ def test_rasters(z, n):
         return list(S), Y
     if ds == "shd":
         from golden.datasets import SHD
-        d = SHD(False, float(z["t_max"]))
+        d = SHD(False, float(z["t_max"]), int(z["pool"]) if "pool" in z else 1)
         idx = np.random.default_rng(0).permutation(len(d))[:n]
         return [d.raster(i, T) for i in idx], d.labels[idx]
     if ds == "nmnist":
