@@ -20,7 +20,7 @@ import torch.nn.functional as F
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from train.qsnn import QSNN  # noqa: E402
+from train.qsnn import QRSNN, QSNN  # noqa: E402
 from train.train_mnist import if_encode_torch, predict_torch  # noqa: E402
 
 
@@ -97,6 +97,21 @@ def envelope_drive_loss(model, S, hid, benv, theta):
     return torch.stack(terms).mean()
 
 
+U_THETA = 1 << 14   # output threshold for the non-spiking readout (never reached in practice; checked)
+
+
+def readout_logits(So, Uo, a):
+    if a.readout == "u":
+        return Uo.mean(0) / a.theta * a.u_scale
+    return (So.sum(0) + 0.01 * Uo.mean(0) / a.theta) * (25.0 / a.T)
+
+
+def predict_any(So, Uo, readout):
+    if readout == "u":
+        return Uo.sum(0).argmax(dim=1)
+    return predict_torch(So, Uo)
+
+
 def evaluate(model, data, bs=500):
     model.eval()
     correct, rh, n, wk = 0, 0.0, data.n(False), 0.0
@@ -105,7 +120,7 @@ def evaluate(model, data, bs=500):
             idx = torch.arange(i, min(n, i + bs))
             S, Y = data.batch(idx, False)
             So, Uo, hid = model(S)
-            correct += (predict_torch(So, Uo) == Y).sum().item()
+            correct += (predict_any(So, Uo, getattr(model, "readout", "spk")) == Y).sum().item()
             rh += hid[0][0].mean().item() * len(idx)
             if model.layers[0].gate_benv:
                 wk += np.mean([l.work for l in model.layers[:-1]]) * len(idx)
@@ -136,18 +151,43 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--tag", default="")
+    ap.add_argument("--model", default="ff", choices=["ff", "rec"], help="rec: recurrent adLIF hidden layers")
+    ap.add_argument("--no_rec", action="store_true", help="rec model without recurrent weights")
+    ap.add_argument("--no_adapt", action="store_true", help="rec model without adaptation")
+    ap.add_argument("--kw", type=int, default=5)
+    ap.add_argument("--sa", type=int, default=8)
+    ap.add_argument("--drop", type=float, default=0.0, help="dropout on hidden spikes (training only)")
+    ap.add_argument("--readout", default="spk", choices=["spk", "u"],
+                    help="u: non-spiking readout, class = argmax sum_t U (output theta set out of reach)")
+    ap.add_argument("--k_out", type=int, default=0)
+    ap.add_argument("--u_scale", type=float, default=0.125, help="logit scale for the u readout")
+    ap.add_argument("--signed_drive", type=int, default=1)
+    ap.add_argument("--threads", type=int, default=2)
     a = ap.parse_args()
     torch.manual_seed(a.seed)
     data = Data(a.dataset, a.T, a.gain, a.limit, a.t_max)
-    model = QSNN(a.sizes, theta=a.theta, k=a.k)
+    torch.set_num_threads(a.threads)
+    if a.model == "rec":
+        model = QRSNN(a.sizes, theta=a.theta, k=a.k, kw=a.kw, sa=a.sa, recurrent=not a.no_rec,
+                      adapt=not a.no_adapt, k_out=a.k_out or None)
+    else:
+        model = QSNN(a.sizes, theta=a.theta, k=a.k)
+    if a.readout == "u":
+        model.layers[-1].theta = U_THETA
+    model.readout = a.readout
     for layer in model.layers[:-1]:
         layer.gate_benv = a.gate_benv
         layer.asleep_drive = a.asleep_drive
+        layer.signed_drive = bool(a.signed_drive)
+        layer.drop = a.drop
     if a.init:
         z0 = np.load(a.init)
         with torch.no_grad():
             for i, layer in enumerate(model.layers):
                 layer.w.copy_(torch.tensor(z0[f"W{i}"].astype(np.float32)))
+                for key, attr in ((f"R{i}", "wr"), (f"A{i}", "a"), (f"Bad{i}", "b")):
+                    if key in z0 and hasattr(layer, attr):
+                        getattr(layer, attr).copy_(torch.tensor(z0[key].astype(np.float32)))
     opt = torch.optim.Adam(model.parameters(), lr=a.lr)
     ntr = data.n(True)
     steps = a.epochs * ((ntr + a.bs - 1) // a.bs)
@@ -163,7 +203,7 @@ def main():
             idx = perm[i:i + a.bs]
             S, Y = data.batch(idx, True)
             So, Uo, hid = model(S)
-            logits = (So.sum(0) + 0.01 * Uo.mean(0) / a.theta) * (25.0 / a.T)
+            logits = readout_logits(So, Uo, a)
             loss = F.cross_entropy(logits, Y)
             if a.rate_lam:
                 rate = torch.stack([h[0].mean() for h in hid[:-1]]).mean()
@@ -190,8 +230,12 @@ def main():
         log.append(rec)
         print(json.dumps(rec), flush=True)
         Ws = model.export_int()
-        np.savez(out / "weights.npz", **{f"W{i}": W.astype(np.int8) for i, W in enumerate(Ws)},
-                 T=a.T, k=a.k, theta=a.theta, gain=a.gain, dataset=a.dataset, t_max=a.t_max)
+        if isinstance(Ws, list):
+            Ws = {f"W{i}": W for i, W in enumerate(Ws)}
+        Ws = {key: (v.astype(np.int8) if key[0] in "WR" else v.astype(np.int16)) for key, v in Ws.items()}
+        np.savez(out / "weights.npz", **Ws, T=a.T, k=a.k, theta=a.theta, gain=a.gain, dataset=a.dataset,
+                 t_max=a.t_max, model=a.model, kw=a.kw, sa=a.sa, readout=a.readout,
+                 k_out=a.k_out or a.k, out_theta=model.layers[-1].theta)
         json.dump({"args": vars(a), "log": log}, open(out / "metrics.json", "w"), indent=2)
     print("saved", out)
 

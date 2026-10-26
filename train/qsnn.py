@@ -136,3 +136,137 @@ class QSNN(nn.Module):
     def export_int(self):
         """Integer weights, shape (M, N) per layer, as numpy int64."""
         return [l.w_int().detach().cpu().numpy().astype("int64") for l in self.layers]
+
+
+class QRecAdLIF(nn.Module):
+    """Recurrent adaptive LIF layer, integer-faithful to golden.hush_rec.run_rec.
+
+        z_t = [x_t ; s_{t-1}],  B = L_k(V) - w,  U = clamp(B + z Wc),  s = U >= theta,  V' = U - theta s
+        w'  = clamp(L_kw(w) + floor(a V' / 2**sa) + b s)
+    a (amin..amax) and b (0..bmax) are learned per-neuron integers (STE rounding).
+
+    Stability: the subthreshold (V, w) map has Jacobian [[lam, -1], [c lam, mu - c]], c = a / 2**sa,
+    lam = 1 - 2**-k, mu = 1 - 2**-kw, det = lam mu. Both eigenvalues lie inside the unit circle iff
+    -c < (1 - lam)(1 - mu) = 2**-(k + kw); so any practical negative a is unstable (growth ~1.14 per
+    step at a = -8, sa = 8, k = kw = 5) and gradients explode over T = 250. Default amin = 0."""
+
+    def __init__(self, n_in: int, n_out: int, theta: int = 64, k: int = 5, kw: int = 5, sa: int = 8,
+                 recurrent: bool = True, adapt: bool = True, amax: int = 32, bmax: int = 32, amin: int = 0,
+                 vbits: int = 16, wbits_ad: int = 16, rec_std: float | None = None):
+        super().__init__()
+        self.theta, self.k, self.kw, self.sa = theta, k, kw, sa
+        self.recurrent, self.adapt, self.amax, self.bmax, self.amin = recurrent, adapt, amax, bmax, amin
+        self.vmin, self.vmax = -(1 << (vbits - 1)), (1 << (vbits - 1)) - 1
+        self.wmin, self.wmax = -(1 << (wbits_ad - 1)), (1 << (wbits_ad - 1)) - 1
+        self.w = nn.Parameter(torch.randn(n_in, n_out) * 2.0 * theta / n_in ** 0.5)
+        if recurrent:
+            self.wr = nn.Parameter(torch.randn(n_out, n_out) * (rec_std or 0.1 * theta / n_out ** 0.5))
+        if adapt:
+            self.a = nn.Parameter(torch.empty(n_out).uniform_(max(amin, -amax / 4), amax / 4))
+            self.b = nn.Parameter(torch.empty(n_out).uniform_(0, bmax / 8))
+        self.sscale = theta / 4
+        self.drop = 0.0
+        self.detach_reset = False  # stop the gradient through reset and spike-triggered adaptation
+
+    gate_benv = 0
+    theta_h = None
+    asleep_drive = "none"
+    signed_drive = True
+
+    def W_int(self):
+        W = RoundClampSTE.apply(self.w, -128, 127)
+        if self.recurrent:
+            W = torch.cat([W, RoundClampSTE.apply(self.wr, -128, 127)], 0)
+        return W
+
+    def ab_int(self, dev):
+        if not self.adapt:
+            z = torch.zeros(self.w.shape[1], device=dev)
+            return z, z
+        return RoundClampSTE.apply(self.a, self.amin, self.amax), RoundClampSTE.apply(self.b, 0, self.bmax)
+
+    def forward(self, S):
+        T, Bs, _ = S.shape
+        Wc = self.W_int()
+        N = Wc.shape[1]
+        a, b = self.ab_int(S.device)
+        V = torch.zeros(Bs, N, device=S.device)
+        wad = torch.zeros(Bs, N, device=S.device)
+        s = torch.zeros(Bs, N, device=S.device)
+        gb = self.gate_benv
+        if gb:
+            C = Wc.shape[1] // gb
+            P = Wc.reshape(Wc.shape[0], C, gb).max(dim=2).values
+            Q = (FloorSTE.apply(Wc.reshape(Wc.shape[0], C, gb).sum(dim=2) / gb)
+                 if self.asleep_drive == "mean" else None)
+            th_h = self.theta if self.theta_h is None else self.theta_h
+            exc, kept, tot = [], 0.0, 0.0
+        mask = None
+        if self.training and self.drop > 0:
+            mask = (torch.rand(Bs, N, device=S.device) >= self.drop).float() / (1 - self.drop)
+        spikes, Us = [], []
+        for t in range(T):
+            z = torch.cat([S[t], s], 1) if self.recurrent else S[t]
+            Bv = leak(V, self.k) - wad
+            U = torch.clamp(Bv + z @ Wc, self.vmin, self.vmax)
+            if gb:
+                Bmax = Bv.reshape(Bs, C, gb).max(dim=2).values
+                D = z @ P
+                lhs = torch.clamp(Bmax, self.vmin, self.vmax) + (D if self.signed_drive else torch.relu(D))
+                g = ((lhs >= th_h) | (Bmax > self.vmax)).detach()
+                exc.append(torch.relu(lhs - th_h).mean() / self.theta)
+                n_t = z.sum(dim=1, keepdim=True)
+                kept += float((g.float() * n_t).sum())
+                tot += float(n_t.sum()) * C
+                gn = g.repeat_interleave(gb, dim=1).to(U.dtype)
+                U_sleep = torch.clamp(Bv, self.vmin, self.vmax) if Q is None else \
+                    torch.clamp(Bv + (z @ Q).repeat_interleave(gb, dim=1), self.vmin, self.vmax)
+                U = gn * U + (1 - gn) * U_sleep
+                s = SpikeFn.apply(U - self.theta, self.sscale) * gn
+            else:
+                s = SpikeFn.apply(U - self.theta, self.sscale)
+            sr = s.detach() if self.detach_reset else s
+            V = U - self.theta * sr
+            if self.adapt:
+                wad = torch.clamp(leak(wad, self.kw) + FloorSTE.apply(a * V / (1 << self.sa)) + b * sr,
+                                  self.wmin, self.wmax)
+            s_out = s if mask is None else s * mask
+            spikes.append(s_out)
+            Us.append(U)
+            s = s_out if mask is None else s   # recurrence sees the undropped spikes
+        if gb:
+            self.exceed = torch.stack(exc).mean()
+            self.work = kept / max(1.0, tot)
+        return torch.stack(spikes), torch.stack(Us)
+
+
+class QRSNN(nn.Module):
+    """Recurrent adLIF hidden layers + non-recurrent LIF readout (QLinearLIF)."""
+
+    def __init__(self, sizes: list[int], theta: int = 64, k: int = 5, kw: int = 5, sa: int = 8,
+                 recurrent: bool = True, adapt: bool = True, k_out: int | None = None):
+        super().__init__()
+        hid = [QRecAdLIF(a, b, theta=theta, k=k, kw=kw, sa=sa, recurrent=recurrent, adapt=adapt)
+               for a, b in zip(sizes[:-2], sizes[1:-1])]
+        out = QLinearLIF(sizes[-2], sizes[-1], theta=theta, k=k if k_out is None else k_out)
+        self.layers = nn.ModuleList(hid + [out])
+
+    def forward(self, S):
+        hidden = []
+        for layer in self.layers:
+            S, U = layer(S)
+            hidden.append((S, U))
+        return S, U, hidden
+
+    def export_int(self):
+        d = {}
+        for i, l in enumerate(self.layers):
+            d[f"W{i}"] = l.w_int().detach().cpu().numpy().astype("int64") if isinstance(l, QLinearLIF) \
+                else RoundClampSTE.apply(l.w, -128, 127).detach().cpu().numpy().astype("int64")
+            if isinstance(l, QRecAdLIF):
+                if l.recurrent:
+                    d[f"R{i}"] = RoundClampSTE.apply(l.wr, -128, 127).detach().cpu().numpy().astype("int64")
+                a, b = l.ab_int("cpu")
+                d[f"A{i}"] = a.detach().cpu().numpy().astype("int64")
+                d[f"Bad{i}"] = b.detach().cpu().numpy().astype("int64")
+        return d
