@@ -88,10 +88,16 @@ def envelope_drive_loss(model, S, hid, benv, theta):
     terms = []
     inp = S
     for li, layer in enumerate(model.layers[:-1]):
-        W = layer.w_int()                                  # (M, N) integer values, STE gradient
+        if hasattr(layer, "W_int"):                        # recurrent adLIF: rows = [inputs; own spikes]
+            W = layer.W_int()
+            r = inp.detach().mean(dim=(0, 1))
+            if layer.recurrent:
+                r = torch.cat([r, hid[li][0].detach().mean(dim=(0, 1))])
+        else:
+            W = layer.w_int()                              # (M, N) integer values, STE gradient
+            r = inp.detach().mean(dim=(0, 1))              # (M,) firing probability per input
         M, N = W.shape
         P = W.reshape(M, N // benv, benv).max(dim=2).values
-        r = inp.detach().mean(dim=(0, 1))                  # (M,) firing probability per input
         terms.append((r[:, None] * F.relu(P)).sum(0).mean() / theta)
         inp = hid[li][0]
     return torch.stack(terms).mean()
@@ -145,7 +151,7 @@ def main():
     ap.add_argument("--env_lam", type=float, default=0.0, help="weight of the envelope drive loss")
     ap.add_argument("--env_benv", type=int, default=8)
     ap.add_argument("--gate_benv", type=int, default=0, help="train with HUSH-gated dynamics in hidden layers")
-    ap.add_argument("--asleep_drive", default="none", choices=["none", "mean"])
+    ap.add_argument("--asleep_drive", default="none", choices=["none", "mean", "lr1"])
     ap.add_argument("--exc_lam", type=float, default=0.0, help="weight of the envelope exceedance loss")
     ap.add_argument("--init", default="", help="initialise from a weights.npz")
     ap.add_argument("--seed", type=int, default=0)

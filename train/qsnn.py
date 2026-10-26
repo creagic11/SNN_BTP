@@ -199,6 +199,9 @@ class QRecAdLIF(nn.Module):
             P = Wc.reshape(Wc.shape[0], C, gb).max(dim=2).values
             Q = (FloorSTE.apply(Wc.reshape(Wc.shape[0], C, gb).sum(dim=2) / gb)
                  if self.asleep_drive == "mean" else None)
+            # "lr1": rounded mean, clamped to the envelope drive bound D_c (golden asleep_drive="lr1")
+            Qr = (RoundClampSTE.apply(Wc.reshape(Wc.shape[0], C, gb).sum(dim=2) / gb, -128, 127)
+                  if self.asleep_drive == "lr1" else None)
             th_h = self.theta if self.theta_h is None else self.theta_h
             exc, kept, tot = [], 0.0, 0.0
         mask = None
@@ -219,8 +222,13 @@ class QRecAdLIF(nn.Module):
                 kept += float((g.float() * n_t).sum())
                 tot += float(n_t.sum()) * C
                 gn = g.repeat_interleave(gb, dim=1).to(U.dtype)
-                U_sleep = torch.clamp(Bv, self.vmin, self.vmax) if Q is None else \
-                    torch.clamp(Bv + (z @ Q).repeat_interleave(gb, dim=1), self.vmin, self.vmax)
+                if Q is not None:
+                    U_sleep = torch.clamp(Bv + (z @ Q).repeat_interleave(gb, dim=1), self.vmin, self.vmax)
+                elif Qr is not None:
+                    A = torch.minimum(z @ Qr, D).repeat_interleave(gb, dim=1)
+                    U_sleep = torch.clamp(Bv + A, self.vmin, self.vmax)
+                else:
+                    U_sleep = torch.clamp(Bv, self.vmin, self.vmax)
                 U = gn * U + (1 - gn) * U_sleep
                 s = SpikeFn.apply(U - self.theta, self.sscale) * gn
             else:
