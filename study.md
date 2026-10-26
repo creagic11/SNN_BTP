@@ -94,6 +94,7 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] Clamped hibernation: why min(A_i, D_c) makes any asleep-drive approximation safe; why a better post-hoc approximation can lower accuracy (the trained net is the gated net).
 - [ ] Readouts: mean-U vs max-over-time (Cramer et al.); why max-over-time is a one-register-per-class integer decision and trained smoothly (82.5 → 87.0%).
 - [ ] Recurrent envelope drain: why spikes are final only at BLK_FIN (input-serial dataflow, signed weights, 0.40 false crossings per spike), why a wrong negative proxy row is unsafe, and the overlap + dual-port + awake-first schedule (tail 6.6% → 0.46%).
+- [ ] Why HUSH fails on recurrent adLIF: the gate exploits hyperpolarisation headroom (FF: 9.7θ; recurrent adLIF: 0.09θ); subthreshold adaptation and recurrent excitation keep the top neuron of each sub-block near threshold. Quote the gated co-training table (reads 0.98).
 - [ ] SHD reference numbers: SE-adLIF 1 layer 37.5k params 94.6%, 2 layers 95.8%, LIF 90.3% (float, no hardware).
 
 ## Presentation drills
