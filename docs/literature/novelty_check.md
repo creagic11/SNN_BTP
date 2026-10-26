@@ -49,3 +49,16 @@ The claim to avoid: "first to exploit output sparsity" or "first to skip silent 
 ## T0.3 Spiker+ availability
 
 The Spiker+ framework is public at [github.com/smilies-polito/Spiker](https://github.com/smilies-polito/Spiker) and on PyPI as `spikerplus`, with tutorials for MNIST (`Tutorials/5_mnist`), SHD (`Tutorials/6_shd`) and a Vivado flow (`Tutorials/7_vivado`). It generates VHDL for Xilinx parts, so it can be regenerated for the XC7A100T with our exact topologies. No LICENSE file was found in the repository, so we use it only to build the baseline and do not copy its code into this repo.
+
+## SHD hardware landscape (added 26 Oct 2026, P1.2)
+
+| Paper | SNN Model | FPGA Target | LUTs/DSPs/BRAM | Power | Key Innovation |
+| --- | --- | --- | --- | --- | --- |
+| Spiker+ (Carpegna et al., 2024, arXiv 2401.01141) | RSNN, SHD 72.99% | Zynq Z7-20 | 18,268 logic cells / – / 51 BRAM | 0.43 W, 540 µs | HDL generator framework for edge SNN accelerators |
+| Matinizadeh et al. | configurable SNN core, SHD 87.80% | Zynq ZCU104 | ≈149.8k LUT / – / 75 BRAM | 1.63 W (peak) | fully configurable neuromorphic core |
+| Chen et al. (SJTU), arXiv 2511.01158 | FF + synaptic delays (140)-256-256-20, SHD 93.4% deployed (94.7% train) | PYNQ-Z2 (Zynq-7020) | 40,521 LUT / 17 DSP / 77 BRAM | 282 mW processor (1.71 W SoC), 9.6 ms | hardware delay emulation, high-throughput SNN processor |
+| Event-graph GNN, arXiv 2602.16442 | event-graph NN (not SNN), SHD 88.8–92.3% | Zynq ZCU104 | 34.5k–91.6k LUT / 106–330 DSP / 28–84.5 BRAM | 0.78–1.08 W PL | graph-based event audio classification |
+| ReckOn (ISSCC 2022) | RNN 256 (ASIC 28 nm), 90.7% on a 10-class subset | ASIC | 138 kB SRAM | 79 µW | on-chip e-prop learning |
+| **HUSH (ours, 26 Oct)** | recurrent adLIF 700-256r-20 INT8, SHD 83.1% (val protocol) | XC7A100T (target) | v1 layer: 10.9k LUT / 1 DSP / 36 RAMB36 + 33 RAMB18 (FF, Yosys) | – | provable block hibernation (Theorem 1′) |
+
+Reading: credible SHD FPGA work now reports 88–93%, and the strongest SNN result uses delays. At 83% we beat Spiker+ (73%) but trail the delay-based designs by about 10 points. Accuracy alone would draw a reviewer's objection.
