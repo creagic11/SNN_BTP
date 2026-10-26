@@ -271,7 +271,7 @@ def main():
     steps = a.epochs * ((ntr + a.bs - 1) // a.bs)
     max_lrs = [g["lr"] for g in opt.param_groups]
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=max_lrs, total_steps=steps, pct_start=0.15)
-    sig_epochs = max(1, int(round(a.sig_frac * a.epochs))) if a.model == "delay" else 0
+    sig_epochs = (max(1, int(round(a.sig_frac * a.epochs))) if a.sig_frac > 0 else 0) if a.model == "delay" else 0
     sigma0 = a.sigma0 or a.dmax / 2
     out = ROOT / "results" / (a.tag or f"{a.dataset}_T{a.T}")
     out.mkdir(parents=True, exist_ok=True)
