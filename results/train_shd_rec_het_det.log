@@ -1,1 +1,202 @@
 {"ep": 1, "b": 0, "loss": 3.071, "gnorm": 0.3155}
+{"ep": 1, "b": 32, "loss": 3.097, "gnorm": 0.3045}
+{"ep": 1, "b": 64, "loss": 3.142, "gnorm": 0.3253}
+{"ep": 1, "b": 96, "loss": 3.126, "gnorm": 0.3177}
+{"epoch": 1, "loss": 3.0981964606640093, "test_acc": 0.05609540636042403, "hidden_rate": 0.049785936731752994, "sec": 111.3}
+{"ep": 2, "b": 0, "loss": 2.958, "gnorm": 0.2765}
+{"ep": 2, "b": 32, "loss": 3.013, "gnorm": 0.2323}
+{"ep": 2, "b": 64, "loss": 3.027, "gnorm": 0.214}
+{"ep": 2, "b": 96, "loss": 3.032, "gnorm": 0.2748}
+{"epoch": 2, "loss": 2.98629561717046, "test_acc": 0.08568904593639576, "hidden_rate": 0.05711234886159745, "sec": 108.8}
+{"ep": 3, "b": 0, "loss": 2.979, "gnorm": 0.2132}
+{"ep": 3, "b": 32, "loss": 2.901, "gnorm": 0.3715}
+{"grad_spike": true, "epoch": 3, "batch": 53, "total": 40.36507576668636, "median": 0.24679520061935267, "per_param": {"layers.0.w": 25.67251968383789, "layers.0.wr": 24.009857177734375, "layers.0.a": 6.5720696449279785, "layers.0.b": 18.724197387695312, "layers.1.w": 0.012876603752374649}, "loss": 2.8727071285247803}
+{"ep": 3, "b": 64, "loss": 2.898, "gnorm": 2070653567808.8118}
+{"ep": 3, "b": 96, "loss": 3.036, "gnorm": Infinity}
+{"epoch": 3, "loss": 3.0163135530903036, "test_acc": 0.060954063604240286, "hidden_rate": 0.14718499603309396, "sec": 108.8}
+{"ep": 4, "b": 0, "loss": 3.054, "gnorm": Infinity}
+{"ep": 4, "b": 32, "loss": 3.141, "gnorm": Infinity}
+{"ep": 4, "b": 64, "loss": 3.275, "gnorm": Infinity}
+{"ep": 4, "b": 96, "loss": 3.137, "gnorm": Infinity}
+{"epoch": 4, "loss": 3.1720721089062356, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 105.0}
+{"ep": 5, "b": 0, "loss": 3.169, "gnorm": Infinity}
+{"ep": 5, "b": 32, "loss": 3.022, "gnorm": Infinity}
+{"ep": 5, "b": 64, "loss": 3.249, "gnorm": Infinity}
+{"ep": 5, "b": 96, "loss": 3.164, "gnorm": Infinity}
+{"epoch": 5, "loss": 3.182557826184829, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 105.0}
+{"ep": 6, "b": 0, "loss": 3.235, "gnorm": Infinity}
+{"ep": 6, "b": 32, "loss": 3.252, "gnorm": Infinity}
+{"ep": 6, "b": 64, "loss": 3.19, "gnorm": Infinity}
+{"ep": 6, "b": 96, "loss": 3.215, "gnorm": Infinity}
+{"epoch": 6, "loss": 3.1802876907683517, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 105.7}
+{"ep": 7, "b": 0, "loss": 3.146, "gnorm": Infinity}
+{"ep": 7, "b": 32, "loss": 3.151, "gnorm": Infinity}
+{"ep": 7, "b": 64, "loss": 3.079, "gnorm": Infinity}
+{"ep": 7, "b": 96, "loss": 3.24, "gnorm": Infinity}
+{"epoch": 7, "loss": 3.183176899494173, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 105.7}
+{"ep": 8, "b": 0, "loss": 3.175, "gnorm": Infinity}
+{"ep": 8, "b": 32, "loss": 3.381, "gnorm": Infinity}
+{"ep": 8, "b": 64, "loss": 3.093, "gnorm": Infinity}
+{"ep": 8, "b": 96, "loss": 3.054, "gnorm": Infinity}
+{"epoch": 8, "loss": 3.1771674048614127, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 108.3}
+{"ep": 9, "b": 0, "loss": 3.238, "gnorm": Infinity}
+{"ep": 9, "b": 32, "loss": 3.235, "gnorm": Infinity}
+{"ep": 9, "b": 64, "loss": 3.134, "gnorm": Infinity}
+{"ep": 9, "b": 96, "loss": 3.087, "gnorm": Infinity}
+{"epoch": 9, "loss": 3.172618622754122, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 105.5}
+{"ep": 10, "b": 0, "loss": 3.208, "gnorm": Infinity}
+{"ep": 10, "b": 32, "loss": 3.092, "gnorm": Infinity}
+{"ep": 10, "b": 64, "loss": 3.251, "gnorm": Infinity}
+{"ep": 10, "b": 96, "loss": 3.398, "gnorm": Infinity}
+{"epoch": 10, "loss": 3.1750760052705758, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 105.4}
+{"ep": 11, "b": 0, "loss": 3.161, "gnorm": Infinity}
+{"ep": 11, "b": 32, "loss": 3.228, "gnorm": Infinity}
+{"ep": 11, "b": 64, "loss": 3.294, "gnorm": Infinity}
+{"ep": 11, "b": 96, "loss": 3.212, "gnorm": Infinity}
+{"epoch": 11, "loss": 3.1859476669212365, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 107.9}
+{"ep": 12, "b": 0, "loss": 3.245, "gnorm": Infinity}
+{"ep": 12, "b": 32, "loss": 3.246, "gnorm": Infinity}
+{"ep": 12, "b": 64, "loss": 3.113, "gnorm": Infinity}
+{"ep": 12, "b": 96, "loss": 3.23, "gnorm": Infinity}
+{"epoch": 12, "loss": 3.1797108178982962, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 108.2}
+{"ep": 13, "b": 0, "loss": 3.266, "gnorm": Infinity}
+{"ep": 13, "b": 32, "loss": 3.109, "gnorm": Infinity}
+{"ep": 13, "b": 64, "loss": 3.081, "gnorm": Infinity}
+{"ep": 13, "b": 96, "loss": 3.348, "gnorm": Infinity}
+{"epoch": 13, "loss": 3.175124917093476, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 112.2}
+{"ep": 14, "b": 0, "loss": 3.229, "gnorm": Infinity}
+{"ep": 14, "b": 32, "loss": 3.1, "gnorm": Infinity}
+{"ep": 14, "b": 64, "loss": 3.159, "gnorm": Infinity}
+{"ep": 14, "b": 96, "loss": 3.323, "gnorm": Infinity}
+{"epoch": 14, "loss": 3.1806381573099434, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 107.2}
+{"ep": 15, "b": 0, "loss": 3.104, "gnorm": Infinity}
+{"ep": 15, "b": 32, "loss": 3.168, "gnorm": Infinity}
+{"ep": 15, "b": 64, "loss": 3.319, "gnorm": Infinity}
+{"ep": 15, "b": 96, "loss": 3.123, "gnorm": Infinity}
+{"epoch": 15, "loss": 3.1815320381409635, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 107.5}
+{"ep": 16, "b": 0, "loss": 3.083, "gnorm": Infinity}
+{"ep": 16, "b": 32, "loss": 3.135, "gnorm": Infinity}
+{"ep": 16, "b": 64, "loss": 3.171, "gnorm": Infinity}
+{"ep": 16, "b": 96, "loss": 3.23, "gnorm": Infinity}
+{"epoch": 16, "loss": 3.1743025105042806, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 108.8}
+{"ep": 17, "b": 0, "loss": 3.21, "gnorm": Infinity}
+{"ep": 17, "b": 32, "loss": 3.204, "gnorm": Infinity}
+{"ep": 17, "b": 64, "loss": 3.23, "gnorm": Infinity}
+{"ep": 17, "b": 96, "loss": 3.245, "gnorm": Infinity}
+{"epoch": 17, "loss": 3.178678238491266, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 111.2}
+{"ep": 18, "b": 0, "loss": 3.113, "gnorm": Infinity}
+{"ep": 18, "b": 32, "loss": 3.27, "gnorm": Infinity}
+{"ep": 18, "b": 64, "loss": 3.089, "gnorm": Infinity}
+{"ep": 18, "b": 96, "loss": 3.108, "gnorm": Infinity}
+{"epoch": 18, "loss": 3.1736487519103793, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 109.3}
+{"ep": 19, "b": 0, "loss": 3.19, "gnorm": Infinity}
+{"ep": 19, "b": 32, "loss": 3.242, "gnorm": Infinity}
+{"ep": 19, "b": 64, "loss": 3.074, "gnorm": Infinity}
+{"ep": 19, "b": 96, "loss": 3.187, "gnorm": Infinity}
+{"epoch": 19, "loss": 3.1634860633926802, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 110.7}
+{"ep": 20, "b": 0, "loss": 3.201, "gnorm": Infinity}
+{"ep": 20, "b": 32, "loss": 3.142, "gnorm": Infinity}
+{"ep": 20, "b": 64, "loss": 3.081, "gnorm": Infinity}
+{"ep": 20, "b": 96, "loss": 3.365, "gnorm": Infinity}
+{"epoch": 20, "loss": 3.165985630446056, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 110.6}
+{"ep": 21, "b": 0, "loss": 3.089, "gnorm": Infinity}
+{"ep": 21, "b": 32, "loss": 3.255, "gnorm": Infinity}
+{"ep": 21, "b": 64, "loss": 3.19, "gnorm": Infinity}
+{"ep": 21, "b": 96, "loss": 3.093, "gnorm": Infinity}
+{"epoch": 21, "loss": 3.181637476915937, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 105.6}
+{"ep": 22, "b": 0, "loss": 3.149, "gnorm": Infinity}
+{"ep": 22, "b": 32, "loss": 3.144, "gnorm": Infinity}
+{"ep": 22, "b": 64, "loss": 3.067, "gnorm": Infinity}
+{"ep": 22, "b": 96, "loss": 3.058, "gnorm": Infinity}
+{"epoch": 22, "loss": 3.1788243285109448, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 110.5}
+{"ep": 23, "b": 0, "loss": 3.137, "gnorm": Infinity}
+{"ep": 23, "b": 32, "loss": 3.308, "gnorm": Infinity}
+{"ep": 23, "b": 64, "loss": 3.104, "gnorm": Infinity}
+{"ep": 23, "b": 96, "loss": 3.217, "gnorm": Infinity}
+{"epoch": 23, "loss": 3.1737094577940845, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 105.6}
+{"ep": 24, "b": 0, "loss": 3.073, "gnorm": Infinity}
+{"ep": 24, "b": 32, "loss": 3.189, "gnorm": Infinity}
+{"ep": 24, "b": 64, "loss": 3.227, "gnorm": Infinity}
+{"ep": 24, "b": 96, "loss": 3.31, "gnorm": Infinity}
+{"epoch": 24, "loss": 3.1886887100176695, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 106.4}
+{"ep": 25, "b": 0, "loss": 3.087, "gnorm": Infinity}
+{"ep": 25, "b": 32, "loss": 3.214, "gnorm": Infinity}
+{"ep": 25, "b": 64, "loss": 3.246, "gnorm": Infinity}
+{"ep": 25, "b": 96, "loss": 3.089, "gnorm": Infinity}
+{"epoch": 25, "loss": 3.1834159898313605, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 108.5}
+{"ep": 26, "b": 0, "loss": 3.166, "gnorm": Infinity}
+{"ep": 26, "b": 32, "loss": 3.345, "gnorm": Infinity}
+{"ep": 26, "b": 64, "loss": 3.318, "gnorm": Infinity}
+{"ep": 26, "b": 96, "loss": 3.224, "gnorm": Infinity}
+{"epoch": 26, "loss": 3.1728739409893385, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 108.0}
+{"ep": 27, "b": 0, "loss": 2.989, "gnorm": Infinity}
+{"ep": 27, "b": 32, "loss": 3.101, "gnorm": Infinity}
+{"ep": 27, "b": 64, "loss": 3.148, "gnorm": Infinity}
+{"ep": 27, "b": 96, "loss": 3.245, "gnorm": Infinity}
+{"epoch": 27, "loss": 3.1778352293329766, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 107.5}
+{"ep": 28, "b": 0, "loss": 3.221, "gnorm": Infinity}
+{"ep": 28, "b": 32, "loss": 3.182, "gnorm": Infinity}
+{"ep": 28, "b": 64, "loss": 3.385, "gnorm": Infinity}
+{"ep": 28, "b": 96, "loss": 3.144, "gnorm": Infinity}
+{"epoch": 28, "loss": 3.174406461004769, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 105.7}
+{"ep": 29, "b": 0, "loss": 3.119, "gnorm": Infinity}
+{"ep": 29, "b": 32, "loss": 3.143, "gnorm": Infinity}
+{"ep": 29, "b": 64, "loss": 3.081, "gnorm": Infinity}
+{"ep": 29, "b": 96, "loss": 3.203, "gnorm": Infinity}
+{"epoch": 29, "loss": 3.171176306461224, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 112.8}
+{"ep": 30, "b": 0, "loss": 3.183, "gnorm": Infinity}
+{"ep": 30, "b": 32, "loss": 3.125, "gnorm": Infinity}
+{"ep": 30, "b": 64, "loss": 3.206, "gnorm": Infinity}
+{"ep": 30, "b": 96, "loss": 3.095, "gnorm": Infinity}
+{"epoch": 30, "loss": 3.1740845443572177, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 107.7}
+{"ep": 31, "b": 0, "loss": 3.124, "gnorm": Infinity}
+{"ep": 31, "b": 32, "loss": 3.06, "gnorm": Infinity}
+{"ep": 31, "b": 64, "loss": 3.194, "gnorm": Infinity}
+{"ep": 31, "b": 96, "loss": 3.18, "gnorm": Infinity}
+{"epoch": 31, "loss": 3.168066717351752, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 107.9}
+{"ep": 32, "b": 0, "loss": 3.13, "gnorm": Infinity}
+{"ep": 32, "b": 32, "loss": 3.194, "gnorm": Infinity}
+{"ep": 32, "b": 64, "loss": 3.243, "gnorm": Infinity}
+{"ep": 32, "b": 96, "loss": 3.176, "gnorm": Infinity}
+{"epoch": 32, "loss": 3.183354039938208, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 105.0}
+{"ep": 33, "b": 0, "loss": 3.112, "gnorm": Infinity}
+{"ep": 33, "b": 32, "loss": 3.033, "gnorm": Infinity}
+{"ep": 33, "b": 64, "loss": 3.144, "gnorm": Infinity}
+{"ep": 33, "b": 96, "loss": 3.092, "gnorm": Infinity}
+{"epoch": 33, "loss": 3.1797826983520596, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 107.1}
+{"ep": 34, "b": 0, "loss": 3.256, "gnorm": Infinity}
+{"ep": 34, "b": 32, "loss": 3.296, "gnorm": Infinity}
+{"ep": 34, "b": 64, "loss": 3.096, "gnorm": Infinity}
+{"ep": 34, "b": 96, "loss": 3.063, "gnorm": Infinity}
+{"epoch": 34, "loss": 3.1778237403403784, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 105.7}
+{"ep": 35, "b": 0, "loss": 3.088, "gnorm": Infinity}
+{"ep": 35, "b": 32, "loss": 3.143, "gnorm": Infinity}
+{"ep": 35, "b": 64, "loss": 3.185, "gnorm": Infinity}
+{"ep": 35, "b": 96, "loss": 3.106, "gnorm": Infinity}
+{"epoch": 35, "loss": 3.169577369039815, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 104.8}
+{"ep": 36, "b": 0, "loss": 3.007, "gnorm": Infinity}
+{"ep": 36, "b": 32, "loss": 3.159, "gnorm": Infinity}
+{"ep": 36, "b": 64, "loss": 3.293, "gnorm": Infinity}
+{"ep": 36, "b": 96, "loss": 3.261, "gnorm": Infinity}
+{"epoch": 36, "loss": 3.167061344907236, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 106.1}
+{"ep": 37, "b": 0, "loss": 3.254, "gnorm": Infinity}
+{"ep": 37, "b": 32, "loss": 3.142, "gnorm": Infinity}
+{"ep": 37, "b": 64, "loss": 3.029, "gnorm": Infinity}
+{"ep": 37, "b": 96, "loss": 3.155, "gnorm": Infinity}
+{"epoch": 37, "loss": 3.1774688550454253, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 103.1}
+{"ep": 38, "b": 0, "loss": 3.025, "gnorm": Infinity}
+{"ep": 38, "b": 32, "loss": 2.999, "gnorm": Infinity}
+{"ep": 38, "b": 64, "loss": 3.221, "gnorm": Infinity}
+{"ep": 38, "b": 96, "loss": 3.219, "gnorm": Infinity}
+{"epoch": 38, "loss": 3.1825662467221294, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 104.3}
+{"ep": 39, "b": 0, "loss": 3.184, "gnorm": Infinity}
+{"ep": 39, "b": 32, "loss": 3.228, "gnorm": Infinity}
+{"ep": 39, "b": 64, "loss": 3.508, "gnorm": Infinity}
+{"ep": 39, "b": 96, "loss": 3.094, "gnorm": Infinity}
+{"epoch": 39, "loss": 3.1765143872476664, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 104.1}
+{"ep": 40, "b": 0, "loss": 3.082, "gnorm": Infinity}
+{"ep": 40, "b": 32, "loss": 3.305, "gnorm": Infinity}
+{"ep": 40, "b": 64, "loss": 3.056, "gnorm": Infinity}
+{"ep": 40, "b": 96, "loss": 3.023, "gnorm": Infinity}
+{"epoch": 40, "loss": 3.1737441053105195, "test_acc": 0.05653710247349823, "hidden_rate": 0.14731856203858507, "sec": 104.1}
+saved /home/claude/snn_btp/results/shd_rec_het_det
