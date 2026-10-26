@@ -11,8 +11,8 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 
 ## Current state
 
-- **Last updated:** 2026-10-24
-- **Now working on:** paused by user (25 Oct). Tier-1 plan written (`docs/tier1_plan.md`). T1.6 seed sweep stopped at its time limit after 3/9 runs; re-run `scripts/sweep_seeds.sh` to resume.
+- **Last updated:** 2026-10-26
+- **Now working on:** Tier-1 P1 (GA, 22 Nov). P1.1 done (HUSH-G golden + Theorem 1'). P1.2 running: `scripts/sweep_rec.sh` (SHD recurrent adLIF, 30 epochs × 2 configs; resumable). Seed sweep T1.6 paused (SHD-FF seeds deprioritised; N-MNIST seeds to re-run when CPU is free).
 - **GitHub:** pushes to `creagic11/SNN_BTP` work (enabled 2026-10-24).
 
 ## Phase 0 — Setup, literature, feasibility (target gate G0: 8 Nov 2026)
@@ -96,3 +96,25 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 ## Tier-1 plan (25 Oct 2026)
 
 See `docs/tier1_plan.md` and the Claude Doc. Phases P1–P6 with gates GA–GE replace Phases 3–5 above once approved.
+
+## Tier-1 Phase P1 — competitive workloads and near-lossless gating (gate GA: 22 Nov 2026)
+
+GA criterion: SHD recurrent adLIF ≥ 90% ungated; HUSH ≤ 0.5 pt loss at ≥ 2× fewer reads; 3 seeds.
+
+| ID | Task | Status | Output |
+| --- | --- | --- | --- |
+| P1.1 | Golden model for recurrent adLIF + headroom envelope; Theorem 1' + property tests | DONE | `golden/hush_rec.py`, `tests/test_hush_rec.py`, `docs/theorem1_prime.md` |
+| P1.2 | Integer adLIF trainer (QRecAdLIF, QRSNN), bit-exact check, SHD baselines | IN PROGRESS | `train/qsnn.py`, `scripts/check_bitexact_rec.py`, `scripts/sweep_rec.sh` |
+| P1.3 | Learned grouping | DONE — negative result (absorbed by co-training) | `scripts/regroup.py` |
+| P1.4 | Gated co-training of the recurrent model (mean-field), θ_h / λ sweep | TODO | |
+| P1.5 | Low-rank hibernation (rank > 1 asleep drive, still ≤ P) | TODO | |
+| P1.6 | Distillation from the ungated teacher into the gated student | TODO | |
+| P1.7 | 3 seeds of the chosen points (SHD rec + N-MNIST) | TODO | |
+
+### P1 subtask log
+
+- 2026-10-26 · P1.1 · `golden/hush_rec.py`: recurrence as extra input rows z = [x_t; s_{t-1}], Wc = [Wff; Wrec]; integer adLIF w' = clip(L_kw(w) + (a·V') >> sa + b·s). Gate on the drive-free part B = L(V) − w: clip(max_c B) + z·P ≥ θ_h, forced awake if max B > vmax. 9 Hypothesis tests pass (reduces exactly to v1 golden; no suppressed spike incl. negative adaptation; gate-on ≡ REF; signed D never looser; mean-field asleep < θ; register ranges; saturation). Mutations (ignore −w, no saturation force, drop recurrent proxy rows) fail 5/2/6 of 9 tests.
+- 2026-10-26 · P1.1 · Signed-D gate (allowed by the new proof) vs v1 max(0, D) on the 4 trained FF nets: identical reads and accuracy. No gain; recorded honestly.
+- 2026-10-26 · P1.2 · `QRecAdLIF`/`QRSNN` integer-faithful (0 spike/U mismatches vs golden, ref/gated/mean). Gradient explosion (1e9–1e27) traced to a < 0: Lemma 2 (Jury criterion) — stable iff −a/2^sa < 2^−(k+kw). Our update is already symplectic Euler (Baronig et al., Nat. Commun. 2025, added to Zotero), so a ≥ 0 gives guaranteed stability. Constrained a ∈ [0, 32], rec init 0.1θ/√N. Non-spiking readout (`--readout u`, class = argmax ΣU, 24-bit accumulator; measured max |U| fits 15 bits).
+- 2026-10-26 · P1.2 · 5-epoch probe (700-256r-20, T=250): 82.3% test (FF best was 70.8% after 25 epochs), hidden rate 15%. Golden check bit-exact (50 samples). Vanilla HUSH on it: reads 0.99 (not co-trained). Speed: ~95 s/epoch alone; an orphan run from the old sweep had slowed everything 10×: run one job at a time.
+- 2026-10-26 · P1.3 · `scripts/regroup.py` (balanced start + best-pair swaps minimising J = Σ_c Σ_j r_j relu(P_jc)). Works on random (−8% J) and ungated N-MNIST (−5%), but 0 improvement on co-trained nets: co-training creates tied sub-block maxima (rows with tied positive max 11–12% → 36–54%), i.e., the weights adapt to the grouping. Post-hoc / learned grouping dropped from the plan.

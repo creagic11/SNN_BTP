@@ -83,6 +83,15 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] SAIF-based power estimation: what it captures, what it misses.
 - [ ] Differential board measurement: why static power cancels; error bars.
 
+## Tier-1 P1 — recurrence, adaptation and the generalised proof (added 26 Oct)
+- [ ] Integer adLIF equations (V, w, a, b, k, kw, sa) and what each costs in hardware per neuron per step.
+- [ ] Theorem 1' in four lines: B = L(V) − w is known before inputs; z ≥ 0 so z·W ≤ z·P; monotone clip; saturation flag (`docs/theorem1_prime.md`).
+- [ ] Why recurrence costs the proof nothing: recurrent spikes are just extra input rows of Wc.
+- [ ] Why the saturation flag is needed once D can be negative (and not with the v1 rule).
+- [ ] Lemma 2: Jury criterion for the (V, w) map; why a < 0 explodes; why our update is symplectic Euler (Baronig et al. 2025).
+- [ ] Negative results you can quote: signed-D gate gives no gain on co-trained FF nets; learned grouping is absorbed by co-training (tied maxima 11% → 54%).
+- [ ] SHD reference numbers: SE-adLIF 1 layer 37.5k params 94.6%, 2 layers 95.8%, LIF 90.3% (float, no hardware).
+
 ## Presentation drills
 - [ ] 3-minute elevator pitch with one figure.
 - [ ] Answer: "Isn't this just SnaPEA for SNNs?"
@@ -90,3 +99,4 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] Answer: "SITRA already skips weight fetches for silent outputs. What is new?" (guarantee, carried state bound, BRAM-matched blocks, FPGA silicon)
 - [ ] Answer: "Your gated network is not the network you trained — so what is your accuracy claim?"
 - [ ] Answer: "Why should energy fall if the envelope unit runs every timestep?"
+- [ ] Answer: "Did you try clustering neurons into better groups?" (yes: no gain after co-training, and why)
