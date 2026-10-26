@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 
 class RoundClampSTE(torch.autograd.Function):
@@ -291,4 +292,73 @@ class QRSNN(nn.Module):
                 d[f"KW{i}"] = l.kwv.cpu().numpy().astype("int64")
                 d[f"A{i}"] = a.detach().cpu().numpy().astype("int64")
                 d[f"Bad{i}"] = b.detach().cpu().numpy().astype("int64")
+        return d
+
+
+class AxonDelay(nn.Module):
+    """Learned per-input (axonal) delay, d_j in [0, dmax-1] steps: z_t[j] = x_{t - d_j}[j].
+
+    Forward is always exact for hard delays (one-hot kernel at round(p_j)), so the trained network equals the
+    integer golden model. Gradient w.r.t. the delay position p_j:
+      * sigma > 0 ("gauss" phase, DCLS-style): forward uses a normalised Gaussian kernel of width sigma
+        centred at p_j (soft, fractional inputs), annealed towards 0 by the trainer;
+      * sigma == 0 ("hard" phase): forward one-hot, backward through a triangular interpolation kernel (STE).
+    Events delayed past the last step are dropped (fixed T)."""
+
+    def __init__(self, n: int, dmax: int, init: str = "uniform"):
+        super().__init__()
+        self.dmax = dmax
+        p = torch.empty(n).uniform_(0, dmax - 1) if init == "uniform" else torch.zeros(n)
+        self.pos = nn.Parameter(p)
+        self.sigma = 0.0
+
+    def d_int(self):
+        return torch.clamp(torch.round(self.pos), 0, self.dmax - 1)
+
+    def kernel(self):
+        tau = torch.arange(self.dmax, dtype=self.pos.dtype, device=self.pos.device)[None, :]
+        p = torch.clamp(self.pos, 0, self.dmax - 1)[:, None]
+        if self.sigma > 0:
+            K = torch.exp(-0.5 * ((tau - p) / self.sigma) ** 2)
+            return K / K.sum(1, keepdim=True)
+        hard = (tau == self.d_int()[:, None]).to(p.dtype)
+        soft = torch.relu(1 - (tau - p).abs())
+        return soft + (hard - soft).detach()
+
+    def forward(self, S):
+        T, B, M = S.shape
+        K = self.kernel()                                       # (M, dmax), K[j, tau]
+        x = S.permute(1, 2, 0)                                  # (B, M, T)
+        x = F.pad(x, (self.dmax - 1, 0))
+        z = F.conv1d(x, K.flip(-1)[:, None, :], groups=M)       # z[t] = sum_tau K[tau] x[t - tau]
+        return z.permute(2, 0, 1)
+
+
+class QDSNN(nn.Module):
+    """Feed-forward integer LIF network with learned axonal delays before every layer (HUSH-friendly:
+    no recurrence, no subthreshold adaptation). Hidden layers are QRecAdLIF(recurrent=False, adapt=False)."""
+
+    def __init__(self, sizes: list[int], theta: int = 64, k: int = 2, dmax: int = 25, k_out: int | None = None):
+        super().__init__()
+        self.delays = nn.ModuleList(AxonDelay(n, dmax) for n in sizes[:-1])
+        hid = [QRecAdLIF(a, b, theta=theta, k=k, recurrent=False, adapt=False) for a, b in zip(sizes[:-2], sizes[1:-1])]
+        self.layers = nn.ModuleList(hid + [QLinearLIF(sizes[-2], sizes[-1], theta=theta, k=k if k_out is None else k_out)])
+
+    def set_sigma(self, s: float):
+        for d in self.delays:
+            d.sigma = s
+
+    def forward(self, S):
+        hidden = []
+        for dl, layer in zip(self.delays, self.layers):
+            S, U = layer(dl(S))
+            hidden.append((S, U))
+        return S, U, hidden
+
+    def export_int(self):
+        d = {}
+        for i, (dl, l) in enumerate(zip(self.delays, self.layers)):
+            d[f"W{i}"] = (l.w_int() if isinstance(l, QLinearLIF) else RoundClampSTE.apply(l.w, -128, 127)
+                          ).detach().cpu().numpy().astype("int64")
+            d[f"D{i}"] = dl.d_int().detach().cpu().numpy().astype("int64")
         return d

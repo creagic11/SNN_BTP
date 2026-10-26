@@ -160,3 +160,16 @@ def test_clamped_hibernation_asleep_neurons_stay_below_threshold(case, drive):
     gn = np.repeat(tr.awake_sub, lif.b_env, axis=1)
     assert np.all(tr.U[~gn] < lif.theta)
     assert not np.any(~gn & (tr.U_ungated >= lif.theta))
+
+
+@settings(max_examples=200, deadline=None)
+@given(st.integers(1, 40), st.integers(1, 20), st.integers(0, 2**31 - 1))
+def test_delay_events_matches_definition(T, M, seed):
+    from golden.hush_delay import delay_events
+    rng = np.random.default_rng(seed)
+    S = (rng.random((T, M)) < 0.3).astype(np.int64)
+    d = rng.integers(0, 30, size=M)
+    Z = delay_events(S, d)
+    for t in range(T):
+        for j in range(M):
+            assert Z[t, j] == (S[t - d[j], j] if t >= d[j] else 0)

@@ -20,7 +20,7 @@ import torch.nn.functional as F
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from train.qsnn import QRSNN, QSNN  # noqa: E402
+from train.qsnn import QDSNN, QRSNN, QSNN  # noqa: E402
 from train.train_mnist import if_encode_torch, predict_torch  # noqa: E402
 
 
@@ -183,7 +183,12 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--tag", default="")
-    ap.add_argument("--model", default="ff", choices=["ff", "rec"], help="rec: recurrent adLIF hidden layers")
+    ap.add_argument("--model", default="ff", choices=["ff", "rec", "delay"],
+                    help="rec: recurrent adLIF hidden layers; delay: FF LIF with learned axonal delays")
+    ap.add_argument("--dmax", type=int, default=25, help="delay model: max delay in steps")
+    ap.add_argument("--lr_pos", type=float, default=0.1, help="delay model: learning rate of delay positions")
+    ap.add_argument("--sigma0", type=float, default=0.0, help="delay model: initial Gaussian width (0 = dmax/2)")
+    ap.add_argument("--sig_frac", type=float, default=0.5, help="delay model: fraction of epochs to anneal sigma to 0")
     ap.add_argument("--no_rec", action="store_true", help="rec model without recurrent weights")
     ap.add_argument("--no_adapt", action="store_true", help="rec model without adaptation")
     ap.add_argument("--kw", type=int, default=5)
@@ -211,7 +216,9 @@ def main():
                 aug=(a.aug_shift, a.aug_stretch, a.aug_jitter) if (a.aug_shift or a.aug_stretch or a.aug_jitter) else None,
                 seed=a.seed)
     torch.set_num_threads(a.threads)
-    if a.model == "rec":
+    if a.model == "delay":
+        model = QDSNN(a.sizes, theta=a.theta, k=a.k, dmax=a.dmax, k_out=a.k_out or None)
+    elif a.model == "rec":
         model = QRSNN(a.sizes, theta=a.theta, k=a.k, kw=a.kw, sa=a.sa, recurrent=not a.no_rec,
                       adapt=not a.no_adapt, k_out=a.k_out or None)
     else:
@@ -238,7 +245,14 @@ def main():
                 for key, attr in ((f"R{i}", "wr"), (f"A{i}", "a"), (f"Bad{i}", "b"), (f"K{i}", "kv"), (f"KW{i}", "kwv")):
                     if key in z0 and hasattr(layer, attr):
                         getattr(layer, attr).copy_(torch.tensor(z0[key].astype(np.float32)))
-    opt = torch.optim.Adam(model.parameters(), lr=a.lr)
+                if f"D{i}" in z0 and hasattr(model, "delays"):
+                    model.delays[i].pos.copy_(torch.tensor(z0[f"D{i}"].astype(np.float32)))
+    if a.model == "delay":
+        pos = [p for n, p in model.named_parameters() if n.endswith(".pos")]
+        rest = [p for n, p in model.named_parameters() if not n.endswith(".pos")]
+        opt = torch.optim.Adam([{"params": rest, "lr": a.lr}, {"params": pos, "lr": a.lr_pos}])
+    else:
+        opt = torch.optim.Adam(model.parameters(), lr=a.lr)
     ntr_all = data.n(True)
     val_idx, best_val = None, -1.0
     train_pool = torch.arange(ntr_all)
@@ -249,11 +263,16 @@ def main():
         val_idx, train_pool = p_all[:nv], p_all[nv:]
     ntr = len(train_pool)
     steps = a.epochs * ((ntr + a.bs - 1) // a.bs)
-    sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=a.lr, total_steps=steps, pct_start=0.15)
+    max_lrs = [g["lr"] for g in opt.param_groups]
+    sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=max_lrs, total_steps=steps, pct_start=0.15)
+    sig_epochs = max(1, int(round(a.sig_frac * a.epochs))) if a.model == "delay" else 0
+    sigma0 = a.sigma0 or a.dmax / 2
     out = ROOT / "results" / (a.tag or f"{a.dataset}_T{a.T}")
     out.mkdir(parents=True, exist_ok=True)
     log = []
     for ep in range(a.epochs):
+        if a.model == "delay":        # DCLS-style: exponential decay of the Gaussian width, then hard delays
+            model.set_sigma(sigma0 * (0.5 / sigma0) ** (ep / max(1, sig_epochs - 1)) if ep < sig_epochs else 0.0)
         model.train()
         perm = train_pool[torch.randperm(ntr)]
         t0, tot, n = time.time(), 0.0, 0
@@ -293,8 +312,13 @@ def main():
             sched.step()
             tot += loss.item() * len(idx)
             n += len(idx)
+        if a.model == "delay":
+            sig_train = model.delays[0].sigma
+            model.set_sigma(0.0)       # evaluate (and export) with hard integer delays
         acc, rate = evaluate(model, data)
         rec = {"epoch": ep + 1, "loss": tot / n, "test_acc": acc, "hidden_rate": rate, "sec": round(time.time() - t0, 1)}
+        if a.model == "delay":
+            rec["sigma"] = round(sig_train, 3)
         is_best = True
         if val_idx is not None:
             rec["val_acc"] = evaluate_idx(model, data, val_idx)
@@ -313,10 +337,10 @@ def main():
         Ws = model.export_int()
         if isinstance(Ws, list):
             Ws = {f"W{i}": W for i, W in enumerate(Ws)}
-        Ws = {key: (v.astype(np.int8) if key[0] in "WR" or key.startswith("K") else v.astype(np.int16)) for key, v in Ws.items()}
+        Ws = {key: (v.astype(np.int8) if key[0] in "WRD" or key.startswith("K") else v.astype(np.int16)) for key, v in Ws.items()}
         meta = dict(T=a.T, k=a.k, theta=a.theta, gain=a.gain, dataset=a.dataset, t_max=a.t_max,
                     pool=a.pool or (2 if a.dataset == "nmnist" else 1), model=a.model, kw=a.kw, sa=a.sa,
-                    readout=a.readout, k_out=a.k_out or a.k, out_theta=model.layers[-1].theta)
+                    readout=a.readout, k_out=a.k_out or a.k, out_theta=model.layers[-1].theta, dmax=a.dmax)
         np.savez(out / "weights_last.npz", **Ws, **meta)
         if is_best:          # weights.npz = best validation epoch (or last epoch when no validation split)
             np.savez(out / "weights.npz", **Ws, **meta, epoch=ep + 1)
