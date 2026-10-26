@@ -92,6 +92,7 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] Negative results you can quote: signed-D gate gives no gain on co-trained FF nets; learned grouping is absorbed by co-training (tied maxima 11% → 54%).
 - [ ] Lemma 3: the reset-path BPTT factor 1 − θσ′, and why bounding it (θ/2) still trained worse than θ/4: a stability bound is not a learning recipe. Be ready to show the round-1 ablation table.
 - [ ] Clamped hibernation: why min(A_i, D_c) makes any asleep-drive approximation safe; why a better post-hoc approximation can lower accuracy (the trained net is the gated net).
+- [ ] Readouts: mean-U vs max-over-time (Cramer et al.); why max-over-time is a one-register-per-class integer decision and trained smoothly (82.5 → 87.0%).
 - [ ] SHD reference numbers: SE-adLIF 1 layer 37.5k params 94.6%, 2 layers 95.8%, LIF 90.3% (float, no hardware).
 
 ## Presentation drills
