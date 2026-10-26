@@ -145,6 +145,21 @@ def evaluate(model, data, bs=500):
     return correct / n, rh / n
 
 
+def evaluate_idx(model, data, idx_all, bs=500):
+    """Accuracy on a subset of the *training* set without augmentation (validation split)."""
+    model.eval()
+    correct = 0
+    aug, data.aug = data.aug, None
+    with torch.no_grad():
+        for i in range(0, len(idx_all), bs):
+            idx = idx_all[i:i + bs]
+            S, Y = data.batch(idx, True)
+            So, Uo, _ = model(S)
+            correct += (predict_any(So, Uo, getattr(model, "readout", "spk")) == Y).sum().item()
+    data.aug = aug
+    return correct / len(idx_all)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dataset", default="shd", choices=["mnist", "shd", "nmnist"])
@@ -185,6 +200,7 @@ def main():
     ap.add_argument("--aug_jitter", type=int, default=0, help="SHD: per-event channel jitter")
     ap.add_argument("--pool", type=int, default=0, help="input channel pooling (SHD: OR of adjacent channels; 0 = default)")
     ap.add_argument("--clip", type=float, default=0.0, help="gradient-norm clip (0 = off)")
+    ap.add_argument("--val_frac", type=float, default=0.0, help="hold out this fraction of train for model selection")
     ap.add_argument("--het", type=int, default=0, help="per-neuron leak shifts k +- het, kw +- het")
     ap.add_argument("--detach_reset", action="store_true")
     ap.add_argument("--log_grad", action="store_true", help="log per-batch grad norms; checkpoint at the first spike")
@@ -223,7 +239,15 @@ def main():
                     if key in z0 and hasattr(layer, attr):
                         getattr(layer, attr).copy_(torch.tensor(z0[key].astype(np.float32)))
     opt = torch.optim.Adam(model.parameters(), lr=a.lr)
-    ntr = data.n(True)
+    ntr_all = data.n(True)
+    val_idx, best_val = None, -1.0
+    train_pool = torch.arange(ntr_all)
+    if a.val_frac > 0:       # fixed held-out validation split (SHD* protocol); selection never sees the test set
+        g = torch.Generator().manual_seed(12345)
+        p_all = torch.randperm(ntr_all, generator=g)
+        nv = int(round(a.val_frac * ntr_all))
+        val_idx, train_pool = p_all[:nv], p_all[nv:]
+    ntr = len(train_pool)
     steps = a.epochs * ((ntr + a.bs - 1) // a.bs)
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=a.lr, total_steps=steps, pct_start=0.15)
     out = ROOT / "results" / (a.tag or f"{a.dataset}_T{a.T}")
@@ -231,7 +255,7 @@ def main():
     log = []
     for ep in range(a.epochs):
         model.train()
-        perm = torch.randperm(ntr)
+        perm = train_pool[torch.randperm(ntr)]
         t0, tot, n = time.time(), 0.0, 0
         for i in range(0, ntr, a.bs):
             idx = perm[i:i + a.bs]
@@ -271,6 +295,12 @@ def main():
             n += len(idx)
         acc, rate = evaluate(model, data)
         rec = {"epoch": ep + 1, "loss": tot / n, "test_acc": acc, "hidden_rate": rate, "sec": round(time.time() - t0, 1)}
+        is_best = True
+        if val_idx is not None:
+            rec["val_acc"] = evaluate_idx(model, data, val_idx)
+            is_best = rec["val_acc"] > best_val
+            best_val = max(best_val, rec["val_acc"])
+            rec["best"] = bool(is_best)
         if a.gate_benv:
             rec["read_frac"] = float(model.eval_read_frac)
         if a.env_lam:
@@ -284,9 +314,12 @@ def main():
         if isinstance(Ws, list):
             Ws = {f"W{i}": W for i, W in enumerate(Ws)}
         Ws = {key: (v.astype(np.int8) if key[0] in "WR" or key.startswith("K") else v.astype(np.int16)) for key, v in Ws.items()}
-        np.savez(out / "weights.npz", **Ws, T=a.T, k=a.k, theta=a.theta, gain=a.gain, dataset=a.dataset,
-                 t_max=a.t_max, pool=a.pool or (2 if a.dataset == "nmnist" else 1), model=a.model, kw=a.kw, sa=a.sa, readout=a.readout,
-                 k_out=a.k_out or a.k, out_theta=model.layers[-1].theta)
+        meta = dict(T=a.T, k=a.k, theta=a.theta, gain=a.gain, dataset=a.dataset, t_max=a.t_max,
+                    pool=a.pool or (2 if a.dataset == "nmnist" else 1), model=a.model, kw=a.kw, sa=a.sa,
+                    readout=a.readout, k_out=a.k_out or a.k, out_theta=model.layers[-1].theta)
+        np.savez(out / "weights_last.npz", **Ws, **meta)
+        if is_best:          # weights.npz = best validation epoch (or last epoch when no validation split)
+            np.savez(out / "weights.npz", **Ws, **meta, epoch=ep + 1)
         json.dump({"args": vars(a), "log": log}, open(out / "metrics.json", "w"), indent=2)
     print("saved", out)
 
