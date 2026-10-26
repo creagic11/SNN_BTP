@@ -25,9 +25,11 @@ from train.qsnn import QRSNN  # noqa: E402
 
 
 def load_rec(z):
-    nl = sum(1 for k in z.files if k.startswith("W"))
+    nl = sum(1 for k in z.files if k.startswith("W") and k[1:].isdigit())
     layers = [RecLayer(z[f"W{i}"].astype(np.int64), z[f"R{i}"].astype(np.int64) if f"R{i}" in z else None,
-                       z[f"A{i}"].astype(np.int64), z[f"Bad{i}"].astype(np.int64)) for i in range(nl - 1)]
+                       z[f"A{i}"].astype(np.int64), z[f"Bad{i}"].astype(np.int64),
+                       z[f"K{i}"].astype(np.int64) if f"K{i}" in z else None,
+                       z[f"KW{i}"].astype(np.int64) if f"KW{i}" in z else None) for i in range(nl - 1)]
     return layers, z[f"W{nl - 1}"].astype(np.int64)
 
 
@@ -58,6 +60,9 @@ def main():
                 l.wr.copy_(torch.tensor(L.Wrec, dtype=torch.float32))
             l.a.copy_(torch.tensor(L.a, dtype=torch.float32))
             l.b.copy_(torch.tensor(L.b, dtype=torch.float32))
+            if L.kv is not None:
+                l.kv.copy_(torch.tensor(L.kv, dtype=torch.float32))
+                l.kwv.copy_(torch.tensor(L.kwv, dtype=torch.float32))
             l.gate_benv, l.asleep_drive = a.gate, a.asleep_drive
         model.layers[-1].w.copy_(torch.tensor(Wo, dtype=torch.float32))
     model.eval()

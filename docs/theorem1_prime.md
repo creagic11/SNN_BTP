@@ -74,3 +74,13 @@ Their SHD reference points:
 | LIF | — | 450k | 90.27% |
 
 These numbers are float, not quantised, and no hardware was reported.
+
+## Lemma 3 (reset-path gradient bound, used by the trainer)
+
+With soft reset V′ = U − θ·s and the surrogate s′ = σ′(U − θ), where σ′(x) = 1/(c·(1 + |x|/c)²) peaks at 1/c, the BPTT factor along the state is ∂V′/∂U = 1 − θ·σ′(U − θ) ∈ [1 − θ/c, 1].
+
+- With c = θ/4, the factor can reach −3. A neuron that sits near threshold for many steps, which is likely with slow leaks such as k = 7 under heterogeneous τ, then amplifies the gradient by up to 3^n. We measured max |∇W| of 1e27 to 1e30, or NaN, on 3 of 4 seeds at initialisation.
+- With c = θ/2, the factor stays in [−1, 1] and the same seeds give 3e−4 to 7e−4.
+- Detaching the reset also works, giving 4e−3 to 1e−2.
+
+The default for recurrent adLIF layers is now c = θ/2. The first homogeneous baseline used θ/4, and its loss spike at epoch 8 (0.80 → 1.46) is consistent with this.

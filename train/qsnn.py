@@ -164,9 +164,21 @@ class QRecAdLIF(nn.Module):
         if adapt:
             self.a = nn.Parameter(torch.empty(n_out).uniform_(max(amin, -amax / 4), amax / 4))
             self.b = nn.Parameter(torch.empty(n_out).uniform_(0, bmax / 8))
-        self.sscale = theta / 4
+        # Lemma 3: through the soft reset dV'/dU = 1 - theta*sigma'(U - theta); the fast-sigmoid peak is
+        # 1/sscale, so sscale = theta/2 bounds |dV'/dU| <= 1 (theta/4 allowed -3 per step: BPTT blow-up).
+        self.sscale = theta / 2
         self.drop = 0.0
-        self.detach_reset = False  # stop the gradient through reset and spike-triggered adaptation
+        self.detach_reset = False
+        # per-neuron leak shifts (heterogeneous time constants); default homogeneous
+        self.register_buffer("kv", torch.full((n_out,), float(k)))
+        self.register_buffer("kwv", torch.full((n_out,), float(kw)))
+
+    def set_heterogeneous(self, spread: int, seed: int = 0):
+        """Draw per-neuron k in [k - spread, k + spread] and kw likewise (fixed, not learned)."""
+        g = torch.Generator().manual_seed(seed)
+        n = self.kv.numel()
+        self.kv.copy_(torch.randint(self.k - spread, self.k + spread + 1, (n,), generator=g).float())
+        self.kwv.copy_(torch.randint(self.kw - spread, self.kw + spread + 1, (n,), generator=g).float())  # stop the gradient through reset and spike-triggered adaptation
 
     gate_benv = 0
     theta_h = None
@@ -210,7 +222,7 @@ class QRecAdLIF(nn.Module):
         spikes, Us = [], []
         for t in range(T):
             z = torch.cat([S[t], s], 1) if self.recurrent else S[t]
-            Bv = leak(V, self.k) - wad
+            Bv = V - FloorSTE.apply(V / 2 ** self.kv) - wad
             U = torch.clamp(Bv + z @ Wc, self.vmin, self.vmax)
             if gb:
                 Bmax = Bv.reshape(Bs, C, gb).max(dim=2).values
@@ -236,7 +248,7 @@ class QRecAdLIF(nn.Module):
             sr = s.detach() if self.detach_reset else s
             V = U - self.theta * sr
             if self.adapt:
-                wad = torch.clamp(leak(wad, self.kw) + FloorSTE.apply(a * V / (1 << self.sa)) + b * sr,
+                wad = torch.clamp(wad - FloorSTE.apply(wad / 2 ** self.kwv) + FloorSTE.apply(a * V / (1 << self.sa)) + b * sr,
                                   self.wmin, self.wmax)
             s_out = s if mask is None else s * mask
             spikes.append(s_out)
@@ -275,6 +287,8 @@ class QRSNN(nn.Module):
                 if l.recurrent:
                     d[f"R{i}"] = RoundClampSTE.apply(l.wr, -128, 127).detach().cpu().numpy().astype("int64")
                 a, b = l.ab_int("cpu")
+                d[f"K{i}"] = l.kv.cpu().numpy().astype("int64")
+                d[f"KW{i}"] = l.kwv.cpu().numpy().astype("int64")
                 d[f"A{i}"] = a.detach().cpu().numpy().astype("int64")
                 d[f"Bad{i}"] = b.detach().cpu().numpy().astype("int64")
         return d

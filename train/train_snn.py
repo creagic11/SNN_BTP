@@ -169,6 +169,10 @@ def main():
     ap.add_argument("--u_scale", type=float, default=0.125, help="logit scale for the u readout")
     ap.add_argument("--signed_drive", type=int, default=1)
     ap.add_argument("--threads", type=int, default=2)
+    ap.add_argument("--clip", type=float, default=0.0, help="gradient-norm clip (0 = off)")
+    ap.add_argument("--het", type=int, default=0, help="per-neuron leak shifts k +- het, kw +- het")
+    ap.add_argument("--detach_reset", action="store_true")
+    ap.add_argument("--sscale_div", type=float, default=0.0, help="surrogate scale = theta / div (0: layer default)")
     a = ap.parse_args()
     torch.manual_seed(a.seed)
     data = Data(a.dataset, a.T, a.gain, a.limit, a.t_max)
@@ -186,12 +190,18 @@ def main():
         layer.asleep_drive = a.asleep_drive
         layer.signed_drive = bool(a.signed_drive)
         layer.drop = a.drop
+        if hasattr(layer, "detach_reset"):
+            layer.detach_reset = a.detach_reset
+        if a.sscale_div:
+            layer.sscale = a.theta / a.sscale_div
+        if a.het and hasattr(layer, "set_heterogeneous"):
+            layer.set_heterogeneous(a.het, a.seed)
     if a.init:
         z0 = np.load(a.init)
         with torch.no_grad():
             for i, layer in enumerate(model.layers):
                 layer.w.copy_(torch.tensor(z0[f"W{i}"].astype(np.float32)))
-                for key, attr in ((f"R{i}", "wr"), (f"A{i}", "a"), (f"Bad{i}", "b")):
+                for key, attr in ((f"R{i}", "wr"), (f"A{i}", "a"), (f"Bad{i}", "b"), (f"K{i}", "kv"), (f"KW{i}", "kwv")):
                     if key in z0 and hasattr(layer, attr):
                         getattr(layer, attr).copy_(torch.tensor(z0[key].astype(np.float32)))
     opt = torch.optim.Adam(model.parameters(), lr=a.lr)
@@ -220,6 +230,8 @@ def main():
                 loss = loss + a.env_lam * envelope_drive_loss(model, S, hid, a.env_benv, a.theta)
             opt.zero_grad()
             loss.backward()
+            if a.clip:
+                torch.nn.utils.clip_grad_norm_(model.parameters(), a.clip)
             opt.step()
             sched.step()
             tot += loss.item() * len(idx)
@@ -238,7 +250,7 @@ def main():
         Ws = model.export_int()
         if isinstance(Ws, list):
             Ws = {f"W{i}": W for i, W in enumerate(Ws)}
-        Ws = {key: (v.astype(np.int8) if key[0] in "WR" else v.astype(np.int16)) for key, v in Ws.items()}
+        Ws = {key: (v.astype(np.int8) if key[0] in "WR" or key.startswith("K") else v.astype(np.int16)) for key, v in Ws.items()}
         np.savez(out / "weights.npz", **Ws, T=a.T, k=a.k, theta=a.theta, gain=a.gain, dataset=a.dataset,
                  t_max=a.t_max, model=a.model, kw=a.kw, sa=a.sa, readout=a.readout,
                  k_out=a.k_out or a.k, out_theta=model.layers[-1].theta)

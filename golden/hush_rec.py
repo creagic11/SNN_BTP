@@ -62,6 +62,8 @@ class RecLayer:
     Wrec: np.ndarray | None = None     # (N, N) int or None
     a: np.ndarray | None = None        # (N,) int, signed coupling V -> w
     b: np.ndarray | None = None        # (N,) int >= 0, spike-triggered adaptation
+    kv: np.ndarray | None = None       # (N,) per-neuron leak shift (overrides q.lif.k); heterogeneous tau
+    kwv: np.ndarray | None = None      # (N,) per-neuron adaptation leak shift (overrides q.kw)
 
     @property
     def N(self) -> int:
@@ -107,8 +109,8 @@ def lowrank_tables(Wc: np.ndarray, b_env: int, r: int, bb: int = 4, sb: int = 3)
     return Qr, Dl, beta
 
 
-def _adapt(w, Vn, s, a, b, q: AdLIFParams):
-    return np.clip(leak(w, q.kw) + ((a * Vn) >> q.sa) + b * s, q.wmin, q.wmax)
+def _adapt(w, Vn, s, a, b, q: AdLIFParams, kw=None):
+    return np.clip(leak(w, q.kw if kw is None else kw) + ((a * Vn) >> q.sa) + b * s, q.wmin, q.wmax)
 
 
 def _new_trace(T, N, C, G, n_active, gated, shadow):
@@ -151,7 +153,7 @@ def run_rec(L: RecLayer, X: np.ndarray, q: AdLIFParams, mode: str = "ref", shado
     for t in range(T):
         z = np.concatenate([X[t], s]) if rec else X[t]
         tr.n_active[t] = int(z.sum())
-        B = leak(V, p.k) - w
+        B = leak(V, p.k if L.kv is None else np.asarray(L.kv, np.int64)) - w
         U_full = clip(B + z @ Wc, p)
         if mode == "ref":
             g = np.ones(C, bool)
@@ -184,7 +186,7 @@ def run_rec(L: RecLayer, X: np.ndarray, q: AdLIFParams, mode: str = "ref", shado
         U = np.where(gn, U_full, U_sleep)
         s = ((U >= p.theta) & gn).astype(np.int64)
         V = U - p.theta * s
-        w = _adapt(w, V, s, a, b, q)
+        w = _adapt(w, V, s, a, b, q, None if L.kwv is None else np.asarray(L.kwv, np.int64))
         tr.U[t], tr.V[t], tr.spikes[t], tr.Wad[t], tr.awake_sub[t] = U, V, s, w, g
     tr.awake_blk = _block_or(tr.awake_sub, p)
     tr.stats = _stats(tr, p)
