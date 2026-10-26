@@ -172,6 +172,7 @@ def main():
     ap.add_argument("--clip", type=float, default=0.0, help="gradient-norm clip (0 = off)")
     ap.add_argument("--het", type=int, default=0, help="per-neuron leak shifts k +- het, kw +- het")
     ap.add_argument("--detach_reset", action="store_true")
+    ap.add_argument("--log_grad", action="store_true", help="log per-batch grad norms; checkpoint at the first spike")
     ap.add_argument("--sscale_div", type=float, default=0.0, help="surrogate scale = theta / div (0: layer default)")
     a = ap.parse_args()
     torch.manual_seed(a.seed)
@@ -230,6 +231,21 @@ def main():
                 loss = loss + a.env_lam * envelope_drive_loss(model, S, hid, a.env_benv, a.theta)
             opt.zero_grad()
             loss.backward()
+            if a.log_grad:
+                gn = {n: float(p.grad.norm()) for n, p in model.named_parameters() if p.grad is not None}
+                tot_g = sum(v * v for v in gn.values()) ** 0.5
+                hist = getattr(model, "_ghist", [])
+                med = float(np.median(hist[-200:])) if hist else tot_g
+                hist.append(tot_g)
+                model._ghist = hist
+                if len(hist) > 50 and tot_g > 50 * med and not getattr(model, "_spiked", False):
+                    model._spiked = True
+                    torch.save({"state": model.state_dict(), "idx": idx}, out / "spike_ckpt.pt")
+                    print(json.dumps({"grad_spike": True, "epoch": ep + 1, "batch": i // a.bs, "total": tot_g,
+                                      "median": med, "per_param": gn, "loss": loss.item()}), flush=True)
+                if (i // a.bs) % 32 == 0:
+                    print(json.dumps({"ep": ep + 1, "b": i // a.bs, "loss": round(loss.item(), 3),
+                                      "gnorm": round(tot_g, 4)}), flush=True)
             if a.clip:
                 torch.nn.utils.clip_grad_norm_(model.parameters(), a.clip)
             opt.step()
