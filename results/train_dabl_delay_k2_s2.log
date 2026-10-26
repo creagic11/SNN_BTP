@@ -1,0 +1,5 @@
+{"epoch": 1, "loss": 3.0340194817908315, "test_acc": 0.20980565371024734, "hidden_rate": 0.1301026433021778, "sec": 59.7, "sigma": 2.0}
+{"epoch": 2, "loss": 2.906109643836066, "test_acc": 0.2765017667844523, "hidden_rate": 0.12682729430312403, "sec": 76.6, "sigma": 0.5}
+{"epoch": 3, "loss": 2.7906730465002654, "test_acc": 0.3365724381625442, "hidden_rate": 0.1247114152400738, "sec": 59.5, "sigma": 0.0}
+{"epoch": 4, "loss": 2.7473619929010114, "test_acc": 0.3374558303886926, "hidden_rate": 0.12459916294990074, "sec": 59.0, "sigma": 0.0}
+saved /home/claude/snn_btp/results/dabl_delay_k2_s2
