@@ -25,8 +25,9 @@ from train.train_mnist import if_encode_torch, predict_torch  # noqa: E402
 
 
 class Data:
-    def __init__(self, name, T, gain=1, limit=0, t_max=1.0, pool=2):
+    def __init__(self, name, T, gain=1, limit=0, t_max=1.0, pool=2, aug=None, seed=0):
         self.name, self.T, self.gain = name, T, gain
+        self.aug, self.rng = aug, np.random.default_rng(seed + 1000)
         if name == "mnist":
             from golden.datasets import mnist_arrays
             Xtr, Ytr = mnist_arrays(True)
@@ -76,7 +77,11 @@ class Data:
             S = if_encode_torch(X[idx], self.T, self.gain)
         elif self.name == "shd":
             ds = self.str_ if train else self.ste
-            S = torch.tensor(ds.batch(idx.tolist(), self.T)).float().transpose(0, 1)
+            if train and self.aug:
+                rs = [ds.raster_aug(i, self.T, self.rng, *self.aug) for i in idx.tolist()]
+                S = torch.tensor(np.stack(rs)).float().transpose(0, 1)
+            else:
+                S = torch.tensor(ds.batch(idx.tolist(), self.T)).float().transpose(0, 1)
         else:
             S = torch.tensor(np.unpackbits(X[idx].numpy(), axis=2)[:, :, :self.M]).float().transpose(0, 1)
         return S, Y[idx]
@@ -175,6 +180,9 @@ def main():
     ap.add_argument("--u_scale", type=float, default=0.125, help="logit scale for the u readout")
     ap.add_argument("--signed_drive", type=int, default=1)
     ap.add_argument("--threads", type=int, default=2)
+    ap.add_argument("--aug_shift", type=int, default=0, help="SHD: random whole-pattern channel shift")
+    ap.add_argument("--aug_stretch", type=float, default=0.0, help="SHD: random time stretch fraction")
+    ap.add_argument("--aug_jitter", type=int, default=0, help="SHD: per-event channel jitter")
     ap.add_argument("--pool", type=int, default=0, help="input channel pooling (SHD: OR of adjacent channels; 0 = default)")
     ap.add_argument("--clip", type=float, default=0.0, help="gradient-norm clip (0 = off)")
     ap.add_argument("--het", type=int, default=0, help="per-neuron leak shifts k +- het, kw +- het")
@@ -183,7 +191,9 @@ def main():
     ap.add_argument("--sscale_div", type=float, default=0.0, help="surrogate scale = theta / div (0: layer default)")
     a = ap.parse_args()
     torch.manual_seed(a.seed)
-    data = Data(a.dataset, a.T, a.gain, a.limit, a.t_max, pool=a.pool or (2 if a.dataset == "nmnist" else 1))
+    data = Data(a.dataset, a.T, a.gain, a.limit, a.t_max, pool=a.pool or (2 if a.dataset == "nmnist" else 1),
+                aug=(a.aug_shift, a.aug_stretch, a.aug_jitter) if (a.aug_shift or a.aug_stretch or a.aug_jitter) else None,
+                seed=a.seed)
     torch.set_num_threads(a.threads)
     if a.model == "rec":
         model = QRSNN(a.sizes, theta=a.theta, k=a.k, kw=a.kw, sa=a.sa, recurrent=not a.no_rec,

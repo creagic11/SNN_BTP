@@ -87,8 +87,11 @@ def main():
         o = run_ref(Wo, x, po)
         umax = max(umax, int(np.abs(o.U).max()))
         u_mis += int((o.U != Uo[:, i].numpy().astype(np.int64)).sum())
-        p_g = predict_u(o.U) if readout == "u" else None
-        p_t = int(Uo[:, i].sum(0).argmax()) if readout == "u" else None
+        if readout == "umax":
+            p_g, p_t = int(np.argmax(o.U.max(axis=0))), int(Uo[:, i].max(0).values.argmax())
+        else:
+            p_g = predict_u(o.U) if readout == "u" else None
+            p_t = int(Uo[:, i].sum(0).argmax()) if readout == "u" else None
         pred_mis += int(p_g != p_t)
         correct += int(p_g == Y[i])
     print(f"{a.weights}: n={len(Y)} gate={a.gate} drive={a.asleep_drive}: hidden spike mismatches {spk_mis}, "

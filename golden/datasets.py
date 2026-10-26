@@ -45,6 +45,22 @@ class SHD:
     def __len__(self):
         return len(self.labels)
 
+    def raster_aug(self, i: int, T: int, rng, ch_shift: int = 0, stretch: float = 0.0, jitter: int = 0):
+        """Training-only augmentation on the event list, then binning: whole-pattern channel shift in
+        [-ch_shift, ch_shift], time stretch factor in [1 - stretch, 1 + stretch], per-event channel jitter."""
+        t, u = self.times[i], self.units[i].copy()
+        if ch_shift:
+            u = u + int(rng.integers(-ch_shift, ch_shift + 1))
+        if jitter:
+            u = u + rng.integers(-jitter, jitter + 1, size=u.size)
+        if stretch:
+            t = t * float(rng.uniform(1 - stretch, 1 + stretch))
+        keep = (t < self.t_max) & (u >= 0) & (u < 700)
+        b = (t[keep] / self.t_max * T).astype(np.int64)
+        r = np.zeros((T, self.M), np.uint8)
+        r[b, u[keep] // self.pool] = 1
+        return r
+
     def raster(self, i: int, T: int) -> np.ndarray:
         """(T, M) uint8, M = ceil(700 / pool); a channel is 1 in a bin if any of its pooled cochlea channels
         spiked in it (events after t_max dropped)."""
