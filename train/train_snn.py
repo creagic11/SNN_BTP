@@ -111,12 +111,16 @@ U_THETA = 1 << 14   # output threshold for the non-spiking readout (never reache
 def readout_logits(So, Uo, a):
     if a.readout == "u":
         return Uo.mean(0) / a.theta * a.u_scale
+    if a.readout == "umax":
+        return Uo.max(0).values / a.theta * a.u_scale
     return (So.sum(0) + 0.01 * Uo.mean(0) / a.theta) * (25.0 / a.T)
 
 
 def predict_any(So, Uo, readout):
     if readout == "u":
         return Uo.sum(0).argmax(dim=1)
+    if readout == "umax":
+        return Uo.max(0).values.argmax(dim=1)
     return predict_torch(So, Uo)
 
 
@@ -165,7 +169,7 @@ def main():
     ap.add_argument("--kw", type=int, default=5)
     ap.add_argument("--sa", type=int, default=8)
     ap.add_argument("--drop", type=float, default=0.0, help="dropout on hidden spikes (training only)")
-    ap.add_argument("--readout", default="spk", choices=["spk", "u"],
+    ap.add_argument("--readout", default="spk", choices=["spk", "u", "umax"],
                     help="u: non-spiking readout, class = argmax sum_t U (output theta set out of reach)")
     ap.add_argument("--k_out", type=int, default=0)
     ap.add_argument("--u_scale", type=float, default=0.125, help="logit scale for the u readout")
@@ -186,7 +190,7 @@ def main():
                       adapt=not a.no_adapt, k_out=a.k_out or None)
     else:
         model = QSNN(a.sizes, theta=a.theta, k=a.k)
-    if a.readout == "u":
+    if a.readout in ("u", "umax"):
         model.layers[-1].theta = U_THETA
     model.readout = a.readout
     for layer in model.layers[:-1]:
