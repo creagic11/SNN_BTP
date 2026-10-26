@@ -187,6 +187,7 @@ def main():
                     help="rec: recurrent adLIF hidden layers; delay: FF LIF with learned axonal delays")
     ap.add_argument("--dmax", type=int, default=25, help="delay model: max delay in steps")
     ap.add_argument("--bn", action="store_true", help="delay model: training-time BatchNorm on hidden input currents")
+    ap.add_argument("--lr_bias", type=float, default=1.0, help="delay model: lr of the per-neuron bias current (integer units)")
     ap.add_argument("--lr_pos", type=float, default=0.1, help="delay model: learning rate of delay positions")
     ap.add_argument("--sigma0", type=float, default=0.0, help="delay model: initial Gaussian width (0 = dmax/2)")
     ap.add_argument("--sig_frac", type=float, default=0.5, help="delay model: fraction of epochs to anneal sigma to 0")
@@ -254,9 +255,14 @@ def main():
                 if f"BI{i}" in z0:                       # folded BN: per-neuron bias current
                     layer.bias = torch.nn.Parameter(torch.tensor(z0[f"BI{i}"].astype(np.float32)))
     if a.model == "delay":
-        pos = [p for n, p in model.named_parameters() if n.endswith(".pos")]
-        rest = [p for n, p in model.named_parameters() if not n.endswith(".pos")]
-        opt = torch.optim.Adam([{"params": rest, "lr": a.lr}, {"params": pos, "lr": a.lr_pos}])
+        named = list(model.named_parameters())
+        pos = [p for n, p in named if n.endswith(".pos")]
+        bias = [p for n, p in named if n.startswith("layers.") and n.endswith(".bias")]   # folded-BN bias current
+        rest = [p for n, p in named if not n.endswith(".pos") and not (n.startswith("layers.") and n.endswith(".bias"))]
+        groups = [{"params": rest, "lr": a.lr}, {"params": pos, "lr": a.lr_pos}]
+        if bias:
+            groups.append({"params": bias, "lr": a.lr_bias})
+        opt = torch.optim.Adam(groups)
     else:
         opt = torch.optim.Adam(model.parameters(), lr=a.lr)
     ntr_all = data.n(True)
