@@ -78,6 +78,35 @@ class RecLayer:
         return a, b
 
 
+def lowrank_tables(Wc: np.ndarray, b_env: int, r: int, bb: int = 4, sb: int = 3):
+    """Clamped low-rank hibernation tables (P1.5). Per sub-block c, Wc[:, c] (M x b_env) is approximated by
+        A_ji ~= Qr_jc + sum_k (beta_ki * Dl_kjc) >> sb
+    Qr = rounded mean (rank 1); the residual's top r-1 singular directions give Dl (int8) and beta
+    (signed bb-bit per neuron). Safety does not depend on the fit: the asleep drive is clamped to D_c."""
+    M, N = Wc.shape
+    C = N // b_env
+    blk = Wc.reshape(M, C, b_env).astype(np.float64)
+    Qr = np.rint(blk.mean(axis=2)).astype(np.int64)
+    Dl = np.zeros((max(r - 1, 0), M, C), np.int64)
+    beta = np.zeros((max(r - 1, 0), N), np.int64)
+    bmax = (1 << (bb - 1)) - 1
+    for c in range(C):
+        R = blk[:, c, :] - Qr[:, c:c + 1]
+        if r <= 1:
+            continue
+        U_, S_, Vt = np.linalg.svd(R, full_matrices=False)
+        for kk in range(min(r - 1, Vt.shape[0])):
+            v = Vt[kk]
+            bq = np.rint(v / max(np.abs(v).max(), 1e-12) * bmax)
+            beta[kk, c * b_env:(c + 1) * b_env] = bq
+            # least-squares column for the quantised beta: R ~= d (bq / 2**sb)^T
+            sc = bq / (1 << sb)
+            d = R @ sc / max(sc @ sc, 1e-12)
+            Dl[kk, :, c] = np.clip(np.rint(d), -128, 127)
+            R = R - np.outer(Dl[kk, :, c], sc)
+    return Qr, Dl, beta
+
+
 def _adapt(w, Vn, s, a, b, q: AdLIFParams):
     return np.clip(leak(w, q.kw) + ((a * Vn) >> q.sa) + b * s, q.wmin, q.wmax)
 
@@ -111,6 +140,9 @@ def run_rec(L: RecLayer, X: np.ndarray, q: AdLIFParams, mode: str = "ref", shado
     a, b = L.ab()
     P = proxy_table(Wc, p.b_env)
     Q = mean_table(Wc, p.b_env) if p.asleep_drive == "mean" else None
+    lr = None
+    if p.asleep_drive.startswith("lr"):          # "lr<r>": clamped rank-r hibernation; "exact": ceiling
+        lr = lowrank_tables(Wc, p.b_env, int(p.asleep_drive[2:]))
     V = np.zeros(N, np.int64)
     w = np.zeros(N, np.int64)
     s = np.zeros(N, np.int64)
@@ -135,10 +167,20 @@ def run_rec(L: RecLayer, X: np.ndarray, q: AdLIFParams, mode: str = "ref", shado
             if shadow:
                 tr.U_ungated[t] = U_full
         gn = np.repeat(g, p.b_env)
-        if Q is None or mode != "gated":
+        if mode != "gated" or p.asleep_drive == "none":
             U_sleep = clip(B, p)
-        else:
+        elif Q is not None:
             U_sleep = clip(B + np.repeat(z @ Q, p.b_env), p)
+        else:
+            if p.asleep_drive == "exact":
+                A = z @ Wc
+            else:
+                Qr, Dl, beta = lr
+                A = np.repeat(z @ Qr, p.b_env)
+                for kk in range(Dl.shape[0]):
+                    A = A + ((beta[kk] * np.repeat(z @ Dl[kk], p.b_env)) >> 3)
+            Dfull = np.repeat(z @ P, p.b_env)
+            U_sleep = clip(B + np.minimum(A, Dfull), p)    # clamp to the envelope's drive bound: safe
         U = np.where(gn, U_full, U_sleep)
         s = ((U >= p.theta) & gn).astype(np.int64)
         V = U - p.theta * s

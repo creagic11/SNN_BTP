@@ -90,7 +90,7 @@ def test_gated_spikes_equal_ungated_spikes_same_state(case):
 @given(rec_case())
 def test_gate_always_on_equals_ref(case):
     L, X, q = case
-    lif = LIFParams(**{**q.lif.__dict__, "theta_h": q.lif.vmin})
+    lif = LIFParams(**{**q.lif.__dict__, "theta_h": -(1 << 40)})   # below any signed lhs
     q2 = AdLIFParams(lif=lif, kw=q.kw, sa=q.sa, wbits=q.wbits, signed_drive=q.signed_drive)
     g, r = run_rec(L, X, q2, "gated"), run_rec(L, X, q2, "ref")
     assert g.awake_sub.all()
@@ -146,4 +146,17 @@ def test_saturated_bound_forces_awake():
     L.Wff = np.array([[100, 100]])
     tr = run_rec(L, X, q, "gated")
     gn = np.repeat(tr.awake_sub, 2, axis=1)
+    assert not np.any(~gn & (tr.U_ungated >= lif.theta))
+
+
+@settings(max_examples=300, deadline=None)
+@given(rec_case(), st.sampled_from(["lr1", "lr2", "lr3", "exact"]))
+def test_clamped_hibernation_asleep_neurons_stay_below_threshold(case, drive):
+    """Any asleep-drive approximation clamped to D_c keeps asleep neurons below theta."""
+    L, X, q = case
+    lif = LIFParams(**{**q.lif.__dict__, "asleep_drive": drive})
+    q2 = AdLIFParams(lif=lif, kw=q.kw, sa=q.sa, wbits=q.wbits, signed_drive=q.signed_drive)
+    tr = run_rec(L, X, q2, "gated")
+    gn = np.repeat(tr.awake_sub, lif.b_env, axis=1)
+    assert np.all(tr.U[~gn] < lif.theta)
     assert not np.any(~gn & (tr.U_ungated >= lif.theta))
