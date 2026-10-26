@@ -1,0 +1,16 @@
+/home/claude/snn_btp/train/qsnn.py:234: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  kept += float((g.float() * n_t).sum())
+{"epoch": 1, "loss": 4.42916652201307, "test_acc": 0.823321554770318, "hidden_rate": 0.13019940507180278, "sec": 135.7, "val_acc": 0.8921568627450981, "best": true, "read_frac": 0.9934634031865119, "env_drive_theta": 4.806116104125977}
+{"epoch": 2, "loss": 3.9928388585186783, "test_acc": 0.8122791519434629, "hidden_rate": 0.08042743014889134, "sec": 137.4, "val_acc": 0.8848039215686274, "best": false, "read_frac": 0.990842481358322, "env_drive_theta": 4.082420349121094}
+{"epoch": 3, "loss": 3.343485216743615, "test_acc": 0.8175795053003534, "hidden_rate": 0.07094639596321979, "sec": 140.4, "val_acc": 0.8799019607843137, "best": false, "read_frac": 0.9895170570847607, "env_drive_theta": 3.790846586227417}
+{"epoch": 4, "loss": 3.1279381094576553, "test_acc": 0.8264134275618374, "hidden_rate": 0.06480112753466245, "sec": 142.9, "val_acc": 0.8897058823529411, "best": false, "read_frac": 0.9884055260226919, "env_drive_theta": 3.605494499206543}
+{"epoch": 5, "loss": 2.97736856450177, "test_acc": 0.8144876325088339, "hidden_rate": 0.062122433377238974, "sec": 142.2, "val_acc": 0.883578431372549, "best": false, "read_frac": 0.9877656899340345, "env_drive_theta": 3.481260061264038}
+{"epoch": 6, "loss": 2.853688839800676, "test_acc": 0.8193462897526502, "hidden_rate": 0.05950127058257695, "sec": 136.4, "val_acc": 0.8946078431372549, "best": true, "read_frac": 0.9871831493775948, "env_drive_theta": 3.3654098510742188}
+{"epoch": 7, "loss": 2.7535423897267686, "test_acc": 0.8074204946996466, "hidden_rate": 0.058423434334803806, "sec": 131.5, "val_acc": 0.9019607843137255, "best": true, "read_frac": 0.9867609347744986, "env_drive_theta": 3.289924144744873}
+{"epoch": 8, "loss": 2.6841314211853193, "test_acc": 0.8043286219081273, "hidden_rate": 0.05674528652413784, "sec": 129.2, "val_acc": 0.8921568627450981, "best": false, "read_frac": 0.9861651104387272, "env_drive_theta": 3.228026866912842}
+{"epoch": 9, "loss": 2.6302563994716883, "test_acc": 0.8109540636042403, "hidden_rate": 0.05678816524074271, "sec": 128.0, "val_acc": 0.8982843137254902, "best": false, "read_frac": 0.9861112003026715, "env_drive_theta": 3.196605920791626}
+{"epoch": 10, "loss": 2.5910602190189205, "test_acc": 0.808303886925795, "hidden_rate": 0.056630914023823954, "sec": 130.8, "val_acc": 0.8933823529411765, "best": false, "read_frac": 0.9859497524050433, "env_drive_theta": 3.1769144535064697}
+{"epoch": 11, "loss": 2.579940458084647, "test_acc": 0.8140459363957597, "hidden_rate": 0.05624933076147056, "sec": 129.1, "val_acc": 0.9044117647058824, "best": true, "read_frac": 0.9858690260052213, "env_drive_theta": 3.164989948272705}
+{"epoch": 12, "loss": 2.5689135898361415, "test_acc": 0.8144876325088339, "hidden_rate": 0.05642548412769085, "sec": 131.8, "val_acc": 0.8970588235294118, "best": false, "read_frac": 0.9859675193517778, "env_drive_theta": 3.161076307296753}
+saved /home/claude/snn_btp/results/shd_rec_lr1_e05_d025
