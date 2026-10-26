@@ -221,10 +221,15 @@ class QRecAdLIF(nn.Module):
         if self.training and self.drop > 0:
             mask = (torch.rand(Bs, N, device=S.device) >= self.drop).float() / (1 - self.drop)
         spikes, Us = [], []
+        I_all = None
+        if getattr(self, "bn", None) is not None and not self.recurrent:
+            # training-time BatchNorm on the input current (statistics over time and batch); folded into
+            # integer weights + per-neuron bias current before deployment
+            I_all = self.bn((S @ Wc).reshape(T * Bs, N)).reshape(T, Bs, N)
         for t in range(T):
             z = torch.cat([S[t], s], 1) if self.recurrent else S[t]
             Bv = V - FloorSTE.apply(V / 2 ** self.kv) - wad
-            U = torch.clamp(Bv + z @ Wc, self.vmin, self.vmax)
+            U = torch.clamp(Bv + (z @ Wc if I_all is None else I_all[t]), self.vmin, self.vmax)
             if gb:
                 Bmax = Bv.reshape(Bs, C, gb).max(dim=2).values
                 D = z @ P
@@ -338,10 +343,16 @@ class QDSNN(nn.Module):
     """Feed-forward integer LIF network with learned axonal delays before every layer (HUSH-friendly:
     no recurrence, no subthreshold adaptation). Hidden layers are QRecAdLIF(recurrent=False, adapt=False)."""
 
-    def __init__(self, sizes: list[int], theta: int = 64, k: int = 2, dmax: int = 25, k_out: int | None = None):
+    def __init__(self, sizes: list[int], theta: int = 64, k: int = 2, dmax: int = 25, k_out: int | None = None,
+                 bn: bool = False):
         super().__init__()
         self.delays = nn.ModuleList(AxonDelay(n, dmax) for n in sizes[:-1])
         hid = [QRecAdLIF(a, b, theta=theta, k=k, recurrent=False, adapt=False) for a, b in zip(sizes[:-2], sizes[1:-1])]
+        if bn:
+            for l in hid:
+                l.bn = nn.BatchNorm1d(l.w.shape[1])
+                with torch.no_grad():              # BN output in integer current units: ~theta-scale
+                    l.bn.weight.fill_(theta / 2.0)
         self.layers = nn.ModuleList(hid + [QLinearLIF(sizes[-2], sizes[-1], theta=theta, k=k if k_out is None else k_out)])
 
     def set_sigma(self, s: float):

@@ -186,6 +186,7 @@ def main():
     ap.add_argument("--model", default="ff", choices=["ff", "rec", "delay"],
                     help="rec: recurrent adLIF hidden layers; delay: FF LIF with learned axonal delays")
     ap.add_argument("--dmax", type=int, default=25, help="delay model: max delay in steps")
+    ap.add_argument("--bn", action="store_true", help="delay model: training-time BatchNorm on hidden input currents")
     ap.add_argument("--lr_pos", type=float, default=0.1, help="delay model: learning rate of delay positions")
     ap.add_argument("--sigma0", type=float, default=0.0, help="delay model: initial Gaussian width (0 = dmax/2)")
     ap.add_argument("--sig_frac", type=float, default=0.5, help="delay model: fraction of epochs to anneal sigma to 0")
@@ -217,7 +218,7 @@ def main():
                 seed=a.seed)
     torch.set_num_threads(a.threads)
     if a.model == "delay":
-        model = QDSNN(a.sizes, theta=a.theta, k=a.k, dmax=a.dmax, k_out=a.k_out or None)
+        model = QDSNN(a.sizes, theta=a.theta, k=a.k, dmax=a.dmax, k_out=a.k_out or None, bn=a.bn)
     elif a.model == "rec":
         model = QRSNN(a.sizes, theta=a.theta, k=a.k, kw=a.kw, sa=a.sa, recurrent=not a.no_rec,
                       adapt=not a.no_adapt, k_out=a.k_out or None)

@@ -1,0 +1,5 @@
+{"epoch": 1, "loss": 2.9932694159166786, "test_acc": 0.24381625441696114, "hidden_rate": 0.1427781993371859, "sec": 56.5, "sigma": 2.0}
+{"epoch": 2, "loss": 2.8224870739993424, "test_acc": 0.35556537102473496, "hidden_rate": 0.11399110496149467, "sec": 72.1, "sigma": 0.5}
+{"epoch": 3, "loss": 2.7334281506054303, "test_acc": 0.37765017667844525, "hidden_rate": 0.10020397395527406, "sec": 56.5, "sigma": 0.0}
+{"epoch": 4, "loss": 2.6915661147437064, "test_acc": 0.4015017667844523, "hidden_rate": 0.10058067540239951, "sec": 59.0, "sigma": 0.0}
+saved /home/claude/snn_btp/results/dabl_bn
