@@ -248,6 +248,11 @@ def main():
                         getattr(layer, attr).copy_(torch.tensor(z0[key].astype(np.float32)))
                 if f"D{i}" in z0 and hasattr(model, "delays"):
                     model.delays[i].pos.copy_(torch.tensor(z0[f"D{i}"].astype(np.float32)))
+                if f"TH{i}" in z0:                       # folded BN: per-layer threshold
+                    layer.theta = int(z0[f"TH{i}"])
+                    layer.sscale = layer.theta / 4
+                if f"BI{i}" in z0:                       # folded BN: per-neuron bias current
+                    layer.bias = torch.nn.Parameter(torch.tensor(z0[f"BI{i}"].astype(np.float32)))
     if a.model == "delay":
         pos = [p for n, p in model.named_parameters() if n.endswith(".pos")]
         rest = [p for n, p in model.named_parameters() if not n.endswith(".pos")]

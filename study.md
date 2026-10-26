@@ -95,6 +95,9 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] Readouts: mean-U vs max-over-time (Cramer et al.); why max-over-time is a one-register-per-class integer decision and trained smoothly (82.5 → 87.0%).
 - [ ] Recurrent envelope drain: why spikes are final only at BLK_FIN (input-serial dataflow, signed weights, 0.40 false crossings per spike), why a wrong negative proxy row is unsafe, and the overlap + dual-port + awake-first schedule (tail 6.6% → 0.46%).
 - [ ] Why HUSH fails on recurrent adLIF: the gate exploits hyperpolarisation headroom (FF: 9.7θ; recurrent adLIF: 0.09θ); subthreshold adaptation and recurrent excitation keep the top neuron of each sub-block near threshold. Quote the gated co-training table (reads 0.98).
+- [ ] Axonal delays: why per-input delays keep Theorem 1 unchanged (delay line on the event stream) while per-synapse delays (DCLS) expand the envelope inputs to (input, delay) taps; hardware cost = dmax-slot event ring buffer per layer input.
+- [ ] Training delays: hard integer forward + soft (Gaussian → triangular) backward; why the forward must stay hard (golden equivalence).
+- [ ] Folding BatchNorm into INT8 weights + bias current + per-layer θ; why the bias current is drive-free (part of B) and keeps the HUSH proof.
 - [ ] SHD reference numbers: SE-adLIF 1 layer 37.5k params 94.6%, 2 layers 95.8%, LIF 90.3% (float, no hardware).
 
 ## Presentation drills

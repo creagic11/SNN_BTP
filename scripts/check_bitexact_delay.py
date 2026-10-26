@@ -23,8 +23,12 @@ with torch.no_grad():
     for i in range(nl):
         m.layers[i].w.copy_(torch.tensor(z[f"W{i}"].astype(np.float32)))
         m.delays[i].pos.copy_(torch.tensor(z[f"D{i}"].astype(np.float32)))
-    for l in m.layers[:-1]:
+    for i, l in enumerate(m.layers[:-1]):
         l.gate_benv, l.asleep_drive = a.gate, a.asleep_drive
+        if f"TH{i}" in z:
+            l.theta = int(z[f"TH{i}"]); l.sscale = l.theta / 4
+        if f"BI{i}" in z:
+            l.bias = torch.nn.Parameter(torch.tensor(z[f"BI{i}"].astype(np.float32)))
 m.eval(); m.set_sigma(0.0)
 R, Y = test_rasters(z, a.n)
 S = torch.tensor(np.stack(R)).float().transpose(0, 1)
