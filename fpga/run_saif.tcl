@@ -27,7 +27,6 @@ foreach cfg {{0 0 base_v3} {1 1 hush_mf_v3}} {
 }
 
 # (2) + (3) simulate and annotate
-set rtl [list $root/rtl/hush_arith.sv $root/rtl/hush_layer.sv $here/top_hush.sv $here/tb_saif.sv]
 foreach cfg {{base 0 0 base_v3} {mf_gentle 1 1 hush_mf_v3} {mf_aggr 1 1 hush_mf_v3}} {
     lassign $cfg case g m build
     set sim $out/sim_$case
@@ -41,12 +40,21 @@ foreach cfg {{base 0 0 base_v3} {mf_gentle 1 1 hush_mf_v3} {mf_aggr 1 1 hush_mf_
     puts $xsim_tcl "close_saif"
     puts $xsim_tcl "quit"
     close $xsim_tcl
+    # Windows' xelab.bat / xsim.bat split arguments at '=', so no generics or plusargs on the command line:
+    # write a per-case copy of the testbench with GATE, MF, the data paths and NS baked in.
+    set fin [open $here/tb_saif.sv r]; set tb [read $fin]; close $fin
+    set tb [string map [list "parameter int GATE = 1, MF = 1;" "parameter int GATE = $g, MF = $m;" \
+        {wdir = ".";} "wdir = \"$here/saif/$case\";" \
+        {sdir = ".";} "sdir = \"$here/saif/samples\";" \
+        {ns = 10;} "ns = $NS;"] $tb]
+    set fo [open $sim/tb_saif_case.sv w]; puts $fo $tb; close $fo
+    set rtl_case [list $root/rtl/hush_arith.sv $root/rtl/hush_layer.sv $here/top_hush.sv $sim/tb_saif_case.sv]
     if {[catch {
-        exec -ignorestderr {*}[auto_execok xvlog] -sv {*}$rtl > $sim/xvlog.log
-        exec -ignorestderr {*}[auto_execok xelab] tb_saif -generic_top "GATE=$g" -generic_top "MF=$m" -debug typical -s snap_$case > $sim/xelab.log
-        exec -ignorestderr {*}[auto_execok xsim] snap_$case -tclbatch $sim/saif.tcl \
-            -testplusarg WDIR=$here/saif/$case -testplusarg SDIR=$here/saif/samples -testplusarg NS=$NS -log $out/sim_$case.log
-    } err]} { note "$case simulation FAILED: $err"; cd $here; continue }
+        exec -ignorestderr {*}[auto_execok xvlog] -sv {*}$rtl_case > $sim/xvlog_out.log
+        exec -ignorestderr {*}[auto_execok xelab] tb_saif -debug typical -s snap_$case > $sim/xelab_out.log
+        exec -ignorestderr {*}[auto_execok xsim] snap_$case -tclbatch $sim/saif.tcl -log $out/sim_$case.log
+    } err]} { note "$case simulation FAILED: $err (see $sim/xvlog.log, $sim/xelab.log, $out/sim_$case.log)"; cd $here; continue }
+    if {![file exists $sim/act.saif]} { note "$case: no SAIF written (see $out/sim_$case.log)"; cd $here; continue }
     open_checkpoint $root/out_$build/routed.dcp
     if {[catch {read_saif -strip_path tb_saif/u_top $sim/act.saif} err]} { note "$case read_saif FAILED: $err" }
     report_power -file $out/power_saif_$case.rpt
