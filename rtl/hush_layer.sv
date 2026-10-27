@@ -28,6 +28,7 @@ module hush_layer #(
     parameter int GATE     = 1,       // 1 = HUSH, 0 = BASE (dense output side)
     parameter int MF       = 0,       // 1 = mean-field hibernation for asleep sub-blocks
     parameter int NEV      = 1024,    // event memory depth
+    parameter int NSMP     = 1,       // samples stored on chip (power runs); sample s uses ts_mem[s*(T+1) +: T+1]
     parameter W_FILE = "w.hex",
     parameter P_FILE = "p.hex",
     parameter Q_FILE = "q.hex",
@@ -37,6 +38,7 @@ module hush_layer #(
     input  logic                 clk,
     input  logic                 rst,
     input  logic                 start,
+    input  logic [15:0]          smp,              // sample select (power runs with NSMP > 1); 0 otherwise
     output logic                 done,
     // output spikes of one block at one timestep
     output logic                 out_valid,
@@ -69,7 +71,7 @@ module hush_layer #(
     logic [8*C-1:0]     p_mem  [M];
     logic [8*C-1:0]     q_mem  [M];
     logic [15:0]        ev_mem [NEV];
-    logic [15:0]        ts_mem [T+1];
+    logic [15:0]        ts_mem [NSMP*(T+1)];
     (* ram_style = "distributed" *) logic [32*VB-1:0] st_mem [G];
     logic [G-1:0]       st_valid;                 // block written since start; unwritten blocks read as 0
 
@@ -92,6 +94,11 @@ module hush_layer #(
         leakf = v - (v >>> K);
     endfunction
 
+    // sample base in ts_mem, captured at start (NSMP = 1: always 0)
+    localparam int TSW = $clog2(NSMP*(T+1) + 1);
+    localparam int SW  = (NSMP > 1) ? $clog2(NSMP) : 1;
+    logic [TSW-1:0] tsb;
+
     // ---------------- envelope unit (ETU) ----------------
     logic signed [AB-1:0] dacc [2][C];
     logic signed [AB-1:0] qacc [2][C];
@@ -113,8 +120,8 @@ module hush_layer #(
             if (consume_bank_valid) bank_ready[consume_bank] <= 1'b0;
             if (etu_go && !etu_busy) begin
                 etu_busy <= 1;
-                etu_ptr  <= ts_mem[etu_t][EAW-1:0];
-                etu_end  <= ts_mem[etu_t + 1][EAW-1:0];
+                etu_ptr  <= EAW'(ts_mem[tsb + etu_t]);
+                etu_end  <= EAW'(ts_mem[tsb + etu_t + 1]);
                 for (int c = 0; c < C; c++) begin dacc[etu_bank][c] <= '0; qacc[etu_bank][c] <= '0; end
             end else if (etu_busy) begin
                 // stage 0: read event index
@@ -239,6 +246,7 @@ module hush_layer #(
             case (st)
                 S_IDLE: if (start) begin
                     t <= 0; cur_bank <= 0; done <= 0;
+                    tsb <= TSW'(smp) * TSW'(T + 1);
                     st_valid <= '0;                                  // new inference: V = 0, R = 0
                     for (int c = 0; c < C; c++) R[c] <= '0;
                     if (GATE || MF) begin etu_t <= 0; etu_bank <= 0; etu_go <= 1; st <= S_ETU0; end
@@ -250,8 +258,8 @@ module hush_layer #(
                         gate <= gate_next;
                         for (int c = 0; c < C; c++) qs_cur[c] <= qacc[cur_bank][c];
                         cnt_awake_sub <= cnt_awake_sub + $countones(gate_next);
-                        pe_start <= ts_mem[t][EAW-1:0];
-                        pe_end   <= ts_mem[t + 1][EAW-1:0];
+                        pe_start <= EAW'(ts_mem[tsb + t]);
+                        pe_end   <= EAW'(ts_mem[tsb + t + 1]);
                         consume_bank_valid <= (GATE || MF);
                         consume_bank       <= cur_bank;
                         // launch ETU for t+1 into the other bank, overlapped with this step's block loop

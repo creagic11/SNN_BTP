@@ -18,7 +18,7 @@ module tb_hush_layer;
     hush_layer #(.M(M), .N(N), .T(T), .K(K), .THETA(THETA), .THETA_H(THETA_H), .GATE(GATE), .MF(MF), .NEV(NEV),
                  .W_FILE("w.hex"), .P_FILE("p.hex"), .Q_FILE("q.hex"),
                  .EV_FILE("ev.hex"), .TS_FILE("ts.hex")) dut (
-        .clk, .rst, .start, .done, .out_valid, .out_t, .out_blk, .out_spk, .v_valid, .v_data,
+        .clk, .rst, .start, .smp(16'd0), .done, .out_valid, .out_t, .out_blk, .out_spk, .v_valid, .v_data,
         .cnt_cycles(cyc), .cnt_col_reads(colr), .cnt_word_reads(wordr), .cnt_awake_sub(awk));
 
     int fd;

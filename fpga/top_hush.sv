@@ -5,7 +5,8 @@
 // datapath cannot be optimised away.
 module top_hush #(
     parameter int M = 578, parameter int N = 256, parameter int T = 100, parameter int K = 4,
-    parameter int THETA = 64, parameter int GATE = 1, parameter int MF = 1, parameter int NEV = 4096
+    parameter int THETA = 64, parameter int GATE = 1, parameter int MF = 1, parameter int NEV = 4096,
+    parameter int NSMP = 1        // > 1: step through NSMP on-chip samples, one per inference (power runs)
 ) (
     input  logic       clk100,
     input  logic       cpu_resetn,
@@ -22,8 +23,9 @@ module top_hush #(
     logic [32*16-1:0] v_data;
     logic [47:0] cyc, colr, wordr, awk;
 
-    hush_layer #(.M(M), .N(N), .T(T), .K(K), .THETA(THETA), .THETA_H(THETA), .GATE(GATE), .MF(MF), .NEV(NEV))
-        u_layer (.clk(clk100), .rst, .start, .done, .out_valid, .out_t, .out_blk, .out_spk, .v_valid, .v_data,
+    logic [15:0] smp;
+    hush_layer #(.M(M), .N(N), .T(T), .K(K), .THETA(THETA), .THETA_H(THETA), .GATE(GATE), .MF(MF), .NEV(NEV), .NSMP(NSMP))
+        u_layer (.clk(clk100), .rst, .start, .smp, .done, .out_valid, .out_t, .out_blk, .out_spk, .v_valid, .v_data,
                  .cnt_cycles(cyc), .cnt_col_reads(colr), .cnt_word_reads(wordr), .cnt_awake_sub(awk));
 
     // autorun: pulse start whenever the layer is idle or done
@@ -31,14 +33,17 @@ module top_hush #(
     logic        done_q;
     logic [5:0]  spk_x;
     always_ff @(posedge clk100) begin
-        if (rst) begin start <= 1'b0; n_inf <= '0; done_q <= 1'b0; spk_x <= '0; end
+        if (rst) begin start <= 1'b0; n_inf <= '0; done_q <= 1'b0; spk_x <= '0; smp <= '0; end
         else begin
             done_q <= done;
             // hush_layer leaves DONE on a start pulse (DONE -> IDLE) and needs start again in IDLE to run, and
             // done stays high in IDLE; so hold start while done is high (fix 28 Oct: the old rising-edge rule
             // ran a single inference and then idled).
             start  <= done || (n_inf == 0 && !start);
-            if (done && !done_q) n_inf <= n_inf + 1'b1;
+            if (done && !done_q) begin
+                n_inf <= n_inf + 1'b1;
+                smp   <= (smp == 16'(NSMP - 1)) ? 16'd0 : smp + 16'd1;   // next sample, captured at the next start
+            end
             if (out_valid) spk_x <= spk_x ^ out_spk[5:0] ^ out_spk[31:26] ^ v_data[5:0];
         end
     end

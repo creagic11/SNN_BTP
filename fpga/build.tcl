@@ -9,13 +9,15 @@ set M [expr {[llength $argv] > 4 ? [lindex $argv 4] : 578}]
 set N [expr {[llength $argv] > 5 ? [lindex $argv 5] : 256}]
 set T [expr {[llength $argv] > 6 ? [lindex $argv 6] : 100}]
 set K [expr {[llength $argv] > 7 ? [lindex $argv 7] : 4}]
+set NSMP [expr {[llength $argv] > 8 ? [lindex $argv 8] : 1}]
+set NEV  [expr {[llength $argv] > 9 ? [lindex $argv 9] : 4096}]
 set here [file dirname [file normalize [info script]]]
 file mkdir $outdir
 cd $hexdir
 read_verilog -sv [list $here/../rtl/hush_arith.sv $here/../rtl/hush_layer.sv $here/top_hush.sv]
 read_xdc $here/nexys_a7_100t.xdc
 synth_design -top top_hush -part xc7a100tcsg324-1 -generic M=$M -generic N=$N -generic T=$T -generic K=$K \
-             -generic GATE=$gate -generic MF=$mf -flatten_hierarchy rebuilt
+             -generic GATE=$gate -generic MF=$mf -generic NSMP=$NSMP -generic NEV=$NEV -flatten_hierarchy rebuilt
 report_utilization -hierarchical -file $outdir/util_synth_hier.rpt
 opt_design
 place_design
