@@ -1,3 +1,5 @@
+> **Superseded (27 Oct 2026)** by the Vivado 2024.1 place-and-route results in `results/vivado_2024_1/` (BASE 1,314 LUT, HUSH-MF 10,960 LUT, 0 DSP, all at 100 MHz). Kept for history.
+
 # T2.5 Resource estimate with open-source synthesis (Yosys 0.70 `synth_xilinx -family xc7`)
 
 Layer: N-MNIST hidden layer, M = 578 inputs, N = 256 neurons, T = 100, event buffer 4,096 entries, INT8 weights, INT16 state, 26-bit accumulators. Script: `synth/synth_nmnist_hush_mf.ys` (run with `yowasp-yosys`; needs the .hex files in the working directory). These are pre-Vivado estimates (no retiming, no LUTRAM mapping of the state array); Vivado numbers will replace them.

@@ -1,19 +1,57 @@
 # HUSH v2 — Progress Log
 
-This file is the resume point. If a session ends, start from the task marked **IN PROGRESS**, then the first **TODO** below it.
+This file is the resume point. If a session ends, read "Current state", then resume at the task marked **IN PROGRESS** or, if none, the first **TODO** in the "Paper A track" table.
 
 - Proposal: `docs/proposal_v2.md` (live copy: Claude Doc "HUSH v2 — Revised BTP Research Proposal")
 - Study checklist for the defense: `study.md`
 - Zotero collection: "HUSH – Literature" (user library 22138861, collection key FA5TR3KP)
 - Compute available in the cloud workspace: 2 CPU cores, 7 GB RAM, no GPU
 
-Status keys: DONE · IN PROGRESS · TODO · BLOCKED
+Status keys: DONE · IN PROGRESS · TODO · BLOCKED · PAUSED · DEFERRED
 
 ## Current state
 
-- **Last updated:** 2026-10-26
-- **Now working on:** comparison report v1 done (27 Oct); next T3.2 SAIF power for v2. Phase 3 (Vivado on the user's laptop). Scope decided 27 Oct: option 1 first, option 2 when a GPU appears. Before that: waiting for the user's scope decision (27 Oct) after SHD delay-path results (GA not met; see last log lines and `docs/headroom_model.md`). Earlier: Tier-1 P1 pivot to FF + axonal delays (user approved 26 Oct). Running `shd_delay_bn` (90 epochs); next: fold BN (`scripts/fold_bn.py`), gated co-training from the folded net. Earlier: P1.1 done. P1.2: SHD recurrent adLIF baseline 86.4% final-epoch (`results/shd_rec_umax`; 87.0% was best-test, not admissible); augmentation run `shd_rec_umax_aug` in progress; then gated co-training (`scripts/sweep_rec_gated.sh`, set INIT to the best baseline and add `--readout umax`). Seed sweep T1.6 paused (SHD-FF seeds deprioritised; N-MNIST seeds to re-run when CPU is free).
+- **Last updated:** 2026-10-27 (23:59 IST)
+- **Active plan:** Paper A track (decided 27 Oct) — see the table below. Resume at the first TODO in "Paper A track".
+- **Done today:** Vivado 2024.1 P&R of BASE / HUSH-drop / HUSH-MF, all meeting 100 MHz on the XC7A100T (`results/vivado_2024_1/`); comparison report v1 against state-of-the-art FPGA SNN accelerators (Claude Doc, link below).
+- **Next:** A3 — SAIF (activity-based) power: prepare an xsim script for the laptop; the user runs one command.
+- **Waiting on the user:** GPU access (unknown; gates Paper B); whether a Nexys A7-100T board + USB power meter is available (gates A7).
+- **Comparison report v1:** "HUSH vs State of the Art — Comparison Report (v1)", https://claude.ai/artifact/PHRvGNYWhkn9HiMooEmfsR
+- **Laptop build folder:** `C:\Users\Anubhav\hush_fpga` (granted to the session; Vivado 2024.1; old reports in `old_runs/`). The device shell is a Linux VM: it can read/write the folder but cannot launch Windows Vivado, so the user runs Vivado commands.
 - **GitHub:** pushes to `creagic11/SNN_BTP` work (enabled 2026-10-24).
+
+## Decisions log
+
+| Date | Decision | Why |
+| --- | --- | --- |
+| 25 Oct | Tier-1 plan written (P1–P6, gates GA–GE) | user asked how to reach tier-1 (`docs/tier1_plan.md`) |
+| 26 Oct | Recurrent envelope drain: duplicated dual-port P_rec BRAM + overlap with next block + awake-first scheduling (user chose option b) | tail 6.6% → 0.46% (`docs/design/recurrent_envelope_drain.md`) |
+| 26 Oct | Pivot SHD path from recurrent adLIF to FF LIF + learned axonal delays (user approved) | recurrent adLIF gates poorly (reads 0.98; headroom 0.09θ) |
+| 27 Oct | **Scope: option 1 now (Paper A, tier-2), option 2 later (Paper B, tier-1) when a GPU is available**; do GPU-independent work first | SHD gating costs accuracy (headroom model); no GPU yet |
+| 27 Oct | Report results against published state-of-the-art works on every axis (accuracy, latency, energy, power, resources, safety), at current accuracy; use the report to justify a GPU and a Nexys A7-100T board | professor's instruction relayed by the user |
+| 27 Oct | Three RTL timing fixes (pipelined R refresh, two-stage finalize, balanced two-stage max tree) | HUSH failed 100 MHz (WNS −12.9 ns); all variants now close |
+
+## Paper A track (tier-2: guarantee + headroom theory + measured hardware; target TCAS-II / DATE)
+
+| ID | Task | Status | Output / note |
+| --- | --- | --- | --- |
+| A1 | Vivado P&R of BASE, HUSH-drop, HUSH-MF at 100 MHz | DONE | `results/vivado_2024_1/` |
+| A2 | Comparison report v1 vs state of the art | DONE | Claude Doc (link above) |
+| A3 | SAIF power over ≥ 100 N-MNIST samples (xsim on the laptop) → report v2 | TODO (next) | replaces vectorless power |
+| A4 | Spiker+ on the same device and topology (external apples-to-apples baseline) | TODO | Spiker+ is public, no LICENSE: baseline use only |
+| A5 | 3 seeds per N-MNIST point (gentle, aggressive, ungated) | TODO | CPU, ~1 h per run |
+| A6 | Raise N-MNIST gated accuracy towards ≥ 97% (gentler λ, wider hidden layer) | TODO | CPU-limited; GPU would speed it up |
+| A7 | Board ΔP measurement, BASE vs HUSH | BLOCKED | needs Nexys A7-100T + meter |
+| A8 | Paper A draft (figures: headroom table, safety table, hardware table, SOTA table) | TODO | |
+
+## Paper B track (tier-1, needs GPU)
+
+| ID | Task | Status |
+| --- | --- | --- |
+| B1 | Conv layers in golden model, trainer and RTL; envelope per output channel × spatial tile; extend Theorem 1 | TODO (golden + proof can start on CPU) |
+| B2 | DVS-Gesture with the gate in the loop at slow leaks (headroom model) | BLOCKED (GPU) |
+| B3 | Multi-array engine with awake-block queue (former P4) | TODO (no GPU needed) |
+| B4 | Full paper (ICCAD 2027 / TCAD) extending Paper A | TODO |
 
 ## Phase 0 — Setup, literature, feasibility (target gate G0: 8 Nov 2026)
 
@@ -60,7 +98,7 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 | T1.1 | Gate-in-the-loop trainer (STE on g_c, exceedance + envelope-drive losses, mean-field option) | DONE |
 | T1.2 | θ_h sweep, accuracy vs ρ Pareto per dataset | TODO |
 | T1.3 | N-MNIST and SHD feed-forward baselines | DONE (SHD 70.8%, N-MNIST 97.59%) |
-| T1.6 | 3 seeds per Pareto point (SHD, N-MNIST); gentler N-MNIST points | IN PROGRESS (`scripts/sweep_seeds.sh`, resumable: re-run it to continue) |
+| T1.6 | 3 seeds per Pareto point (SHD, N-MNIST); gentler N-MNIST points | PAUSED 26 Oct (SHD-FF seeds dropped; N-MNIST seeds moved to A5) |
 | T1.7 | Bin-size sweep (SHD T=500/1000, N-MNIST T=200) | TODO |
 | T1.8 | Energy model: reads + cycles + envelope overhead → dynamic energy estimate | TODO |
 | T1.4 | G1 report | TODO |
@@ -93,23 +131,23 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED
 | T4.2 | Sweeps: activity, B_env, θ_h, T | TODO |
 | T5.1 | TCAS-II brief draft | TODO |
 
-## Tier-1 plan (25 Oct 2026)
+## Tier-1 plan (25 Oct 2026) — superseded in scope on 27 Oct by the Paper A / Paper B tracks above
 
 See `docs/tier1_plan.md` and the Claude Doc. Phases P1–P6 with gates GA–GE replace Phases 3–5 above once approved.
 
 ## Tier-1 Phase P1 — competitive workloads and near-lossless gating (gate GA: 22 Nov 2026)
 
-GA criterion: SHD recurrent adLIF ≥ 90% ungated; HUSH ≤ 0.5 pt loss at ≥ 2× fewer reads; 3 seeds.
+GA criterion: SHD recurrent adLIF ≥ 90% ungated; HUSH ≤ 0.5 pt loss at ≥ 2× fewer reads; 3 seeds. **Outcome (27 Oct): not met** — best SHD 87.8% ungated (delays); gating costs accuracy on high-accuracy SHD nets (headroom model).
 
 | ID | Task | Status | Output |
 | --- | --- | --- | --- |
 | P1.1 | Golden model for recurrent adLIF + headroom envelope; Theorem 1' + property tests | DONE | `golden/hush_rec.py`, `tests/test_hush_rec.py`, `docs/theorem1_prime.md` |
-| P1.2 | Integer adLIF trainer (QRecAdLIF, QRSNN), bit-exact check, SHD baselines | IN PROGRESS | `train/qsnn.py`, `scripts/check_bitexact_rec.py`, `scripts/sweep_rec.sh` |
+| P1.2 | Integer adLIF trainer (QRecAdLIF, QRSNN), bit-exact check, SHD baselines | DONE — 83.1% (val protocol) | `train/qsnn.py`, `scripts/check_bitexact_rec.py`, `scripts/sweep_rec*.sh` |
 | P1.3 | Learned grouping | DONE — negative result (absorbed by co-training) | `scripts/regroup.py` |
-| P1.4 | Gated co-training of the recurrent model (mean-field), θ_h / λ sweep | TODO | |
-| P1.5 | Clamped low-rank hibernation (any asleep drive, clamped to D_c) | IN PROGRESS — golden + proof done; post-hoc study shows it must be co-trained | `golden/hush_rec.py` (`lr<r>`, `exact`), `scripts/hibernation_ceiling.py` |
-| P1.6 | Distillation from the ungated teacher into the gated student | TODO | |
-| P1.7 | 3 seeds of the chosen points (SHD rec + N-MNIST) | TODO | |
+| P1.4 | Gated co-training (recurrent, then delay nets) | DONE — negative: recurrent reads 0.98; delays k = 2 reads ≥ 0.94; k = 4 reads 0.77 at −6.7 pt | `docs/headroom_model.md` |
+| P1.5 | Clamped low-rank hibernation (any asleep drive, clamped to D_c) | DONE (golden + proof + trainer lr1); co-trained comparison deferred | `golden/hush_rec.py` (`lr<r>`, `exact`), `scripts/hibernation_ceiling.py` |
+| P1.6 | Distillation from the ungated teacher into the gated student | DEFERRED (scope change 27 Oct) | |
+| P1.7 | 3 seeds of the chosen points | MOVED to A5 (N-MNIST) | |
 
 ### P1 subtask log
 

@@ -73,9 +73,9 @@ Work through this in order. Each item says what you must be able to do at the bo
 
 ## Phase 2 — Microarchitecture and verification (added at T2.x)
 - [ ] Draw the datapath from memory, including the overlap of envelope(t+1) with PE(t).
-- [ ] Derive the cycle model C_HUSH = Σ max(n_{t+1}, A_t·n_t) + c and the speedup min(G, 1/ρ).
+- [ ] Derive the exact cycle model (`rtl/sim/cycle_model.py`): awake block 4 + (n_t + 3), asleep block 3, COMBINE stalls until the envelope bank for t is ready; and the speedup bound min(G, 1/ρ).
 - [ ] Explain why HUSH is never slower in cycles than BASE but can cost more energy at ρ ≈ 1.
-- [ ] Walk through `rtl/hush_layer.sv`: ETU 3-stage pipeline and double-buffered banks; combine; block loop states SEL/LOAD/RUN/FIN and the 2-cycle asleep pass; why accumulators are 26 bits and the clip happens once.
+- [ ] Walk through `rtl/hush_layer.sv`: ETU 3-stage pipeline and double-buffered banks; combine; block loop states SEL/LOAD/RUN/FIN/FIN2 (two-stage finalize since 27 Oct) and the 3-cycle asleep pass; the R refresh through a registered word and a balanced two-stage max tree; why accumulators are 18 bits (|D| ≤ 578 × 127 < 2^17) and the clip happens once.
 - [ ] How the RTL is checked bit-exact: `rtl/sim/run_case.py` compares every block write-back (spikes + state) and the counters with the golden model.
 - [ ] Explain bounded model checking vs k-induction, and what the SymbiYosys proof covers.
 
@@ -95,7 +95,7 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] Negative results you can quote: signed-D gate gives no gain on co-trained FF nets; learned grouping is absorbed by co-training (tied maxima 11% → 54%).
 - [ ] Lemma 3: the reset-path BPTT factor 1 − θσ′, and why bounding it (θ/2) still trained worse than θ/4: a stability bound is not a learning recipe. Be ready to show the round-1 ablation table.
 - [ ] Clamped hibernation: why min(A_i, D_c) makes any asleep-drive approximation safe; why a better post-hoc approximation can lower accuracy (the trained net is the gated net).
-- [ ] Readouts: mean-U vs max-over-time (Cramer et al.); why max-over-time is a one-register-per-class integer decision and trained smoothly (82.5 → 87.0%).
+- [ ] Readouts: mean-U vs max-over-time (Cramer et al.); why max-over-time is a one-register-per-class integer decision and trained smoothly. Honest numbers: recurrent adLIF 83.1% under the validation protocol (the 87.0% seen once was a best-*test* epoch and is not admissible — know why).
 - [ ] Recurrent envelope drain: why spikes are final only at BLK_FIN (input-serial dataflow, signed weights, 0.40 false crossings per spike), why a wrong negative proxy row is unsafe, and the overlap + dual-port + awake-first schedule (tail 6.6% → 0.46%).
 - [ ] Why HUSH fails on recurrent adLIF: the gate exploits hyperpolarisation headroom (FF: 9.7θ; recurrent adLIF: 0.09θ); subthreshold adaptation and recurrent excitation keep the top neuron of each sub-block near threshold. Quote the gated co-training table (reads 0.98).
 - [ ] Axonal delays: why per-input delays keep Theorem 1 unchanged (delay line on the event stream) while per-synapse delays (DCLS) expand the envelope inputs to (input, delay) taps; hardware cost = dmax-slot event ring buffer per layer input.
@@ -105,6 +105,15 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] The four-network headroom table and the k = 4 controls (gate alone −6.7 pt vs rate reg alone −0.5 pt): be ready to say exactly when HUSH pays and when it does not.
 - [ ] SHD reference numbers: SE-adLIF 1 layer 37.5k params 94.6%, 2 layers 95.8%, LIF 90.3% (float, no hardware).
 
+## Comparison against the state of the art (added 27 Oct — Paper A)
+- [ ] The four levels of comparison and what each proves: internal ablation (BASE vs HUSH), competing ideas in the same setting (SITRA-/Early-style), same-device external baseline (Spiker+, to do), published SOTA table.
+- [ ] Normalised metrics and why raw LUT/power numbers across papers mislead: energy per inference, energy per (dense-equivalent) SOP, throughput per kLUT, latency.
+- [ ] Our hardware table by heart (Vivado 2024.1, XC7A100T, 100 MHz met): BASE 1,314 LUT / 113 mW / 294 µs / 33.2 µJ; HUSH-MF 10,960 LUT / 6,177 FF / 54 RAMB36 + 3 RAMB18 / 0 DSP / 190 mW; gentle 95.32% / 149 µs / 28.4 µJ (1.97×, −15%); aggressive 92.72% / 95 µs / 18.1 µJ (3.09×, −46%).
+- [ ] The N-MNIST SOTA row: Wu, Song & So (FPT 2023), ZCU102, 95.76%, 50 ms, 0.33–0.37 W (≈ 17.5 mJ). Our gentle point: ≈ 335× lower latency, ≈ 600× lower energy, 4–15× fewer LUTs — and why those ratios reflect different designs and devices, not HUSH alone.
+- [ ] MNIST-class rows for scale: Ansari & Wielgosz 2026 (Artix-7 200T, 96.7%, 82 µs, ≈ 27.6 µJ), Spiker-LL 2026 (39 µJ), Spiker+ 2024 (780 µs, ≈ 140 µJ). SHD rows: Chen et al. 2025 93.4% (delays, 9.6 ms), Spiker+ 72.99%.
+- [ ] Our honest weak points and the answer to each: accuracy (−2.3 to −4.9 pt on N-MNIST; SHD trails delay designs) → GPU; area (8× BASE LUTs) → still 17% of a 100T; vectorless power → SAIF next, board when available.
+- [ ] Why the GPU and the Nexys A7-100T are needed, in one sentence each (accuracy gap / measured power).
+
 ## Presentation drills
 - [ ] 3-minute elevator pitch with one figure.
 - [ ] Answer: "Isn't this just SnaPEA for SNNs?"
@@ -113,3 +122,5 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] Answer: "Your gated network is not the network you trained — so what is your accuracy claim?"
 - [ ] Answer: "Why should energy fall if the envelope unit runs every timestep?"
 - [ ] Answer: "Did you try clustering neurons into better groups?" (yes: no gain after co-training, and why)
+- [ ] Answer: "Your HUSH design is 8× the LUTs of BASE — where is the win?" (latency 2–3× and energy −15 to −46% at 17% of the device; area is fixed, savings scale with inference count)
+- [ ] Answer: "Your energy numbers are vectorless estimates." (yes, conservative for HUSH; SAIF v2 and board measurement planned — say exactly what each adds)

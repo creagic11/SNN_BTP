@@ -18,3 +18,5 @@ Properties (assertions on every reachable state):
 Run: `sby -f fv_hush.sby prove_mf` (needs SymbiYosys at tag `yosys-0.33` to match Yosys 0.33; SMT engines boolector 1.5 and z3 4.8 did not finish here).
 
 Scope note: the formal proof covers the safety arithmetic and the resync recursion for one sub-block. The full layer (memories, sequencing, counters) is checked by bit-exact simulation against the golden model (`rtl/sim/regress.py`).
+
+Note (27 Oct 2026, timing fixes). `hush_layer` now registers the saturated pre-reset potential U (output `u` of `hush_lane`) and the awake bits at FIN, and applies spike = awake ∧ (U ≥ θ) and Vnew = U − θ·spike in a second stage (FIN2). The formula is identical to `hush_lane`'s; the proven safety arithmetic (U and the envelope) is unchanged. R is refreshed from the registered word through a two-stage max tree, so it lands 2 cycles after FIN2 and is first read ≥ 3 cycles after it, at COMBINE. Bit-exact simulation covers both changes (40/40 random + N-MNIST in all modes). The formal harness still instantiates `hush_lane` / `hush_envelope` directly.

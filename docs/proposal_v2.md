@@ -1,3 +1,5 @@
+> **Status note (27 Oct 2026):** this is the 24 Oct proposal. Scope has since changed: see `docs/tier1_plan.md` (update of 27 Oct) and the Paper A / Paper B tracks in `progress.md`.
+
 # HUSH v2 — Revised BTP Research Proposal
 
 Oct 15, 2026 · Anubhav Jha (23EE10091), IIT Kharagpur · Supervisor: Prof. Rajat Shubhra Chakraborty

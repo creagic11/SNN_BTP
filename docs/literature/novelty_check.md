@@ -62,3 +62,19 @@ The Spiker+ framework is public at [github.com/smilies-polito/Spiker](https://gi
 | **HUSH (ours, 26 Oct)** | recurrent adLIF 700-256r-20 INT8, SHD 83.1% (val protocol) | XC7A100T (target) | v1 layer: 10.9k LUT / 1 DSP / 36 RAMB36 + 33 RAMB18 (FF, Yosys) | – | provable block hibernation (Theorem 1′) |
 
 Reading: credible SHD FPGA work now reports 88–93%, and the strongest SNN result uses delays. At 83% we beat Spiker+ (73%) but trail the delay-based designs by about 10 points. Accuracy alone would draw a reviewer's objection.
+
+## N-MNIST and MNIST-class FPGA landscape (added 27 Oct 2026, comparison report v1)
+
+Energy marked * is power × latency computed by us from the paper's own numbers.
+
+| Paper | SNN Model | FPGA Target | LUTs/DSPs/BRAM | Power | Key Innovation |
+| --- | --- | --- | --- | --- | --- |
+| [Wu, Song & So](https://web.ece.hku.hk/~hso/Publications/wu_fpt2023.pdf), FPT 2023 | event-driven SNN, N-MNIST 95.76% (also Poker-DVS, DVS-Gesture); 50 ms per sample | ZCU102 (UltraScale+) | 39.7k–165k / 0 / 0 | 0.33–0.37 W (≈ 17.5 mJ*) | asynchronously triggered neurons |
+| Row "[9]" in Wu et al.'s Table I | N-MNIST 82.32% | XC7Z045 | 10.1k / 32 / 131 | 0.94 W | (as reported by Wu et al.; label ambiguous in source) |
+| [Ansari & Wielgosz](https://arxiv.org/abs/2608.00595), arXiv 2026 | 784-64-10 LIF, MNIST 96.70%, T = 16; 82 µs | Artix-7 XC7A200T | 16.0k / 0 / 0 | 0.336 W (≈ 27.6 µJ*) | time-multiplexed neurons, pipelined readout |
+| [Spiker-LL](https://arxiv.org/abs/2605.18003), arXiv 2026 | 784-200-10, MNIST 90% (8-bit); 120 µs | PYNQ-Z2 | 8.5k / 0 / 46 | 0.326 W (39 µJ) | on-chip adaptive local learning |
+| [Spiker+](https://arxiv.org/abs/2401.01141), 2024 | MNIST 96.83%, 780 µs; SHD 72.99%, 540 µs | Xilinx 7-series (Z7-20 for SHD) | 7.6k logic cells / – / 18 (MNIST); 18.3k / – / 51 (SHD) | 0.18 W (≈ 140 µJ*); 0.43 W (≈ 232 µJ*) | Python-to-VHDL SNN generator |
+| **HUSH-MF (ours)**, 27 Oct 2026 | 578-256-10 integer LIF, N-MNIST 95.32% (gentle) / 92.72% (aggressive); 149 / 95 µs | Artix-7 XC7A100T, 100 MHz met | 10,960 / 0 / 54 RAMB36 + 3 RAMB18 | 0.190 W vectorless (28.4 / 18.1 µJ) | provably safe block hibernation (0 suppressed spikes) |
+| BASE (ours, gate off) | same network, 97.59%; 294 µs | XC7A100T, 100 MHz met | 1,314 / 0 / 20 + 2 | 0.113 W vectorless (33.2 µJ) | identical datapath without HUSH |
+
+Reading: on N-MNIST, HUSH's gentle point matches the best reported FPGA accuracy at ≈ 335× lower latency and ≈ 600× lower energy, with fewer LUTs. The designs and devices differ widely, so only the BASE-vs-HUSH rows isolate HUSH's own contribution. Surveys used to find rows: arXiv 2502.20415 and 2407.08356; the TCAS-I 2025 DVS accelerator (N-MNIST) still needs its resource table extracted.
