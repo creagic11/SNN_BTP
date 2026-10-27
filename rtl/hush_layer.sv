@@ -179,12 +179,19 @@ module hush_layer #(
             .lv(lv[l]), .u(usat[l]), .spk(spk[l]), .vnew(vnew[l]));
     end
 
+    // R refresh is pipelined (timing fix, 27 Oct): FIN registers the new state word, and the 8-input
+    // max trees run from that register one cycle later. R is first read at the next step's COMBINE,
+    // which is >= 2 cycles after any FIN (FIN -> SEL(b==G) -> STEP_END -> COMBINE), so the cycle count
+    // and every output are unchanged.
+    logic [32*VB-1:0]        fin_word;
+    logic                    fin_v;
+    logic [$clog2(G+1)-1:0]  fin_b;
     logic signed [VB-1:0] rnew [4];
     always_comb begin
         for (int s = 0; s < 4; s++) begin
-            rnew[s] = vnew[8*s];
+            rnew[s] = $signed(fin_word[VB*(8*s) +: VB]);
             for (int l = 1; l < 8; l++)
-                if (vnew[8*s + l] > rnew[s]) rnew[s] = vnew[8*s + l];
+                if ($signed(fin_word[VB*(8*s + l) +: VB]) > rnew[s]) rnew[s] = $signed(fin_word[VB*(8*s + l) +: VB]);
         end
     end
 
@@ -202,10 +209,12 @@ module hush_layer #(
             st <= S_IDLE; done <= 0; out_valid <= 0; v_valid <= 0; etu_go <= 0;
             consume_bank_valid <= 0;
             cnt_cycles <= 0; cnt_col_reads <= 0; cnt_word_reads <= 0; cnt_awake_sub <= 0;
-            st_valid <= '0;
+            st_valid <= '0; fin_v <= 0;
             for (int c = 0; c < C; c++) R[c] <= '0;
         end else begin
             out_valid <= 0; v_valid <= 0; etu_go <= 0; consume_bank_valid <= 0;
+            fin_v <= 0;
+            if (fin_v) for (int s = 0; s < 4; s++) R[4*fin_b + s] <= rnew[s];
             if (st != S_IDLE && st != S_DONE) cnt_cycles <= cnt_cycles + 1'b1;
             case (st)
                 S_IDLE: if (start) begin
@@ -263,7 +272,7 @@ module hush_layer #(
                     for (int l = 0; l < 32; l++) begin word[VB*l +: VB] = vnew[l]; spk_w[l] = spk[l]; end
                     st_mem[b] <= word;
                     st_valid[b] <= 1'b1;
-                    for (int s = 0; s < 4; s++) R[4*b + s] <= rnew[s];
+                    fin_word <= word; fin_v <= 1'b1; fin_b <= b;
                     out_valid <= 1; out_t <= 16'(t); out_blk <= 16'(b); out_spk <= spk_w;
                     v_valid <= 1; v_data <= word;
                     b <= b + 1'b1;
