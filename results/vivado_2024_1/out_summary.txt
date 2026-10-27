@@ -1,0 +1,7 @@
+vivado: 2024.1
+base OK
+hush_drop OK
+hush_mf OK
+vivado: 2024.1
+hush_drop OK
+hush_mf OK

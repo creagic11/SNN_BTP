@@ -80,6 +80,9 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] Explain bounded model checking vs k-induction, and what the SymbiYosys proof covers.
 
 ## Phase 3 — Power methodology (added at T3.x)
+- [ ] Timing closure story: three critical paths found and fixed (lane + serial max in one cycle → pipelined R refresh → two-stage finalize → balanced two-stage max tree); why each change is bit-exact and why R's late write is safe (read ≥ 3 cycles later at COMBINE).
+- [ ] Vectorless vs SAIF vs board power: why vectorless charges HUSH's extra logic and cannot credit skipped reads; why static power (~100 mW) makes energy track latency on the XC7A100T.
+- [ ] Our numbers by heart: BASE 1.3k LUT / 294 µs / 33 µJ; HUSH-MF 11.0k LUT / 149 µs / 28 µJ (gentle), 95 µs / 18 µJ (aggressive); 100 MHz met.
 - [ ] SAIF-based power estimation: what it captures, what it misses.
 - [ ] Differential board measurement: why static power cancels; error bars.
 
