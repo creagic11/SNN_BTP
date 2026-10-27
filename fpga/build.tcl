@@ -1,8 +1,8 @@
 # Non-project Vivado flow for the HUSH layer on XC7A100T-1CSG324C.
 #   vivado -mode batch -source build.tcl -tclargs <hexdir> <outdir> <GATE> <MF> [M N T K]
 # <hexdir> holds w.hex p.hex q.hex ev.hex ts.hex (from rtl/sim/run_case.py write_mems).
-set hexdir [lindex $argv 0]
-set outdir [lindex $argv 1]
+set hexdir [file normalize [lindex $argv 0]]
+set outdir [file normalize [lindex $argv 1]]
 set gate   [lindex $argv 2]
 set mf     [lindex $argv 3]
 set M [expr {[llength $argv] > 4 ? [lindex $argv 4] : 578}]
