@@ -34,7 +34,10 @@ module top_hush #(
         if (rst) begin start <= 1'b0; n_inf <= '0; done_q <= 1'b0; spk_x <= '0; end
         else begin
             done_q <= done;
-            start  <= (done && !done_q) || (n_inf == 0 && !start && !done);
+            // hush_layer leaves DONE on a start pulse (DONE -> IDLE) and needs start again in IDLE to run, and
+            // done stays high in IDLE; so hold start while done is high (fix 28 Oct: the old rising-edge rule
+            // ran a single inference and then idled).
+            start  <= done || (n_inf == 0 && !start);
             if (done && !done_q) n_inf <= n_inf + 1'b1;
             if (out_valid) spk_x <= spk_x ^ out_spk[5:0] ^ out_spk[31:26] ^ v_data[5:0];
         end

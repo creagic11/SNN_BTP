@@ -33,11 +33,13 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED · PAUSED · DEFERRED
 
 ## Paper A track (tier-2: guarantee + headroom theory + measured hardware; target TCAS-II / DATE)
 
+Agreed with the user (28 Oct, 00:19): finish the missing Paper A tasks except the board measurement, in this order — (1) A3 SAIF power [started 28 Oct; ~½ day, user runs Vivado], (2) A4 Spiker+ on the same chip [1–2 days, user runs Vivado], (3) A5 three seeds per N-MNIST point [~1 day CPU], (4) A8 paper draft [2–3 days, user and professor review], (5) A6 raise gated N-MNIST accuracy [~1 day CPU, outcome uncertain]. A7 (board) waits for hardware. Report v2 after A3 for the supervisor meeting.
+
 | ID | Task | Status | Output / note |
 | --- | --- | --- | --- |
 | A1 | Vivado P&R of BASE, HUSH-drop, HUSH-MF at 100 MHz | DONE | `results/vivado_2024_1/` |
 | A2 | Comparison report v1 vs state of the art | DONE | Claude Doc (link above) |
-| A3 | SAIF power over ≥ 100 N-MNIST samples (xsim on the laptop) → report v2 | TODO (next) | replaces vectorless power |
+| A3 | SAIF power over ≥ 100 N-MNIST samples (xsim on the laptop) → report v2 | IN PROGRESS (28 Oct) | replaces vectorless power |
 | A4 | Spiker+ on the same device and topology (external apples-to-apples baseline) | TODO | Spiker+ is public, no LICENSE: baseline use only |
 | A5 | 3 seeds per N-MNIST point (gentle, aggressive, ungated) | TODO | CPU, ~1 h per run |
 | A6 | Raise N-MNIST gated accuracy towards ≥ 97% (gentler λ, wider hidden layer) | TODO | CPU-limited; GPU would speed it up |
