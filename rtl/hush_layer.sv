@@ -146,7 +146,7 @@ module hush_layer #(
 
     // ---------------- main sequencer ----------------
     typedef enum logic [3:0] {S_IDLE, S_ETU0, S_COMBINE, S_BLK_SEL, S_BLK_LOAD, S_BLK_RUN, S_BLK_FIN,
-                              S_SLP_LOAD, S_SLP_FIN, S_STEP_END, S_DONE} state_t;
+                              S_SLP_LOAD, S_SLP_FIN, S_FIN2, S_STEP_END, S_DONE} state_t;
     state_t st;
 
     logic [TW-1:0]           t;
@@ -186,6 +186,18 @@ module hush_layer #(
     logic [32*VB-1:0]        fin_word;
     logic                    fin_v;
     logic [$clog2(G+1)-1:0]  fin_b;
+    // Finalize is two stages (timing fix 2, 27 Oct): stage 1 (BLK_FIN / SLP_FIN) registers the lane's
+    // saturated pre-reset potential U and the awake bits; stage 2 (FIN2) applies spike = awake & (U >= THETA)
+    // and Vnew = U - THETA*spike, exactly hush_lane's formula, then writes back. +1 cycle per block.
+    logic signed [AB-1:0]    u_r [32];
+    logic [31:0]             aw_r;
+    logic signed [VB-1:0]    vnew2 [32];
+    logic                    spk2  [32];
+    always_comb
+        for (int l = 0; l < 32; l++) begin
+            spk2[l]  = aw_r[l] && (u_r[l] >= THETA);
+            vnew2[l] = VB'(u_r[l] - (spk2[l] ? AB'(THETA) : AB'(0)));
+        end
     logic signed [VB-1:0] rnew [4];
     always_comb begin
         for (int s = 0; s < 4; s++) begin
@@ -267,9 +279,16 @@ module hush_layer #(
                     if (pe_ptr == pe_end && !pe_v1 && !pe_v2) st <= S_BLK_FIN;
                 end
                 S_BLK_FIN, S_SLP_FIN: begin
+                    for (int l = 0; l < 32; l++) begin
+                        u_r[l]  <= usat[l];
+                        aw_r[l] <= (st == S_BLK_FIN) && blk_gate[l/8];
+                    end
+                    st <= S_FIN2;
+                end
+                S_FIN2: begin
                     logic [32*VB-1:0] word;
                     logic [31:0] spk_w;
-                    for (int l = 0; l < 32; l++) begin word[VB*l +: VB] = vnew[l]; spk_w[l] = spk[l]; end
+                    for (int l = 0; l < 32; l++) begin word[VB*l +: VB] = vnew2[l]; spk_w[l] = spk2[l]; end
                     st_mem[b] <= word;
                     st_valid[b] <= 1'b1;
                     fin_word <= word; fin_v <= 1'b1; fin_b <= b;
