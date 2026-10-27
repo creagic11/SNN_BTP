@@ -99,6 +99,7 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] Training delays: hard integer forward + soft (Gaussian → triangular) backward; why the forward must stay hard (golden equivalence).
 - [ ] Folding BatchNorm into INT8 weights + bias current + per-layer θ; why the bias current is drive-free (part of B) and keeps the HUSH proof.
 - [ ] Headroom model (`docs/headroom_model.md`): steady headroom ≈ θ + 2^k·|b|; HUSH sleeps when headroom exceeds n_t·E[P⁺]; why fast leaks (delay nets) and subthreshold adaptation (adLIF) defeat gating while the slow-leak FF net gated well.
+- [ ] The four-network headroom table and the k = 4 controls (gate alone −6.7 pt vs rate reg alone −0.5 pt): be ready to say exactly when HUSH pays and when it does not.
 - [ ] SHD reference numbers: SE-adLIF 1 layer 37.5k params 94.6%, 2 layers 95.8%, LIF 90.3% (float, no hardware).
 
 ## Presentation drills
