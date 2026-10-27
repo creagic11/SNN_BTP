@@ -51,7 +51,7 @@ foreach cfg {{base 0 0 base_v3} {mf_gentle 1 1 hush_mf_v3} {mf_aggr 1 1 hush_mf_
     set rtl_case [list $root/rtl/hush_arith.sv $root/rtl/hush_layer.sv $here/top_hush.sv $sim/tb_saif_case.sv]
     if {[catch {
         exec -ignorestderr {*}[auto_execok xvlog] -sv {*}$rtl_case > $sim/xvlog_out.log
-        exec -ignorestderr {*}[auto_execok xelab] tb_saif -debug typical -s snap_$case > $sim/xelab_out.log
+        exec -ignorestderr {*}[auto_execok xelab] tb_saif -timescale 1ns/1ps -debug typical -s snap_$case > $sim/xelab_out.log
         exec -ignorestderr {*}[auto_execok xsim] snap_$case -tclbatch $sim/saif.tcl -log $out/sim_$case.log
     } err]} { note "$case simulation FAILED: $err (see $sim/xvlog.log, $sim/xelab.log, $out/sim_$case.log)"; cd $here; continue }
     if {![file exists $sim/act.saif]} { note "$case: no SAIF written (see $out/sim_$case.log)"; cd $here; continue }
