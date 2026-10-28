@@ -1,18 +1,18 @@
 {
   "BASE": {
     "acc": 0.968,
-    "cycles": 29403.452,
-    "latency_us": 294.03452000000004,
+    "cycles": 30290.53,
+    "latency_us": 302.9053,
     "word_reads": 22529.296,
     "col_reads": 90117.184
   },
   "HUSH": {
-    "acc": 0.962,
-    "cycles": 28949.936,
-    "latency_us": 289.49936,
-    "word_reads": 22299.822,
-    "col_reads": 86833.582
+    "acc": 0.964,
+    "cycles": 29890.902,
+    "latency_us": 298.90902,
+    "word_reads": 22379.966,
+    "col_reads": 88178.362
   },
-  "speedup": 1.0156655268598866,
-  "col_read_ratio": 0.9635629759580593
+  "speedup": 1.013369553049955,
+  "col_read_ratio": 0.978485546108498
 }

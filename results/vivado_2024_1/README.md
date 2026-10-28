@@ -1,3 +1,5 @@
+> **Superseded (28 Oct 2026)** by `results/power_saif_v5/`. These builds pruned BASE lanes 6-25 (too-narrow LED fold), stored weights as trimmed ROMs and had no per-column weight enables; do not quote these numbers.
+
 # Vivado 2024.1 results — XC7A100T-1CSG324C, 100 MHz (27 Oct 2026)
 
 N-MNIST hidden layer (578×256, T = 100, k = 4), built with `fpga/run_all.tcl` / `fpga/run_hush.tcl` on the user's laptop. RTL = commit "Timing fix 3" (two-stage finalize + balanced two-stage max tree).

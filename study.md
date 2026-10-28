@@ -82,7 +82,7 @@ Work through this in order. Each item says what you must be able to do at the bo
 ## Phase 3 — Power methodology (added at T3.x)
 - [ ] Timing closure story: three critical paths found and fixed (lane + serial max in one cycle → pipelined R refresh → two-stage finalize → balanced two-stage max tree); why each change is bit-exact and why R's late write is safe (read ≥ 3 cycles later at COMBINE).
 - [ ] Vectorless vs SAIF vs board power: why vectorless charges HUSH's extra logic and cannot credit skipped reads; why static power (~100 mW) makes energy track latency on the XC7A100T.
-- [ ] Our numbers by heart: BASE 1.3k LUT / 294 µs / 33 µJ; HUSH-MF 11.0k LUT / 149 µs / 28 µJ (gentle), 95 µs / 18 µJ (aggressive); 100 MHz met.
+- [ ] Our numbers by heart (v5, 28 Oct): BASE 3.8k LUT / 303 µs / 44 µJ; HUSH-MF 9.8k LUT / 153 µs / 23 µJ (gentle), 97 µs / 15 µJ (aggressive); 100 MHz met. (v1's 1.3k LUT / 294 µs / 33 µJ BASE was a pruned build — never quote it.)
 - [ ] SAIF-based power estimation: what it captures, what it misses.
 - [ ] Differential board measurement: why static power cancels; error bars.
 
@@ -108,7 +108,7 @@ Work through this in order. Each item says what you must be able to do at the bo
 ## Comparison against the state of the art (added 27 Oct — Paper A)
 - [ ] The four levels of comparison and what each proves: internal ablation (BASE vs HUSH), competing ideas in the same setting (SITRA-/Early-style), same-device external baseline (Spiker+, to do), published SOTA table.
 - [ ] Normalised metrics and why raw LUT/power numbers across papers mislead: energy per inference, energy per (dense-equivalent) SOP, throughput per kLUT, latency.
-- [ ] Our hardware table by heart (Vivado 2024.1, XC7A100T, 100 MHz met): BASE 1,314 LUT / 113 mW / 294 µs / 33.2 µJ; HUSH-MF 10,960 LUT / 6,177 FF / 54 RAMB36 + 3 RAMB18 / 0 DSP / 190 mW; gentle 95.32% / 149 µs / 28.4 µJ (1.97×, −15%); aggressive 92.72% / 95 µs / 18.1 µJ (3.09×, −46%).
+- [ ] Our hardware table by heart (v5, Vivado 2024.1, XC7A100T, 100 MHz met): BASE 3,821 LUT / 2,643 FF / 43 RAMB36 / 0 DSP / 145 mW (45 dynamic) / 302.9 µs / 43.9 µJ; HUSH-MF 9,800 LUT / 6,284 FF / 57 RAMB36 + 2 RAMB18 / 0 DSP; gentle 95.32% / 151 mW / 153.0 µs / 23.1 µJ (1.98×, −47%); aggressive 92.72% / 157 mW / 97.2 µs / 15.3 µJ (3.12×, −65%). Whole network, 500 samples; power = gate-level SAIF on the hidden-layer build.
 - [ ] The N-MNIST SOTA row: Wu, Song & So (FPT 2023), ZCU102, 95.76%, 50 ms, 0.33–0.37 W (≈ 17.5 mJ). Our gentle point: ≈ 335× lower latency, ≈ 600× lower energy, 4–15× fewer LUTs — and why those ratios reflect different designs and devices, not HUSH alone.
 - [ ] MNIST-class rows for scale: Ansari & Wielgosz 2026 (Artix-7 200T, 96.7%, 82 µs, ≈ 27.6 µJ), Spiker-LL 2026 (39 µJ), Spiker+ 2024 (780 µs, ≈ 140 µJ). SHD rows: Chen et al. 2025 93.4% (delays, 9.6 ms), Spiker+ 72.99%.
 - [ ] Our honest weak points and the answer to each: accuracy (−2.3 to −4.9 pt on N-MNIST; SHD trails delay designs) → GPU; area (8× BASE LUTs) → still 17% of a 100T; vectorless power → SAIF next, board when available.

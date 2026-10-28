@@ -1,4 +1,4 @@
-> **Superseded (27 Oct 2026)** by the Vivado 2024.1 place-and-route results in `results/vivado_2024_1/` (BASE 1,314 LUT, HUSH-MF 10,960 LUT, 0 DSP, all at 100 MHz). Kept for history.
+> **Superseded (27 Oct 2026)** by the Vivado 2024.1 results, now `results/power_saif_v5/` (v5: BASE 3,821 LUT, HUSH-MF 9,800 LUT, 0 DSP, all at 100 MHz). Kept for history.
 
 # T2.5 Resource estimate with open-source synthesis (Yosys 0.70 `synth_xilinx -family xc7`)
 

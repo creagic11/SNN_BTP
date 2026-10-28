@@ -37,3 +37,15 @@ Caveats: vendor power estimate from zero-delay gate-level activity (no glitch po
 (A7 pending); hidden layer only; the 64K-entry event store is test harness (both BASE and HUSH carry it);
 static power is the device's (XC7A100T, typical, 25 °C) and identical for all builds. Full reports are on the
 laptop under hush_fpga/out_v5c (to be copied here when file transfer works again).
+
+## Whole network (578-256-10), 500 test samples — the numbers used in the comparison report v2
+
+Latency from the exact cycle model (`scripts/rtl_perf.py --n 500`, v5 model: PE_STAGES = 4, ETU +1), which
+gate-level simulation matches within 3–8 cycles; accuracy on the full test set; energy = the activity-based
+power above (hidden-layer build) × whole-network latency.
+
+| Variant | Accuracy | Latency µs | Throughput /s | Weight-column reads | Energy µJ | per dense-equivalent SOP (683,055) |
+|---|---|---|---|---|---|---|
+| BASE | 97.59% | 302.9 | 3,301 | 1.00 | 43.9 | 64.3 pJ |
+| HUSH-MF gentle | 95.32% | 153.0 (1.98×) | 6,537 | 0.168 | 23.1 (−47%) | 33.8 pJ |
+| HUSH-MF aggressive | 92.72% | 97.2 (3.12×) | 10,284 | 0.067 | 15.3 (−65%) | 22.4 pJ |
