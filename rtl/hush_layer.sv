@@ -9,14 +9,21 @@
 //     One word = four 72-bit RAMB36 columns (8 weights + 8 spare bits each), one per sub-block;
 //     a sub-block that sleeps inside an awake block keeps its column disabled (counted in col_reads).
 //   * Proxy memory P and mean memory Q: one row per input j, C x INT8.
-//   * Input events: ev_mem holds active input indices, timestep t occupies [ts_mem[t], ts_mem[t+1]).
+//   * Input events: ev_mem holds active input indices, timestep t occupies [ts[t], ts[t+1]), stored as ts2 pairs.
 //   * Envelope unit (ETU) accumulates D_c(t+1) = sum P[j][c] and Qs_c(t+1) = sum Q[j][c] for the next
 //     timestep while the block loop processes timestep t (double-buffered banks).
 //   * State: G words of 32 x INT16 potentials. Asleep blocks get the leak (+ mean drive if MF) in a
 //     short 2-cycle pass, so R_c = exact max V of every sub-block after every timestep.
 //
-// Simulation-oriented top: memories are initialised with $readmemh, results stream out of the
-// out_* (spikes) and v_* (state write-back) ports. An AXI wrapper for the board comes later.
+// Memories (v5, 28 Oct 2026, A3b): every table is a writable block RAM with a host load port (ld_*), so
+// synthesis cannot shrink it from its contents (as a ROM it trimmed INT8 weights to the 6 bits the trained
+// values use). Initial contents come from $readmemh. Ports per memory:
+//   w   : four 64-bit column RAMs (one per sub-block), read only when that sub-block is awake (per-column
+//         enable; this is what cnt_col_reads counts); write = load port.
+//   p,q : one read port (ETU) + load port.
+//   ev  : true dual port: A = load / ETU read, B = block-loop read.
+//   ts2 : {ts[t+1], ts[t]} pairs, true dual port like ev; the ETU's read takes one extra cycle (ETU = n+4).
+// Results stream out of the out_* (spikes) and v_* (state write-back) ports.
 
 module hush_layer #(
     parameter int M        = 64,      // inputs
@@ -28,17 +35,25 @@ module hush_layer #(
     parameter int GATE     = 1,       // 1 = HUSH, 0 = BASE (dense output side)
     parameter int MF       = 0,       // 1 = mean-field hibernation for asleep sub-blocks
     parameter int NEV      = 1024,    // event memory depth
-    parameter int NSMP     = 1,       // samples stored on chip (power runs); sample s uses ts_mem[s*(T+1) +: T+1]
-    parameter W_FILE = "w.hex",
+    parameter int NSMP     = 1,       // samples stored on chip (power runs); sample s uses ts2[s*(T+1) +: T+1]
+    parameter W0_FILE = "w0.hex",
+    parameter W1_FILE = "w1.hex",
+    parameter W2_FILE = "w2.hex",
+    parameter W3_FILE = "w3.hex",
     parameter P_FILE = "p.hex",
     parameter Q_FILE = "q.hex",
     parameter EV_FILE = "ev.hex",
-    parameter TS_FILE = "ts.hex"
+    parameter TS2_FILE = "ts2.hex"
 ) (
     input  logic                 clk,
     input  logic                 rst,
     input  logic                 start,
     input  logic [15:0]          smp,              // sample select (power runs with NSMP > 1); 0 otherwise
+    // host load port (only while idle): sel 0 = w (all 4 columns), 1 = p, 2 = q, 3 = ev, 4 = ts2
+    input  logic                 ld_we,
+    input  logic [2:0]           ld_sel,
+    input  logic [15:0]          ld_addr,
+    input  logic [255:0]         ld_data,
     output logic                 done,
     // output spikes of one block at one timestep
     output logic                 out_valid,
@@ -67,21 +82,25 @@ module hush_layer #(
     localparam logic signed [AB-1:0] VMIN = -(1 <<< (VB - 1));
 
     // ---------------- memories ----------------
-    logic [255:0]       w_mem  [G*M];
-    logic [8*C-1:0]     p_mem  [M];
-    logic [8*C-1:0]     q_mem  [M];
-    logic [15:0]        ev_mem [NEV];
-    logic [15:0]        ts_mem [NSMP*(T+1)];
+    localparam int NTS = NSMP * (T + 1);
+    (* ram_style = "block" *) logic [8*C-1:0] p_mem  [M];
+    (* ram_style = "block" *) logic [8*C-1:0] q_mem  [M];
+    (* ram_style = "block", ram_decomp = "power" *) logic [15:0] ev_mem [NEV];
+    (* ram_style = "block" *) logic [31:0] ts2_mem [NTS];
     (* ram_style = "distributed" *) logic [32*VB-1:0] st_mem [G];
     logic [G-1:0]       st_valid;                 // block written since start; unwritten blocks read as 0
 
     initial begin
-        $readmemh(W_FILE, w_mem);
         $readmemh(P_FILE, p_mem);
         if (MF) $readmemh(Q_FILE, q_mem);
         $readmemh(EV_FILE, ev_mem);
-        $readmemh(TS_FILE, ts_mem);
+        $readmemh(TS2_FILE, ts2_mem);
     end
+    wire ld_w  = ld_we && ld_sel == 3'd0;
+    wire ld_p  = ld_we && ld_sel == 3'd1;
+    wire ld_q  = ld_we && ld_sel == 3'd2;
+    wire ld_ev = ld_we && ld_sel == 3'd3;
+    wire ld_ts = ld_we && ld_sel == 3'd4;
 
     // ---------------- helpers ----------------
     function automatic logic signed [AB-1:0] sat(input logic signed [AB-1:0] x);
@@ -94,7 +113,7 @@ module hush_layer #(
         leakf = v - (v >>> K);
     endfunction
 
-    // sample base in ts_mem, captured at start (NSMP = 1: always 0)
+    // sample base in ts2, captured at start (NSMP = 1: always 0)
     localparam int TSW = $clog2(NSMP*(T+1) + 1);
     localparam int SW  = (NSMP > 1) ? $clog2(NSMP) : 1;
     logic [TSW-1:0] tsb;
@@ -107,6 +126,8 @@ module hush_layer #(
     logic [TW-1:0]        etu_t;
     logic [EAW-1:0]       etu_ptr, etu_end;
     logic                 etu_v1, etu_v2;            // pipeline valids: ev data, P/Q data
+    logic                 etu_ld;                    // ts2 word for the new timestep arrives this cycle
+    logic [31:0]          etu_ts;
     logic [15:0]          etu_j;
     logic [8*C-1:0]       etu_prow, etu_qrow;
     logic                 etu_clear;                 // pulse: clear bank etu_bank (handled in ETU block)
@@ -115,27 +136,23 @@ module hush_layer #(
 
     always_ff @(posedge clk) begin
         if (rst) begin
-            etu_busy <= 0; etu_v1 <= 0; etu_v2 <= 0; bank_ready <= 2'b00;
+            etu_busy <= 0; etu_v1 <= 0; etu_v2 <= 0; bank_ready <= 2'b00; etu_ld <= 0;
         end else begin
             if (consume_bank_valid) bank_ready[consume_bank] <= 1'b0;
             if (etu_go && !etu_busy) begin
                 etu_busy <= 1;
-                etu_ptr  <= EAW'(ts_mem[tsb + etu_t]);
-                etu_end  <= EAW'(ts_mem[tsb + etu_t + 1]);
+                etu_ld   <= 1;                               // ts2 read issued this cycle (port A)
                 for (int c = 0; c < C; c++) begin dacc[etu_bank][c] <= '0; qacc[etu_bank][c] <= '0; end
+            end else if (etu_ld) begin
+                etu_ld  <= 0;
+                etu_ptr <= EAW'(etu_ts[15:0]);
+                etu_end <= EAW'(etu_ts[31:16]);
             end else if (etu_busy) begin
-                // stage 0: read event index
+                // stage 0: read event index (ev port A, below)
                 etu_v1 <= (etu_ptr != etu_end);
-                if (etu_ptr != etu_end) begin
-                    etu_j   <= ev_mem[etu_ptr];
-                    etu_ptr <= etu_ptr + 1'b1;
-                end
-                // stage 1: read proxy rows
+                if (etu_ptr != etu_end) etu_ptr <= etu_ptr + 1'b1;
+                // stage 1: read proxy rows (p/q RAMs, below)
                 etu_v2 <= etu_v1;
-                if (etu_v1) begin
-                    etu_prow <= p_mem[etu_j[IW-1:0]];
-                    etu_qrow <= MF ? q_mem[etu_j[IW-1:0]] : '0;
-                end
                 // stage 2: accumulate
                 if (etu_v2) begin
                     for (int c = 0; c < C; c++) begin
@@ -151,6 +168,36 @@ module hush_layer #(
         end
     end
 
+    // ETU memory ports
+    wire etu_rd_ts = !rst && etu_go && !etu_busy;
+    wire etu_rd_ev = !rst && etu_busy && !etu_ld && (etu_ptr != etu_end);
+    wire etu_rd_pq = !rst && etu_busy && !etu_ld && etu_v1;
+    wire [TSW-1:0] tsa_addr = ld_ts ? TSW'(ld_addr) : TSW'(tsb + etu_t);
+    always_ff @(posedge clk)                                      // ts2 port A: load / ETU read
+        if (ld_ts || etu_rd_ts) begin
+            if (ld_ts) ts2_mem[tsa_addr] <= ld_data[31:0];
+            etu_ts <= ts2_mem[tsa_addr];
+        end
+    wire [EAW-1:0] eva_addr = ld_ev ? EAW'(ld_addr) : etu_ptr;
+    always_ff @(posedge clk)                                      // ev port A: load / ETU read
+        if (ld_ev || etu_rd_ev) begin
+            if (ld_ev) ev_mem[eva_addr] <= ld_data[15:0];
+            etu_j <= ev_mem[eva_addr];
+        end
+    wire [IW-1:0] pa_addr = (ld_p || ld_q) ? IW'(ld_addr) : etu_j[IW-1:0];
+    always_ff @(posedge clk) begin                                // p (and q) RAMs: load / ETU read
+        if (ld_p) p_mem[pa_addr] <= ld_data[8*C-1:0];
+        if (etu_rd_pq) etu_prow <= p_mem[pa_addr];
+    end
+    if (MF) begin : g_q
+        always_ff @(posedge clk) begin
+            if (ld_q) q_mem[pa_addr] <= ld_data[8*C-1:0];
+            if (etu_rd_pq) etu_qrow <= q_mem[pa_addr];
+        end
+    end else begin : g_noq
+        assign etu_qrow = '0;
+    end
+
     // ---------------- main sequencer ----------------
     typedef enum logic [3:0] {S_IDLE, S_ETU0, S_COMBINE, S_BLK_SEL, S_BLK_LOAD, S_BLK_RUN, S_BLK_FIN,
                               S_SLP_LOAD, S_SLP_FIN, S_FIN2, S_STEP_END, S_DONE} state_t;
@@ -163,9 +210,12 @@ module hush_layer #(
     logic signed [VB-1:0]    R [C];                  // exact max V per sub-block after the last step
     logic signed [AB-1:0]    qs_cur [C];             // mean drive of timestep t per sub-block
     logic [EAW-1:0]          pe_ptr, pe_start, pe_end;
+    logic [31:0]             pe_ts;                  // {ts[t+1], ts[t]} of the current timestep
     logic                    pe_v1, pe_v2;
     logic [15:0]             pe_j;
-    logic [255:0]            pe_w;
+    wire  [255:0]            pe_w;
+    assign pe_start = EAW'(pe_ts[15:0]);
+    assign pe_end   = EAW'(pe_ts[31:16]);
     logic signed [AB-1:0]    acc [32];
     logic [32*VB-1:0]        st_rd;
     logic                    first;                  // state word arrives this cycle
@@ -215,12 +265,13 @@ module hush_layer #(
     logic                    mid_v;
     logic [$clog2(G+1)-1:0]  mid_b;
     logic signed [VB-1:0]    m2n [4][2];
-    always_comb
-        for (int s = 0; s < 4; s++)
-            for (int h = 0; h < 2; h++)
-                m2n[s][h] = smax(smax($signed(fin_word[VB*(8*s + 4*h + 0) +: VB]), $signed(fin_word[VB*(8*s + 4*h + 1) +: VB])),
+    // named generate scopes (v5): unnamed loop scopes appear as "(null)" in Vivado's netlist, which read_saif rejects
+    for (genvar s = 0; s < 4; s++) begin : g_mx
+        for (genvar h = 0; h < 2; h++) begin : g_h
+            assign m2n[s][h] = smax(smax($signed(fin_word[VB*(8*s + 4*h + 0) +: VB]), $signed(fin_word[VB*(8*s + 4*h + 1) +: VB])),
                                  smax($signed(fin_word[VB*(8*s + 4*h + 2) +: VB]), $signed(fin_word[VB*(8*s + 4*h + 3) +: VB])));
-
+        end
+    end
     // combine: one hush_envelope per sub-block (shared with the formal harness)
     logic [C-1:0] gate_next, env_gate;
     for (genvar c = 0; c < C; c++) begin : g_env
@@ -228,6 +279,28 @@ module hush_layer #(
         hush_envelope #(.VB(VB), .AB(AB), .K(K), .THETA_H(THETA_H)) u_env (
             .R(R[c]), .D(dacc[cur_bank][c]), .E(e_unused), .gate(env_gate[c]));
         assign gate_next[c] = GATE ? env_gate[c] : 1'b1;
+    end
+
+    // block-loop memory ports
+    wire pe_rd_ts = !rst && (st == S_COMBINE) && (!(GATE || MF) || bank_ready[cur_bank]);
+    wire pe_rd_ev = !rst && (st == S_BLK_RUN) && (pe_ptr != pe_end);
+    wire pe_rd_w  = !rst && (st == S_BLK_RUN) && pe_v1;
+    always_ff @(posedge clk) if (pe_rd_ts) pe_ts <= ts2_mem[TSW'(tsb + t)];   // ts2 port B
+    always_ff @(posedge clk) if (pe_rd_ev) pe_j  <= ev_mem[pe_ptr];           // ev port B
+    wire [WAW-1:0] wa_addr = ld_w ? WAW'(ld_addr) : WAW'(b * M + pe_j[IW-1:0]);
+    for (genvar s = 0; s < 4; s++) begin : g_wcol                        // one RAM per sub-block column
+        (* ram_style = "block", ram_decomp = "power" *) logic [63:0] mem [G*M];
+        logic [63:0] q;
+        if (s == 0) begin : g_i0 initial $readmemh(W0_FILE, mem); end
+        if (s == 1) begin : g_i1 initial $readmemh(W1_FILE, mem); end
+        if (s == 2) begin : g_i2 initial $readmemh(W2_FILE, mem); end
+        if (s == 3) begin : g_i3 initial $readmemh(W3_FILE, mem); end
+        always_ff @(posedge clk)
+            if (ld_w || (pe_rd_w && blk_gate[s])) begin                // column enable = sub-block awake
+                if (ld_w) mem[wa_addr] <= ld_data[64*s +: 64];
+                q <= mem[wa_addr];
+            end
+        assign pe_w[64*s +: 64] = q;
     end
 
     always_ff @(posedge clk) begin
@@ -258,8 +331,6 @@ module hush_layer #(
                         gate <= gate_next;
                         for (int c = 0; c < C; c++) qs_cur[c] <= qacc[cur_bank][c];
                         cnt_awake_sub <= cnt_awake_sub + $countones(gate_next);
-                        pe_start <= EAW'(ts_mem[tsb + t]);
-                        pe_end   <= EAW'(ts_mem[tsb + t + 1]);
                         consume_bank_valid <= (GATE || MF);
                         consume_bank       <= cur_bank;
                         // launch ETU for t+1 into the other bank, overlapped with this step's block loop
@@ -282,10 +353,9 @@ module hush_layer #(
                 end
                 S_BLK_RUN: begin
                     pe_v1 <= (pe_ptr != pe_end);
-                    if (pe_ptr != pe_end) begin pe_j <= ev_mem[pe_ptr]; pe_ptr <= pe_ptr + 1'b1; end
+                    if (pe_ptr != pe_end) pe_ptr <= pe_ptr + 1'b1;   // ev port B read (below)
                     pe_v2 <= pe_v1;
-                    if (pe_v1) begin
-                        pe_w <= w_mem[b * M + pe_j[IW-1:0]];
+                    if (pe_v1) begin                                 // weight column reads (below)
                         cnt_word_reads <= cnt_word_reads + 1'b1;
                         cnt_col_reads  <= cnt_col_reads + $countones(blk_gate);
                     end

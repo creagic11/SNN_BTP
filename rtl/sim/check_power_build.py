@@ -23,9 +23,11 @@ for case, (tag, g, m, col) in cases.items():
         for f in (ROOT / "fpga/pwr" / case).glob("*.hex"):
             shutil.copy(f, td)
         exe = Path(td) / "sim.vvp"
-        subprocess.run(["iverilog", "-g2012", "-o", str(exe), "-s", "tb_pwr", "-P", f"tb_pwr.GATE={g}", "-P", f"tb_pwr.MF={m}",
+        cp = subprocess.run(["iverilog", "-g2012", "-o", str(exe), "-s", "tb_pwr", "-P", f"tb_pwr.GATE={g}", "-P", f"tb_pwr.MF={m}",
                         "-P", f"tb_pwr.NSMP={NS}", str(ROOT / "rtl/hush_arith.sv"), str(ROOT / "rtl/hush_layer.sv"),
-                        str(ROOT / "fpga/top_hush.sv"), str(ROOT / "rtl/sim/tb_pwr.sv")], check=True)
+                        str(ROOT / "fpga/uart_loader.sv"), str(ROOT / "fpga/top_hush.sv"), str(ROOT / "rtl/sim/tb_pwr.sv")],
+                       check=True, capture_output=True, text=True)
+        assert "error" not in cp.stderr.lower(), cp.stderr
         subprocess.run(["vvp", "-n", str(exe)], cwd=td, check=True, capture_output=True)
         lines = (Path(td) / "pwr_out.txt").read_text().splitlines()
     mism = 0; cyc_diff = []
@@ -46,5 +48,5 @@ for case, (tag, g, m, col) in cases.items():
         cyc_diff.append(cyc - int(exp[i][col]))
     ok = mism == 0
     ok_all &= ok
-    print(f"{case}: {NS} samples, block mismatches {mism}/{NS * 800}, sim-minus-model cycles {min(cyc_diff)}..{max(cyc_diff)} -> {'PASS' if ok else 'FAIL'}")
+    print(f"{case}: {NS} samples, block mismatches {mism}/{NS * 800}, sim-minus-model cycles {cyc_diff} -> {'PASS' if ok else 'FAIL'}")
 sys.exit(0 if ok_all else 1)

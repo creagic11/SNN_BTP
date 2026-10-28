@@ -7,7 +7,7 @@ module tb_net;
     logic clk = 0, rn = 0;
     always #5 clk = ~clk;
     wire [7:0] led;
-    top_hush u_top (.clk100(clk), .cpu_resetn(rn), .led(led));
+    top_hush u_top (.clk100(clk), .cpu_resetn(rn), .uart_rx(1'b1), .led(led));
     longint c = 0, c0 = 0; int inf = 0; logic dq = 0;
     always @(posedge clk) c++;
     always @(posedge clk) begin

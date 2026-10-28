@@ -56,25 +56,29 @@ def write_mems(d: Path, W, S):
     with open(d / "ts.hex", "w") as f:
         for x in ts:
             f.write(f"{x:04x}\n")
+    from hexutil import derive
+    derive(d)                                     # w0..w3.hex, ts2.hex for hush_layer v5
     return max(1, len(ev))
 
 
-def simulate(d: Path, M, N, T, k, theta, theta_h, gate, mf, nev):
+def simulate(d: Path, M, N, T, k, theta, theta_h, gate, mf, nev, load=0):
     exe = d / "sim.vvp"
-    params = dict(M=M, N=N, T=T, K=k, THETA=theta, THETA_H=theta_h, GATE=gate, MF=mf, NEV=nev)
+    params = dict(M=M, N=N, T=T, K=k, THETA=theta, THETA_H=theta_h, GATE=gate, MF=mf, NEV=nev, LOAD=load)
     cmd = ["iverilog", "-g2012", "-o", str(exe), "-s", "tb_hush_layer"]
     for kname, v in params.items():
         cmd += ["-P", f"tb_hush_layer.{kname}={v}"]
     cmd += ["-P", 'tb_hush_layer.OUT_FILE="rtl_out.txt"',
             str(RTL / "hush_arith.sv"), str(RTL / "hush_layer.sv"), str(RTL / "tb_hush_layer.sv")]
-    subprocess.run(cmd, check=True)
+    c = subprocess.run(cmd, capture_output=True, text=True)
+    if c.returncode or "error" in c.stderr.lower():        # iverilog ignores a bad -P value with rc 0
+        raise RuntimeError(f"iverilog failed: {c.stderr}")
     r = subprocess.run(["vvp", "-n", str(exe)], cwd=d, capture_output=True, text=True)
     if "TIMEOUT" in r.stdout or r.returncode:
         print(r.stdout[-2000:], r.stderr[-2000:])
     return (d / "rtl_out.txt").read_text().splitlines()
 
 
-def check(W, S, k, theta, gate, mf, theta_h=None, verbose=True):
+def check(W, S, k, theta, gate, mf, theta_h=None, verbose=True, load=0):
     M, N = W.shape
     T = S.shape[0]
     th_h = theta if theta_h is None else theta_h
@@ -83,7 +87,7 @@ def check(W, S, k, theta, gate, mf, theta_h=None, verbose=True):
     with tempfile.TemporaryDirectory() as td:
         d = Path(td)
         nev = write_mems(d, W, S)
-        lines = simulate(d, M, N, T, k, theta, th_h, gate, mf, nev)
+        lines = simulate(d, M, N, T, k, theta, th_h, gate, mf, nev, load)
     G = N // 32
     rows = [l.split() for l in lines if l.startswith("S ")]
     assert len(rows) == T * G, f"expected {T * G} block write-backs, got {len(rows)}"
@@ -103,9 +107,9 @@ def check(W, S, k, theta, gate, mf, theta_h=None, verbose=True):
     exp_col = int(sum(tr.awake_sub[t].reshape(G, 4)[tr.awake_blk[t]].sum() * n[t] for t in range(T)))
     exp_awk = int(tr.awake_sub.sum())
     model_cyc = rtl_cycles(n, tr.awake_blk, envelope=bool(gate or mf))
-    ok = mism == 0 and wordr == exp_word and colr == exp_col and awk == exp_awk
+    ok = mism == 0 and wordr == exp_word and colr == exp_col and awk == exp_awk and cyc == model_cyc
     if verbose:
-        print(f"M={M} N={N} T={T} gate={gate} mf={mf}: block mismatches={mism}/{T * G}, "
+        print(f"M={M} N={N} T={T} gate={gate} mf={mf} load={load}: block mismatches={mism}/{T * G}, "
               f"word reads {wordr}/{exp_word}, col reads {colr}/{exp_col}, awake sub {awk}/{exp_awk}, cycles {cyc}/model {model_cyc} "
               f"-> {'PASS' if ok else 'FAIL'}")
     return ok, cyc
@@ -125,6 +129,7 @@ def main():
     ap.add_argument("--mf", type=int, default=0)
     ap.add_argument("--rate", type=float, default=0.2)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--load", type=int, default=0, help="1: fill the memories through the ld_* port")
     a = ap.parse_args()
     if a.weights:
         from scripts.measure_rho import pad_hidden, test_rasters
@@ -136,7 +141,7 @@ def main():
         rng = np.random.default_rng(a.seed)
         W = rng.integers(-60, 61, size=(a.M, a.N))
         S = (rng.random((a.T, a.M)) < a.rate).astype(np.int64)
-        ok, _ = check(W, S, a.k, a.theta, a.gate, a.mf)
+        ok, _ = check(W, S, a.k, a.theta, a.gate, a.mf, load=a.load)
     sys.exit(0 if ok else 1)
 
 

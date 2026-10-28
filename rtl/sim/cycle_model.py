@@ -5,8 +5,8 @@ Per timestep t with n_t active inputs and the block gates of the golden model:
   awake block   : SEL + LOAD + RUN + FIN + FIN2 = 4 + (n_t + 3 if n_t > 0 else 1)
   asleep block  : SEL + SLP_FIN + FIN2 = 3
   end of step   : SEL (b == G) + STEP_END = 2
-The envelope unit for t+1 starts one cycle after COMBINE(t) and needs n_{t+1} + 3 cycles
-(or 1 when n = 0); COMBINE(t+1) stalls if the block loop of t finishes earlier.
+The envelope unit for t+1 starts one cycle after COMBINE(t) and needs n_{t+1} + 4 cycles
+(or 2 when n = 0; +1 since v5 for the ts2 block-RAM read); COMBINE(t+1) stalls if the block loop of t finishes earlier.
 Timestep 0 is preceded by the envelope pass for t = 0 (ETU0 state). BASE (GATE=0, MF=0) has no
 envelope unit.
 """
@@ -16,8 +16,11 @@ from __future__ import annotations
 import numpy as np
 
 
+ETU_TS_READ = 1  # v5 (28 Oct, A3b): the ETU reads its {ts[t+1], ts[t]} pair from block RAM, +1 cycle
+
+
 def etu_cycles(n: int) -> int:
-    return n + 3 if n > 0 else 1
+    return (n + 3 if n > 0 else 1) + ETU_TS_READ
 
 
 FIN_STAGES = 2   # finalize is two stages since the 27 Oct timing fix (FIN + FIN2)

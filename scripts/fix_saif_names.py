@@ -1,4 +1,4 @@
-"""Rewrite xsim gate-level SAIF net names into the form Vivado's read_saif matches (A3, 28 Oct 2026).
+r"""Rewrite xsim gate-level SAIF net names into the form Vivado's read_saif matches (A3, 28 Oct 2026).
 xsim writes escaped netlist identifiers as  \\name\[i\]_n_0\   (leading double backslash, trailing escaped
 space) and escaped buses as  \\name\ \[k\] ; Vivado matches  name\[i\]_n_0  and  name\[k\] . Left as is, those
 nets (31-38% of the design: LIF lane adders, accumulators, spike outputs) are unmatched and fall back to

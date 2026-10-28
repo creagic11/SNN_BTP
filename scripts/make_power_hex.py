@@ -12,6 +12,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / "rtl" / "sim")]
 from run_case import hexrow  # noqa: E402
+from hexutil import derive  # noqa: E402
 from cycle_model import rtl_cycles  # noqa: E402
 from golden.hush import LIFParams, mean_table, proxy_table, run_gated, run_ref  # noqa: E402
 from scripts.measure_rho import pad_hidden, test_rasters  # noqa: E402
@@ -49,6 +50,7 @@ for name, tag in nets.items():
         f.write("".join(f"{e:04x}\n" for e in ev))
     with open(d / "ts.hex", "w") as f:
         f.write("".join(f"{x:04x}\n" for x in ts))
+    derive(d)                                   # w0..w3.hex, ts2.hex (hush_layer v5)
     cyc[name] = []
     for S in R:
         S = S.astype(np.int64); n = S.sum(1)

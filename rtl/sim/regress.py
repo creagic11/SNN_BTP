@@ -33,7 +33,7 @@ def main():
         rate = float(rng.choice([0.02, 0.08, 0.25, 0.6]))
         S = (rng.random((T, M)) < rate).astype(np.int64)
         gate, mf = int(rng.integers(0, 2)), int(rng.integers(0, 2))
-        ok, _ = check(W, S, k, theta, gate, mf, verbose=True)
+        ok, _ = check(W, S, k, theta, gate, mf, verbose=True, load=int(s % 4 == 0))   # every 4th: memories via the load port
         if not ok:
             fails.append(s)
     print(f"{a.n - len(fails)}/{a.n} passed; failing seeds: {fails}")

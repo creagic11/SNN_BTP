@@ -1,6 +1,6 @@
 # Non-project Vivado flow for the HUSH layer on XC7A100T-1CSG324C.
 #   vivado -mode batch -source build.tcl -tclargs <hexdir> <outdir> <GATE> <MF> [M N T K]
-# <hexdir> holds w.hex p.hex q.hex ev.hex ts.hex (from rtl/sim/run_case.py write_mems).
+# <hexdir> holds w0..w3.hex p.hex q.hex ev.hex ts2.hex (rtl/sim/run_case.py write_mems or rtl/sim/hexutil.py).
 set hexdir [file normalize [lindex $argv 0]]
 set outdir [file normalize [lindex $argv 1]]
 set gate   [lindex $argv 2]
@@ -14,7 +14,7 @@ set NEV  [expr {[llength $argv] > 9 ? [lindex $argv 9] : 4096}]
 set here [file dirname [file normalize [info script]]]
 file mkdir $outdir
 cd $hexdir
-read_verilog -sv [list $here/../rtl/hush_arith.sv $here/../rtl/hush_layer.sv $here/top_hush.sv]
+read_verilog -sv [list $here/../rtl/hush_arith.sv $here/../rtl/hush_layer.sv $here/uart_loader.sv $here/top_hush.sv]
 read_xdc $here/nexys_a7_100t.xdc
 synth_design -top top_hush -part xc7a100tcsg324-1 -generic M=$M -generic N=$N -generic T=$T -generic K=$K \
              -generic GATE=$gate -generic MF=$mf -generic NSMP=$NSMP -generic NEV=$NEV -flatten_hierarchy rebuilt
@@ -27,6 +27,7 @@ report_utilization -file $outdir/util.rpt
 report_utilization -hierarchical -file $outdir/util_hier.rpt
 report_timing_summary -max_paths 20 -file $outdir/timing.rpt
 report_power -file $outdir/power_vectorless.rpt
+catch {report_ram_utilization -file $outdir/ram_util.rpt}
 write_checkpoint -force $outdir/routed.dcp
 write_bitstream -force $outdir/top_hush.bit
 puts "DONE: reports in $outdir"

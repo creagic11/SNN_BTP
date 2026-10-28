@@ -10,6 +10,7 @@ module top_hush #(
 ) (
     input  logic       clk100,
     input  logic       cpu_resetn,
+    input  logic       uart_rx,         // host load port (weights, tables, events); idle-high when unused
     output logic [7:0] led
 );
     logic rst;
@@ -24,8 +25,13 @@ module top_hush #(
     logic [47:0] cyc, colr, wordr, awk;
 
     logic [15:0] smp;
+    logic        ld_we;
+    logic [2:0]  ld_sel;
+    logic [15:0] ld_addr;
+    logic [255:0] ld_data;
+    uart_loader u_ld (.clk(clk100), .rst, .rx(uart_rx), .ld_we, .ld_sel, .ld_addr, .ld_data);
     hush_layer #(.M(M), .N(N), .T(T), .K(K), .THETA(THETA), .THETA_H(THETA), .GATE(GATE), .MF(MF), .NEV(NEV), .NSMP(NSMP))
-        u_layer (.clk(clk100), .rst, .start, .smp, .done, .out_valid, .out_t, .out_blk, .out_spk, .v_valid, .v_data,
+        u_layer (.clk(clk100), .rst, .start, .smp, .ld_we, .ld_sel, .ld_addr, .ld_data, .done, .out_valid, .out_t, .out_blk, .out_spk, .v_valid, .v_data,
                  .cnt_cycles(cyc), .cnt_col_reads(colr), .cnt_word_reads(wordr), .cnt_awake_sub(awk));
 
     // autorun: pulse start whenever the layer is idle or done

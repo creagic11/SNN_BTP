@@ -5,7 +5,7 @@ module tb_pwr;
     parameter int GATE = 1, MF = 1, NSMP = 20, NEV = 65536;
     logic clk = 0, rn = 0; always #5 clk = ~clk;
     logic [7:0] led;
-    top_hush #(.M(578), .N(256), .T(100), .K(4), .GATE(GATE), .MF(MF), .NEV(NEV), .NSMP(NSMP)) u_top (.clk100(clk), .cpu_resetn(rn), .led(led));
+    top_hush #(.M(578), .N(256), .T(100), .K(4), .GATE(GATE), .MF(MF), .NEV(NEV), .NSMP(NSMP)) u_top (.clk100(clk), .cpu_resetn(rn), .uart_rx(1'b1), .led(led));
     int fd, inf = 0; longint c = 0, c0 = 0; logic dq = 0;
     always @(posedge clk) c++;
     always @(posedge clk) begin
