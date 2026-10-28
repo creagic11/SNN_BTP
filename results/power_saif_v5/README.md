@@ -35,8 +35,8 @@ aggressive 17 / 9 / 15 / 13.
 
 Caveats: vendor power estimate from zero-delay gate-level activity (no glitch power), not a board measurement
 (A7 pending); hidden layer only; the 64K-entry event store is test harness (both BASE and HUSH carry it);
-static power is the device's (XC7A100T, typical, 25 °C) and identical for all builds. Full reports are on the
-laptop under hush_fpga/out_v5c (to be copied here when file transfer works again).
+static power is the device's (XC7A100T, typical, 25 °C) and identical for all builds. Full Vivado reports
+(timing, utilisation, RAM mapping, power, simulation logs) are in `reports/`.
 
 ## Whole network (578-256-10), 500 test samples — the numbers used in the comparison report v2
 
