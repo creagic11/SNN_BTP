@@ -211,8 +211,8 @@ module hush_layer #(
     logic signed [AB-1:0]    qs_cur [C];             // mean drive of timestep t per sub-block
     logic [EAW-1:0]          pe_ptr, pe_start, pe_end;
     logic [31:0]             pe_ts;                  // {ts[t+1], ts[t]} of the current timestep
-    logic                    pe_v1, pe_v2;
-    logic [15:0]             pe_j;
+    logic                    pe_v1, pe_vj, pe_v2;   // valids: ev data, registered index, weight data
+    logic [15:0]             pe_j, pe_jr;
     wire  [255:0]            pe_w;
     assign pe_start = EAW'(pe_ts[15:0]);
     assign pe_end   = EAW'(pe_ts[31:16]);
@@ -284,10 +284,14 @@ module hush_layer #(
     // block-loop memory ports
     wire pe_rd_ts = !rst && (st == S_COMBINE) && (!(GATE || MF) || bank_ready[cur_bank]);
     wire pe_rd_ev = !rst && (st == S_BLK_RUN) && (pe_ptr != pe_end);
-    wire pe_rd_w  = !rst && (st == S_BLK_RUN) && pe_v1;
+    wire pe_rd_w  = !rst && (st == S_BLK_RUN) && pe_vj;
     always_ff @(posedge clk) if (pe_rd_ts) pe_ts <= ts2_mem[TSW'(tsb + t)];   // ts2 port B
     always_ff @(posedge clk) if (pe_rd_ev) pe_j  <= ev_mem[pe_ptr];           // ev port B
-    wire [WAW-1:0] wa_addr = ld_w ? WAW'(ld_addr) : WAW'(b * M + pe_j[IW-1:0]);
+    // timing fix 4 (28 Oct, v5): register the event index before it forms the weight address (critical path
+    // was ev BRAM -> b*M + j -> weight-RAM enable decode, 11.4 ns in the 20-sample power builds). +1 cycle per
+    // awake block with events. pe_jr maps onto the BRAM output register.
+    always_ff @(posedge clk) pe_jr <= pe_j;
+    wire [WAW-1:0] wa_addr = ld_w ? WAW'(ld_addr) : WAW'(b * M + pe_jr[IW-1:0]);
     for (genvar s = 0; s < 4; s++) begin : g_wcol                        // one RAM per sub-block column
         (* ram_style = "block", ram_decomp = "power" *) logic [63:0] mem [G*M];
         logic [63:0] q;
@@ -348,21 +352,22 @@ module hush_layer #(
                 end
                 S_BLK_LOAD: begin
                     for (int l = 0; l < 32; l++) acc[l] <= AB'(lv[l]);
-                    pe_ptr <= pe_start; pe_v1 <= 0; pe_v2 <= 0;
+                    pe_ptr <= pe_start; pe_v1 <= 0; pe_vj <= 0; pe_v2 <= 0;
                     st <= S_BLK_RUN;
                 end
                 S_BLK_RUN: begin
                     pe_v1 <= (pe_ptr != pe_end);
                     if (pe_ptr != pe_end) pe_ptr <= pe_ptr + 1'b1;   // ev port B read (below)
-                    pe_v2 <= pe_v1;
-                    if (pe_v1) begin                                 // weight column reads (below)
+                    pe_vj <= pe_v1;
+                    pe_v2 <= pe_vj;
+                    if (pe_vj) begin                                 // weight column reads (below)
                         cnt_word_reads <= cnt_word_reads + 1'b1;
                         cnt_col_reads  <= cnt_col_reads + $countones(blk_gate);
                     end
                     if (pe_v2)
                         for (int l = 0; l < 32; l++)
                             if (blk_gate[l/8]) acc[l] <= acc[l] + AB'($signed(pe_w[8*l +: 8]));
-                    if (pe_ptr == pe_end && !pe_v1 && !pe_v2) st <= S_BLK_FIN;
+                    if (pe_ptr == pe_end && !pe_v1 && !pe_vj && !pe_v2) st <= S_BLK_FIN;
                 end
                 S_BLK_FIN, S_SLP_FIN: begin
                     for (int l = 0; l < 32; l++) begin

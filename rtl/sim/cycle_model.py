@@ -2,7 +2,7 @@
 
 Per timestep t with n_t active inputs and the block gates of the golden model:
   COMBINE       : 1 cycle, plus a stall until the envelope bank for t is ready
-  awake block   : SEL + LOAD + RUN + FIN + FIN2 = 4 + (n_t + 3 if n_t > 0 else 1)
+  awake block   : SEL + LOAD + RUN + FIN + FIN2 = 4 + (n_t + 4 if n_t > 0 else 1)
   asleep block  : SEL + SLP_FIN + FIN2 = 3
   end of step   : SEL (b == G) + STEP_END = 2
 The envelope unit for t+1 starts one cycle after COMBINE(t) and needs n_{t+1} + 4 cycles
@@ -26,8 +26,11 @@ def etu_cycles(n: int) -> int:
 FIN_STAGES = 2   # finalize is two stages since the 27 Oct timing fix (FIN + FIN2)
 
 
+PE_STAGES = 4    # ev read, index register (timing fix 4, 28 Oct), weight read, accumulate
+
+
 def block_cycles(n: int, awake: bool) -> int:
-    return (2 + FIN_STAGES + (n + 3 if n > 0 else 1)) if awake else 1 + FIN_STAGES
+    return (2 + FIN_STAGES + (n + PE_STAGES if n > 0 else 1)) if awake else 1 + FIN_STAGES
 
 
 def rtl_cycles(n: np.ndarray, awake_blk: np.ndarray, envelope: bool) -> int:

@@ -1,8 +1,8 @@
 # A3b: annotate the v5 power builds with their gate-level SAIF (names fixed by fix_saif_names.tcl), report power
-# and energy per inference. Called by run_v5.bat after the simulations. Writes ../out_v5b/pwr/<case>/power_saif.rpt,
-# unmatched.txt, ../out_v5b/energy.csv and lines in ../out_v5b/summary.txt.
+# and energy per inference. Called by run_v5.bat after the simulations. Writes ../out_v5c/pwr/<case>/power_saif.rpt,
+# unmatched.txt, ../out_v5c/energy.csv and lines in ../out_v5c/summary.txt.
 set here [file dirname [file normalize [info script]]]
-set out  [file normalize $here/../out_v5b]
+set out  [file normalize $here/../out_v5c]
 source $here/fix_saif_names.tcl
 proc note {msg} { global out; set fp [open $out/summary.txt a]; puts $fp "[clock format [clock seconds] -format %H:%M:%S] $msg"; close $fp; puts $msg }
 set csv [open $out/energy.csv w]
