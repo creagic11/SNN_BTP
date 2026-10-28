@@ -1,0 +1,44 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (win64) Build 5076996 Wed May 22 18:37:14 MDT 2024
+| Date         : Wed Oct 28 02:54:39 2026
+| Host         : LAPTOP-GFP075F7 running 64-bit major release  (build 9200)
+| Command      : report_utilization -hierarchical -file C:/Users/Anubhav/hush_fpga/out_pwr/base/util_hier.rpt
+| Design       : top_hush
+| Device       : xc7a100tcsg324-1
+| Speed File   : -1
+| Design State : Routed
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++-----------------------+--------------+------------+------------+---------+------+-----+--------+--------+------------+
+|        Instance       |    Module    | Total LUTs | Logic LUTs | LUTRAMs | SRLs | FFs | RAMB36 | RAMB18 | DSP Blocks |
++-----------------------+--------------+------------+------------+---------+------+-----+--------+--------+------------+
+| top_hush              |        (top) |       1331 |       1138 |     192 |    1 | 742 |     39 |      0 |          2 |
+|   (top_hush)          |        (top) |          8 |          7 |       0 |    1 |  49 |      0 |      0 |          0 |
+|   u_layer             |   hush_layer |       1323 |       1131 |     192 |    0 | 693 |     39 |      0 |          2 |
+|     (u_layer)         |   hush_layer |        818 |        626 |     192 |    0 | 693 |     39 |      0 |          2 |
+|     g_lane[0].u_lane  |    hush_lane |         44 |         44 |       0 |    0 |   0 |      0 |      0 |          0 |
+|     g_lane[1].u_lane  |  hush_lane_0 |         44 |         44 |       0 |    0 |   0 |      0 |      0 |          0 |
+|     g_lane[26].u_lane |  hush_lane_1 |         44 |         44 |       0 |    0 |   0 |      0 |      0 |          0 |
+|     g_lane[27].u_lane |  hush_lane_2 |         44 |         44 |       0 |    0 |   0 |      0 |      0 |          0 |
+|     g_lane[28].u_lane |  hush_lane_3 |         44 |         44 |       0 |    0 |   0 |      0 |      0 |          0 |
+|     g_lane[29].u_lane |  hush_lane_4 |         44 |         44 |       0 |    0 |   0 |      0 |      0 |          0 |
+|     g_lane[2].u_lane  |  hush_lane_5 |         44 |         44 |       0 |    0 |   0 |      0 |      0 |          0 |
+|     g_lane[30].u_lane |  hush_lane_6 |         44 |         44 |       0 |    0 |   0 |      0 |      0 |          0 |
+|     g_lane[31].u_lane |  hush_lane_7 |         44 |         44 |       0 |    0 |   0 |      0 |      0 |          0 |
+|     g_lane[3].u_lane  |  hush_lane_8 |         45 |         45 |       0 |    0 |   0 |      0 |      0 |          0 |
+|     g_lane[4].u_lane  |  hush_lane_9 |         44 |         44 |       0 |    0 |   0 |      0 |      0 |          0 |
+|     g_lane[5].u_lane  | hush_lane_10 |         44 |         44 |       0 |    0 |   0 |      0 |      0 |          0 |
++-----------------------+--------------+------------+------------+---------+------+-----+--------+--------+------------+
+* Note: The sum of lower-level cells may be larger than their parent cells total, due to cross-hierarchy LUT combining
+
+

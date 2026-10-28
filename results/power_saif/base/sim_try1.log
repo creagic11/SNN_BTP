@@ -1,0 +1,56 @@
+#-----------------------------------------------------------
+# xsim v2024.1 (64-bit)
+# SW Build 5076996 on Wed May 22 18:37:14 MDT 2024
+# IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+# SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+# Start of session at: Wed Oct 28 09:11:40 2026
+# Process ID: 24392
+# Current directory: C:/Users/Anubhav/hush_fpga/out_pwr/base
+# Command line: xsim.exe -log sim_try1.log -mode tcl -source {xsim.dir/snap_net/xsim_script.tcl}
+# Log file: C:/Users/Anubhav/hush_fpga/out_pwr/base/sim_try1.log
+# Journal file: C:/Users/Anubhav/hush_fpga/out_pwr/base\xsim.jou
+# Running On        :LAPTOP-GFP075F7
+# Platform          :Windows Server 2016 or Windows 10
+# Operating System  :26200
+# Processor Detail  :13th Gen Intel(R) Core(TM) i5-1340P
+# CPU Frequency     :2189 MHz
+# CPU Physical cores:12
+# CPU Logical cores :16
+# Host memory       :16803 MB
+# Swap memory       :19764 MB
+# Total Virtual     :36567 MB
+# Available Virtual :2364 MB
+#-----------------------------------------------------------
+source xsim.dir/snap_net/xsim_script.tcl
+# xsim {snap_net} -autoloadwcfg -tclbatch {saif.tcl}
+Time resolution is 1 ps
+source saif.tcl
+## open_saif C:/Users/Anubhav/hush_fpga/out_pwr/base/act.saif
+## log_saif [get_objects -r /tb_net/u_top/*]
+## run all
+I 0 27260
+I 1 28927
+I 2 18480
+I 3 32984
+I 4 22248
+I 5 29600
+I 6 23696
+I 7 29392
+I 8 26656
+I 9 17848
+I 10 31464
+I 11 31216
+I 12 36328
+I 13 28712
+I 14 23888
+I 15 23256
+I 16 17504
+I 17 31416
+I 18 28768
+I 19 33048
+$finish called at time : 5427305 ns : File "C:/Users/Anubhav/hush_fpga/fpga/tb_net.sv" Line 17
+run: Time (s): cpu = 00:00:00 ; elapsed = 00:06:48 . Memory (MB): peak = 232.887 ; gain = 0.000
+## close_saif
+## quit
+INFO: xsimkernel Simulation Memory Usage: 42328 KB (Peak: 42328 KB), Simulation CPU Usage: 399608 ms
+INFO: [Common 17-206] Exiting xsim at Wed Oct 28 09:18:32 2026...

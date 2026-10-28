@@ -1,0 +1,5 @@
+annotate_power3 Wed Oct 28 11:15:42 +0530 2026
+base power OK  saif=act_fixed.saif  total=0.167 W  matched=100%   (3317/3317)
+mf_gentle power OK  saif=act_fixed.saif  total=0.283 W  matched=100%   (43441/43473)
+mf_aggr power OK  saif=act_fixed.saif  total=0.298 W  matched=100%   (43052/43084)
+ALL DONE
