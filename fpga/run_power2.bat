@@ -4,8 +4,8 @@ rem EXCEPTION_ACCESS_VIOLATION while loading, launched from inside the Vivado ba
 rem memory left), then annotate power in a fresh Vivado. Builds, netlists and xsim snapshots from run_power.tcl
 rem are reused. Per case: try 1 = existing snapshot (debug typical); try 2 = rebuilt snapshot with -debug wave;
 rem diagnostic = plain run without SAIF if both fail. Run from the Vivado 2024.1 Tcl Shell:
-rem     cd C:\Users\Anubhav\hush_fpga\fpga
-rem     run_power2.bat
+rem     cd C:/Users/Anubhav/hush_fpga/fpga
+rem     exec -ignorestderr cmd /c run_power2.bat
 setlocal
 set "OUT=%~dp0..\out_pwr"
 echo run_power2 start %date% %time%>"%OUT%\summary2.txt"
