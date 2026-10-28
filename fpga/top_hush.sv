@@ -1,8 +1,8 @@
 // Board top for power/timing runs on a Nexys A7-100T (XC7A100T-1CSG324C).
 // Runs back-to-back inferences of one hush_layer on a fixed test sample stored in BRAM ("autorun"),
 // so the board draws steady-state power for the differential BASE-vs-HUSH measurement.
-// LEDs: [0] heartbeat (toggles every 2^k inferences), [1] done, [7:2] XOR of output spikes so the
-// datapath cannot be optimised away.
+// LEDs: [0] heartbeat (toggles every 2^k inferences), [1] done, [7:2] XOR-fold of every output spike and
+// state bit, so no part of the datapath can be optimised away.
 module top_hush #(
     parameter int M = 578, parameter int N = 256, parameter int T = 100, parameter int K = 4,
     parameter int THETA = 64, parameter int GATE = 1, parameter int MF = 1, parameter int NEV = 4096,
@@ -34,6 +34,16 @@ module top_hush #(
         u_layer (.clk(clk100), .rst, .start, .smp, .ld_we, .ld_sel, .ld_addr, .ld_data, .done, .out_valid, .out_t, .out_blk, .out_spk, .v_valid, .v_data,
                  .cnt_cycles(cyc), .cnt_col_reads(colr), .cnt_word_reads(wordr), .cnt_awake_sub(awk));
 
+    // Observability (fix 28 Oct, A3b): fold ALL 32 spikes and all 512 state bits into the LEDs. The old version
+    // used lanes 0-5 and 26-31 only, so synthesis deleted the unobservable lanes 6-25 (sub-blocks 1 and 2) and
+    // their weight-RAM columns -- most of BASE's datapath. Builds before this fix understate BASE (and part of HUSH).
+    function automatic logic [5:0] fold6(input logic [32+512-1:0] x);
+        logic [5:0] f;
+        f = '0;
+        for (int i = 0; i < 32 + 512; i = i + 6) f = f ^ 6'(x >> i);   // the last chunk is zero-padded
+        return f;
+    endfunction
+
     // autorun: pulse start whenever the layer is idle or done
     logic [23:0] n_inf;
     logic        done_q;
@@ -50,7 +60,7 @@ module top_hush #(
                 n_inf <= n_inf + 1'b1;
                 smp   <= (smp == 16'(NSMP - 1)) ? 16'd0 : smp + 16'd1;   // next sample, captured at the next start
             end
-            if (out_valid) spk_x <= spk_x ^ out_spk[5:0] ^ out_spk[31:26] ^ v_data[5:0];
+            if (out_valid) spk_x <= spk_x ^ fold6({out_spk, v_data});   // every lane observable
         end
     end
     assign led = {spk_x, done, n_inf[12]};

@@ -1,11 +1,11 @@
 # A3b (28 Oct 2026): hush_layer v5 (writable RAMs with a load port, per-column weight-RAM enables, ts2 pairs in
 # block RAM, named generate scopes). Rebuilds everything from the same RTL, unattended; called by run_v5.bat.
-#   (1) timing/area builds, 1 sample on chip (as in the paper table): base, hush_drop, hush_mf -> ../out_v5/timing/
-#   (2) power builds, 20 N-MNIST samples on chip: base, mf_gentle, mf_aggr -> ../out_v5/pwr/
+#   (1) timing/area builds, 1 sample on chip (as in the paper table): base, hush_drop, hush_mf -> ../out_v5b/timing/
+#   (2) power builds, 20 N-MNIST samples on chip: base, mf_gentle, mf_aggr -> ../out_v5b/pwr/
 #       + routed functional netlist + compiled xsim snapshot (simulation itself runs outside Vivado, see run_v5.bat)
 set here [file dirname [file normalize [info script]]]
 set root [file normalize $here/..]
-set out  $root/out_v5
+set out  $root/out_v5b
 file mkdir $out/timing $out/pwr
 proc note {msg} { global out; set fp [open $out/summary.txt a]; puts $fp "[clock format [clock seconds] -format %H:%M:%S] $msg"; close $fp; puts $msg }
 note "prep_v5 start, vivado [version -short]"
