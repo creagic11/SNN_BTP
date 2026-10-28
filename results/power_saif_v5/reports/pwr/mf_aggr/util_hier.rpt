@@ -1,0 +1,89 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (win64) Build 5076996 Wed May 22 18:37:14 MDT 2024
+| Date         : Wed Oct 28 13:12:07 2026
+| Host         : LAPTOP-GFP075F7 running 64-bit major release  (build 9200)
+| Command      : report_utilization -hierarchical -file C:/Users/Anubhav/hush_fpga/out_v5c/pwr/mf_aggr/util_hier.rpt
+| Design       : top_hush
+| Device       : xc7a100tcsg324-1
+| Speed File   : -1
+| Design State : Routed
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++-----------------------+------------------+------------+------------+---------+------+------+--------+--------+------------+
+|        Instance       |      Module      | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | DSP Blocks |
++-----------------------+------------------+------------+------------+---------+------+------+--------+--------+------------+
+| top_hush              |            (top) |      10109 |       9596 |     512 |    1 | 6342 |     88 |      2 |          2 |
+|   (top_hush)          |            (top) |          8 |          7 |       0 |    1 |   50 |      0 |      0 |          0 |
+|   u_layer             |       hush_layer |       9951 |       9439 |     512 |    0 | 5942 |     88 |      2 |          2 |
+|     (u_layer)         |       hush_layer |       6484 |       5972 |     512 |    0 | 5942 |     88 |      2 |          2 |
+|     g_env[0].u_env    |    hush_envelope |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[10].u_env   |  hush_envelope_0 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[11].u_env   |  hush_envelope_1 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[12].u_env   |  hush_envelope_2 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[13].u_env   |  hush_envelope_3 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[14].u_env   |  hush_envelope_4 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[15].u_env   |  hush_envelope_5 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[16].u_env   |  hush_envelope_6 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[17].u_env   |  hush_envelope_7 |         59 |         59 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[18].u_env   |  hush_envelope_8 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[19].u_env   |  hush_envelope_9 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[1].u_env    | hush_envelope_10 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[20].u_env   | hush_envelope_11 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[21].u_env   | hush_envelope_12 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[22].u_env   | hush_envelope_13 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[23].u_env   | hush_envelope_14 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[24].u_env   | hush_envelope_15 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[25].u_env   | hush_envelope_16 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[26].u_env   | hush_envelope_17 |         61 |         61 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[27].u_env   | hush_envelope_18 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[28].u_env   | hush_envelope_19 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[29].u_env   | hush_envelope_20 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[2].u_env    | hush_envelope_21 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[30].u_env   | hush_envelope_22 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[31].u_env   | hush_envelope_23 |         59 |         59 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[3].u_env    | hush_envelope_24 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[4].u_env    | hush_envelope_25 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[5].u_env    | hush_envelope_26 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[6].u_env    | hush_envelope_27 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[7].u_env    | hush_envelope_28 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[8].u_env    | hush_envelope_29 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_env[9].u_env    | hush_envelope_30 |         57 |         57 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[10].u_lane |        hush_lane |         64 |         64 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[11].u_lane |     hush_lane_31 |         64 |         64 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[12].u_lane |     hush_lane_32 |         64 |         64 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[13].u_lane |     hush_lane_33 |         64 |         64 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[14].u_lane |     hush_lane_34 |         64 |         64 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[15].u_lane |     hush_lane_35 |         94 |         94 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[16].u_lane |     hush_lane_36 |         94 |         94 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[17].u_lane |     hush_lane_37 |         64 |         64 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[18].u_lane |     hush_lane_38 |         65 |         65 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[19].u_lane |     hush_lane_39 |         64 |         64 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[20].u_lane |     hush_lane_40 |         65 |         65 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[21].u_lane |     hush_lane_41 |         66 |         66 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[22].u_lane |     hush_lane_42 |         64 |         64 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[23].u_lane |     hush_lane_43 |         64 |         64 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[24].u_lane |     hush_lane_44 |         64 |         64 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[25].u_lane |     hush_lane_45 |         66 |         66 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[26].u_lane |     hush_lane_46 |         65 |         65 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[27].u_lane |     hush_lane_47 |         64 |         64 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[28].u_lane |     hush_lane_48 |         64 |         64 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[29].u_lane |     hush_lane_49 |         64 |         64 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[30].u_lane |     hush_lane_50 |         64 |         64 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[31].u_lane |     hush_lane_51 |         94 |         94 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[8].u_lane  |     hush_lane_52 |         64 |         64 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[9].u_lane  |     hush_lane_53 |         66 |         66 |       0 |    0 |    0 |      0 |      0 |          0 |
+|   u_ld                |      uart_loader |        151 |        151 |       0 |    0 |  350 |      0 |      0 |          0 |
++-----------------------+------------------+------------+------------+---------+------+------+--------+--------+------------+
+* Note: The sum of lower-level cells may be larger than their parent cells total, due to cross-hierarchy LUT combining
+
+

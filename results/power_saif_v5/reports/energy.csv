@@ -1,0 +1,4 @@
+case,inferences,mean_cycles,latency_us,total_mW,dynamic_mW,static_mW,E_total_uJ,E_dyn_uJ,nets_matched
+base,20,27924.2,279.24,145,45,101,40.49,12.57,100%   (11138/11138)
+mf_gentle,20,14641.9,146.42,151,49,101,22.11,7.17,100%   (28375/28375)
+mf_aggr,20,8751.1,87.51,157,56,101,13.74,4.90,100%   (28375/28375)

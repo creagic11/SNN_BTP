@@ -1,0 +1,65 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (win64) Build 5076996 Wed May 22 18:37:14 MDT 2024
+| Date         : Wed Oct 28 13:04:13 2026
+| Host         : LAPTOP-GFP075F7 running 64-bit major release  (build 9200)
+| Command      : report_utilization -hierarchical -file C:/Users/Anubhav/hush_fpga/out_v5c/pwr/base/util_hier.rpt
+| Design       : top_hush
+| Device       : xc7a100tcsg324-1
+| Speed File   : -1
+| Design State : Routed
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++-----------------------+--------------+------------+------------+---------+------+------+--------+--------+------------+
+|        Instance       |    Module    | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | DSP Blocks |
++-----------------------+--------------+------------+------------+---------+------+------+--------+--------+------------+
+| top_hush              |        (top) |       3995 |       3482 |     512 |    1 | 2700 |     74 |      0 |          2 |
+|   (top_hush)          |        (top) |          6 |          5 |       0 |    1 |   50 |      0 |      0 |          0 |
+|   u_layer             |   hush_layer |       3867 |       3355 |     512 |    0 | 2300 |     74 |      0 |          2 |
+|     (u_layer)         |   hush_layer |       2523 |       2011 |     512 |    0 | 2300 |     74 |      0 |          2 |
+|     g_lane[0].u_lane  |    hush_lane |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[10].u_lane |  hush_lane_0 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[11].u_lane |  hush_lane_1 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[12].u_lane |  hush_lane_2 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[13].u_lane |  hush_lane_3 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[14].u_lane |  hush_lane_4 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[15].u_lane |  hush_lane_5 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[16].u_lane |  hush_lane_6 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[17].u_lane |  hush_lane_7 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[18].u_lane |  hush_lane_8 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[19].u_lane |  hush_lane_9 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[1].u_lane  | hush_lane_10 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[20].u_lane | hush_lane_11 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[21].u_lane | hush_lane_12 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[22].u_lane | hush_lane_13 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[23].u_lane | hush_lane_14 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[24].u_lane | hush_lane_15 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[25].u_lane | hush_lane_16 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[26].u_lane | hush_lane_17 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[27].u_lane | hush_lane_18 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[28].u_lane | hush_lane_19 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[29].u_lane | hush_lane_20 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[2].u_lane  | hush_lane_21 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[30].u_lane | hush_lane_22 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[31].u_lane | hush_lane_23 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[3].u_lane  | hush_lane_24 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[4].u_lane  | hush_lane_25 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[5].u_lane  | hush_lane_26 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[6].u_lane  | hush_lane_27 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[7].u_lane  | hush_lane_28 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[8].u_lane  | hush_lane_29 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     g_lane[9].u_lane  | hush_lane_30 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|   u_ld                |  uart_loader |        122 |        122 |       0 |    0 |  350 |      0 |      0 |          0 |
++-----------------------+--------------+------------+------------+---------+------+------+--------+--------+------------+
+* Note: The sum of lower-level cells may be larger than their parent cells total, due to cross-hierarchy LUT combining
+
+

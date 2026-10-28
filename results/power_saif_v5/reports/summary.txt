@@ -1,0 +1,26 @@
+run_v5 start 28-10-2026 12:55:47.62
+12:55:51 prep_v5 start, vivado 2024.1
+12:57:35 timing/base build OK  WNS=1.441 ns
+12:59:54 timing/hush_drop build OK  WNS=0.198 ns
+13:02:42 timing/hush_mf build OK  WNS=0.496 ns
+13:04:28 pwr/base build OK  WNS=0.270 ns
+13:05:21 pwr/base netlist + snapshot OK
+13:08:19 pwr/mf_gentle build OK  WNS=0.491 ns
+13:09:31 pwr/mf_gentle netlist + snapshot OK
+13:12:53 pwr/mf_aggr build OK  WNS=0.491 ns
+13:15:20 pwr/mf_aggr netlist + snapshot OK
+13:15:20 prep_v5 done
+base sim start 13:15:25.18
+base sim OK 14:09:13.63
+mf_gentle sim start 14:09:13.64
+mf_gentle sim OK 14:41:32.39
+mf_aggr sim start 14:41:32.40
+mf_aggr sim OK 15:04:06.63
+15:04:11 base SAIF names: bus 6076 scalar 7723 dropped 0 left-escaped 0 paren-balance 0
+15:04:54 base power OK: base,20,27924.2,279.24,145,45,101,40.49,12.57,100%   (11138/11138)
+15:04:56 mf_gentle SAIF names: bus 16190 scalar 17760 dropped 0 left-escaped 0 paren-balance 0
+15:05:25 mf_gentle power OK: mf_gentle,20,14641.9,146.42,151,49,101,22.11,7.17,100%   (28375/28375)
+15:05:27 mf_aggr SAIF names: bus 16190 scalar 17760 dropped 0 left-escaped 0 paren-balance 0
+15:05:55 mf_aggr power OK: mf_aggr,20,8751.1,87.51,157,56,101,13.74,4.90,100%   (28375/28375)
+15:05:55 ALL DONE
+run_v5 finished 15:05:56.53

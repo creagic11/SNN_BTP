@@ -1,0 +1,57 @@
+#-----------------------------------------------------------
+# xsim v2024.1 (64-bit)
+# SW Build 5076996 on Wed May 22 18:37:14 MDT 2024
+# IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+# SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+# Start of session at: Wed Oct 28 14:41:34 2026
+# Process ID: 16432
+# Current directory: C:/Users/Anubhav/hush_fpga/out_v5c/pwr/mf_aggr
+# Command line: xsim.exe -log sim_try1.log -mode tcl -source {xsim.dir/snap_net/xsim_script.tcl}
+# Log file: C:/Users/Anubhav/hush_fpga/out_v5c/pwr/mf_aggr/sim_try1.log
+# Journal file: C:/Users/Anubhav/hush_fpga/out_v5c/pwr/mf_aggr\xsim.jou
+# Running On        :LAPTOP-GFP075F7
+# Platform          :Windows Server 2016 or Windows 10
+# Operating System  :26200
+# Processor Detail  :13th Gen Intel(R) Core(TM) i5-1340P
+# CPU Frequency     :2189 MHz
+# CPU Physical cores:12
+# CPU Logical cores :16
+# Host memory       :16803 MB
+# Swap memory       :20845 MB
+# Total Virtual     :37648 MB
+# Available Virtual :6399 MB
+#-----------------------------------------------------------
+source xsim.dir/snap_net/xsim_script.tcl
+# xsim {snap_net} -autoloadwcfg -tclbatch {saif.tcl}
+Time resolution is 1 ps
+source saif.tcl
+## open_saif C:/Users/Anubhav/hush_fpga/out_v5c/pwr/mf_aggr/act.saif
+get_objects: Time (s): cpu = 00:04:07 ; elapsed = 00:04:26 . Memory (MB): peak = 242.977 ; gain = 0.000
+## log_saif [get_objects -r /tb_net/u_top/*]
+## run all
+I 0 5616
+I 1 8993
+I 2 6530
+I 3 9922
+I 4 7522
+I 5 10400
+I 6 9185
+I 7 11160
+I 8 8147
+I 9 5408
+I 10 8416
+I 11 8822
+I 12 14107
+I 13 5776
+I 14 9070
+I 15 9909
+I 16 5379
+I 17 9192
+I 18 10208
+I 19 8125
+$finish called at time : 1719265 ns : File "C:/Users/Anubhav/hush_fpga/fpga/tb_net.sv" Line 17
+run: Time (s): cpu = 00:00:01 ; elapsed = 00:18:04 . Memory (MB): peak = 242.977 ; gain = 0.000
+## close_saif
+## quit
+INFO: xsimkernel Simulation Memory Usage: 144608 KB (Peak: 144608 KB), Simulation CPU Usage: 1005796 ms
+INFO: [Common 17-206] Exiting xsim at Wed Oct 28 15:04:06 2026...
