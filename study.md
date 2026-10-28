@@ -1,5 +1,7 @@
 # HUSH v2 — Study Checklist for Defense and Conference
 
+> Learn the project from `docs/primer.md` first; use this checklist after each primer section to test yourself and to go deeper (each item names the repo file with the detail).
+
 Work through this in order. Each item says what you must be able to do at the board without notes. Items are added as the project reaches each phase; the repo file that holds the material is given in brackets.
 
 ## Phase 0 — Foundations and the core idea
@@ -73,7 +75,7 @@ Work through this in order. Each item says what you must be able to do at the bo
 
 ## Phase 2 — Microarchitecture and verification (added at T2.x)
 - [ ] Draw the datapath from memory, including the overlap of envelope(t+1) with PE(t).
-- [ ] Derive the exact cycle model (`rtl/sim/cycle_model.py`): awake block 4 + (n_t + 3), asleep block 3, COMBINE stalls until the envelope bank for t is ready; and the speedup bound min(G, 1/ρ).
+- [ ] Derive the exact cycle model (`rtl/sim/cycle_model.py`): awake block 4 + (n_t + 4) since v5 (4 + (n_t + 3) before the 28 Oct event-index register), asleep block 3, COMBINE stalls until the envelope bank for t is ready; and the speedup bound min(G, 1/ρ).
 - [ ] Explain why HUSH is never slower in cycles than BASE but can cost more energy at ρ ≈ 1.
 - [ ] Walk through `rtl/hush_layer.sv`: ETU 3-stage pipeline and double-buffered banks; combine; block loop states SEL/LOAD/RUN/FIN/FIN2 (two-stage finalize since 27 Oct) and the 3-cycle asleep pass; the R refresh through a registered word and a balanced two-stage max tree; why accumulators are 18 bits (|D| ≤ 578 × 127 < 2^17) and the clip happens once.
 - [ ] How the RTL is checked bit-exact: `rtl/sim/run_case.py` compares every block write-back (spikes + state) and the counters with the golden model.
@@ -109,9 +111,9 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] The four levels of comparison and what each proves: internal ablation (BASE vs HUSH), competing ideas in the same setting (SITRA-/Early-style), same-device external baseline (Spiker+, to do), published SOTA table.
 - [ ] Normalised metrics and why raw LUT/power numbers across papers mislead: energy per inference, energy per (dense-equivalent) SOP, throughput per kLUT, latency.
 - [ ] Our hardware table by heart (v5, Vivado 2024.1, XC7A100T, 100 MHz met): BASE 3,821 LUT / 2,643 FF / 43 RAMB36 / 0 DSP / 145 mW (45 dynamic) / 302.9 µs / 43.9 µJ; HUSH-MF 9,800 LUT / 6,284 FF / 57 RAMB36 + 2 RAMB18 / 0 DSP; gentle 95.32% / 151 mW / 153.0 µs / 23.1 µJ (1.98×, −47%); aggressive 92.72% / 157 mW / 97.2 µs / 15.3 µJ (3.12×, −65%). Whole network, 500 samples; power = gate-level SAIF on the hidden-layer build.
-- [ ] The N-MNIST SOTA row: Wu, Song & So (FPT 2023), ZCU102, 95.76%, 50 ms, 0.33–0.37 W (≈ 17.5 mJ). Our gentle point: ≈ 335× lower latency, ≈ 600× lower energy, 4–15× fewer LUTs — and why those ratios reflect different designs and devices, not HUSH alone.
+- [ ] The N-MNIST SOTA row: Wu, Song & So (FPT 2023), ZCU102, 95.76%, 50 ms, 0.33–0.37 W (≈ 17.5 mJ). Our gentle point (v5): ≈ 330× lower latency, ≈ 760× lower energy, 4–17× fewer LUTs — and why those ratios reflect different designs and devices, not HUSH alone.
 - [ ] MNIST-class rows for scale: Ansari & Wielgosz 2026 (Artix-7 200T, 96.7%, 82 µs, ≈ 27.6 µJ), Spiker-LL 2026 (39 µJ), Spiker+ 2024 (780 µs, ≈ 140 µJ). SHD rows: Chen et al. 2025 93.4% (delays, 9.6 ms), Spiker+ 72.99%.
-- [ ] Our honest weak points and the answer to each: accuracy (−2.3 to −4.9 pt on N-MNIST; SHD trails delay designs) → GPU; area (8× BASE LUTs) → still 17% of a 100T; vectorless power → SAIF next, board when available.
+- [ ] Our honest weak points and the answer to each: accuracy (−2.3 to −4.9 pt on N-MNIST; SHD trails delay designs) → GPU; area (2.6× BASE LUTs, v5) → still 15.5% of a 100T; power is a gate-level activity-based estimate → board when available.
 - [ ] Why the GPU and the Nexys A7-100T are needed, in one sentence each (accuracy gap / measured power).
 
 ## Presentation drills
@@ -122,8 +124,8 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] Answer: "Your gated network is not the network you trained — so what is your accuracy claim?"
 - [ ] Answer: "Why should energy fall if the envelope unit runs every timestep?"
 - [ ] Answer: "Did you try clustering neurons into better groups?" (yes: no gain after co-training, and why)
-- [ ] Answer: "Your HUSH design is 8× the LUTs of BASE — where is the win?" (latency 2–3× and energy −15 to −46% at 17% of the device; area is fixed, savings scale with inference count)
-- [ ] Answer: "Your energy numbers are vectorless estimates." (yes, conservative for HUSH; SAIF v2 and board measurement planned — say exactly what each adds)
+- [ ] Answer: "Your HUSH design is 2.6× the LUTs of BASE — where is the win?" (latency 2–3× and energy −47 to −65% at 15.5% of the device; area is fixed, savings scale with inference count)
+- [ ] Answer: "Your energy numbers are estimates." (yes: gate-level activity-based, 100% nets matched, but Vivado's model without glitch power; the board measurement A7 replaces it — say exactly what each adds)
 
 ## A3 power results (28 Oct) — defend these
 - Why the earlier numbers were thrown away: (1) the LED fold only observed lanes 0-5/26-31, so synthesis deleted most of BASE; (2) ROM tables let synthesis trim INT8 weights to 6 bits; (3) the sub-block column gating existed only in a counter; (4) a test-harness ROM added 10k LUTs to HUSH only. A reviewer finding any one of these would reject the comparison.
