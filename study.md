@@ -124,3 +124,10 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] Answer: "Did you try clustering neurons into better groups?" (yes: no gain after co-training, and why)
 - [ ] Answer: "Your HUSH design is 8× the LUTs of BASE — where is the win?" (latency 2–3× and energy −15 to −46% at 17% of the device; area is fixed, savings scale with inference count)
 - [ ] Answer: "Your energy numbers are vectorless estimates." (yes, conservative for HUSH; SAIF v2 and board measurement planned — say exactly what each adds)
+
+## A3 power results (28 Oct) — defend these
+- Why the earlier numbers were thrown away: (1) the LED fold only observed lanes 0-5/26-31, so synthesis deleted most of BASE; (2) ROM tables let synthesis trim INT8 weights to 6 bits; (3) the sub-block column gating existed only in a counter; (4) a test-harness ROM added 10k LUTs to HUSH only. A reviewer finding any one of these would reject the comparison.
+- How power is measured: post-route functional netlist simulated in xsim over 20 N-MNIST samples → SAIF of every net → read_saif (100% nets matched, confidence High) → report_power. Zero-delay activity, so glitch power is not included; it is an estimate, not a board measurement.
+- Why BRAM dynamic power is only 11-14 mW: each read enables one BRAM (ram_decomp = "power" splits deep RAMs by address) and HUSH reads only the weight columns of awake sub-blocks.
+- Headline: at +4-8% power, HUSH-MF cuts latency 1.9-3.2× and energy per inference 1.8-3.0× (dynamic 1.75-2.6×) against the same-chip dense baseline. Costs: 2.6× LUTs, +35% BRAM (P/Q tables, envelope units).
+- Static power (~101 mW) is the XC7A100T's and dominates total power; the energy gain comes from finishing sooner as well as from switching less.
