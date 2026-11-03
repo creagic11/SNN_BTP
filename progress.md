@@ -31,7 +31,9 @@ Status keys: DONE · IN PROGRESS · TODO · BLOCKED · PAUSED · DEFERRED
 | 27 Oct | Report results against published state-of-the-art works on every axis (accuracy, latency, energy, power, resources, safety), at current accuracy; use the report to justify a GPU and a Nexys A7-100T board | professor's instruction relayed by the user |
 | 27 Oct | Three RTL timing fixes (pipelined R refresh, two-stage finalize, balanced two-stage max tree) | HUSH failed 100 MHz (WNS −12.9 ns); all variants now close |
 
-## Paper A track (tier-2: guarantee + headroom theory + measured hardware; target TCAS-II / DATE)
+## Paper A track (tier-2: guarantee + headroom theory + measured hardware; target TCAS-II / FCCM 2027)
+
+**Current plan (3 Nov): `docs/plan_nov2026.md`** — every task has numbered steps with "done when" checks; this table holds the status.
 
 Agreed with the user (28 Oct, 00:19): finish the missing Paper A tasks except the board measurement, in this order — (1) A3 SAIF power [started 28 Oct; ~½ day, user runs Vivado], (2) A4 Spiker+ on the same chip [1–2 days, user runs Vivado], (3) A5 three seeds per N-MNIST point [~1 day CPU], (4) A8 paper draft [2–3 days, user and professor review], (5) A6 raise gated N-MNIST accuracy [~1 day CPU, outcome uncertain]. A7 (board) waits for hardware. Report v2 after A3 for the supervisor meeting.
 
@@ -40,11 +42,12 @@ Agreed with the user (28 Oct, 00:19): finish the missing Paper A tasks except th
 | A1 | Vivado P&R of BASE, HUSH-drop, HUSH-MF at 100 MHz | DONE | `results/vivado_2024_1/` |
 | A2 | Comparison report v1 vs state of the art | DONE | Claude Doc (link above) |
 | A3 | SAIF power (gate-level, 20 N-MNIST samples) | DONE 28 Oct (v5, results/power_saif_v5) | supersedes vectorless + v4 numbers |
-| A4 | Spiker+ on the same device and topology (external apples-to-apples baseline) | TODO | Spiker+ is public, no LICENSE: baseline use only |
-| A5 | 3 seeds per N-MNIST point (gentle, aggressive, ungated) | TODO | CPU, ~1 h per run |
-| A6 | Raise N-MNIST gated accuracy towards ≥ 97% (gentler λ, wider hidden layer) | TODO | CPU-limited; GPU would speed it up |
+| A4 | Spiker+ on the same device and topology (A4.1–A4.6 in `docs/plan_nov2026.md`) | TODO (starts 3 Nov) | user runs laptop run L1; Spiker+ has no LICENSE: baseline use only |
+| A5 | 3 seeds per N-MNIST point (A5.1–A5.3) | TODO (starts 3 Nov, CPU background) | `results/seeds_nmnist.md` |
+| A6 | Raise N-MNIST gated accuracy (A6.1–A6.3) | TODO (after A5, CPU background) | target ≥ 96.5% at reads ≤ 0.25 |
+| A9 | Real-time inference on a live sensor stream: full network on chip, stream mode, streaming testbench (A9.1–A9.6) | TODO (4–7 Nov) | professor's request, 3 Nov; user runs part of laptop run L1 |
 | A7 | Board ΔP measurement, BASE vs HUSH | BLOCKED | needs Nexys A7-100T + meter |
-| A8 | Paper A draft (figures: headroom table, safety table, hardware table, SOTA table) | TODO | |
+| A8 | Paper A draft (A8.0–A8.4; venue: TCAS-II or FCCM 2027, to confirm) | TODO (8–12 Nov) | |
 
 ## Paper B track (tier-1, needs GPU)
 
@@ -210,3 +213,4 @@ GA criterion: SHD recurrent adLIF ≥ 90% ungated; HUSH ≤ 0.5 pt loss at ≥ 2
 - 2026-10-28 (17:25 IST) · **A3 DONE (v5, run out_v5c)**: all six builds meet timing (timing builds BASE +1.441 / HUSH-drop +0.198 / HUSH-MF +0.496 ns; power builds +0.270 / +0.491 / +0.491); nets matched 100%, confidence High; netlist cycles = model + 3..8. Energy per hidden-layer inference: BASE 40.49 µJ (12.57 dyn), HUSH-MF gentle 22.11 (7.17), aggressive 13.74 (4.90) → **1.83× / 2.95× total energy, 1.75× / 2.57× dynamic energy, 1.91× / 3.19× latency** at +4% / +8% power. Area: BASE 3,821 LUT / 43 BRAM vs HUSH-MF 9,800 LUT / 58 BRAM. Archived in `results/power_saif_v5/` (README + energy.csv); old results/vivado_2024_1 and results/power_saif superseded. Full reports archived in results/power_saif_v5/reports/ (copied 28 Oct 18:40 after a transient laptop-transfer failure; md5 verified). Next: comparison report v2 with these numbers, then A4 (Spiker+).
 - 2026-10-28 (18:00 IST) · Report · Comparison report updated to **v2** (Claude Doc, same link): summary, measured-results tables, power method, new "Corrections since v1" section, SOTA rows, methodology bullet. Whole-network latency recomputed with the v5 cycle model (500 samples): BASE 302.9 µs, gentle 153.0 (1.98×), aggressive 97.2 (3.12×); energy = SAIF power × latency: 43.9 / 23.1 (−47%) / 15.3 µJ (−65%); per dense-equivalent SOP 64.3 / 33.8 / 22.4 pJ. vs FPT 2023 N-MNIST: ≈330× latency, ≈760× energy, 4–17× fewer LUTs. Repo docs updated (README, fpga/README with the working v5 commands, novelty_check rows, study, superseded banners on results/vivado_2024_1 and results/power_saif; results/*/rtl_perf.json regenerated with the v5 model).
 - 2026-10-28 (19:20 IST) · Study · `docs/primer.md` ("HUSH from scratch", 12 sections: one-page summary, basics, gate + proof, training + headroom, hardware, verification, results + 4-level SOTA comparison, why v1 numbers were discarded, open tasks, 10 hard questions, glossary) written for a separate learning chat; also saved to the Claude Project as claude/HUSH_primer.md. study.md stale v1 items updated to v5 and now points to the primer. Task 2 (A4 Spiker+) starts 29 Oct.
+- 2026-11-03 · Plan · Decisions with the user: GPU work deferred (reused later), Paper A on simulation + activity-based power (no board), professor wants clear SOTA wins on some axes + real-time inference on a live sensor stream. Plan `docs/plan_nov2026.md`: S0 housekeeping; A5 seeds (CPU background); A4 Spiker+ same chip (Spiker+ uses β = 0.9375 = 1 − 2⁻⁴ and subtract reset = our neuron); A9 real-time (full network on chip, stream mode, streaming testbench; measured stream stats: 27 events/bin mean, 84 max); laptop run L1 (A4 + A9 builds); A6 accuracy; A8 draft by 12 Nov (ISCAS 2027 deadline passed 13 Oct; TCAS-II or FCCM 2027 ≈ 10 Jan). Honest framing recorded: both BASE and HUSH are real-time by >400×, so HUSH's real-time gain is capacity (streams per chip) and dynamic energy, not real-time capability; static power dominates energy per 300 ms window.
