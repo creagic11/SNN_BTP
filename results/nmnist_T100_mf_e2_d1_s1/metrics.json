@@ -1,0 +1,112 @@
+{
+  "args": {
+    "dataset": "nmnist",
+    "sizes": [
+      578,
+      256,
+      10
+    ],
+    "T": 100,
+    "k": 4,
+    "theta": 64,
+    "gain": 1,
+    "t_max": 0.3,
+    "epochs": 6,
+    "bs": 128,
+    "lr": 0.02,
+    "rate_target": 0.05,
+    "rate_lam": 5.0,
+    "env_lam": 1.0,
+    "env_benv": 8,
+    "gate_benv": 8,
+    "asleep_drive": "mean",
+    "exc_lam": 2.0,
+    "init": "results/nmnist_T100_s1/weights.npz",
+    "seed": 1,
+    "limit": 0,
+    "tag": "nmnist_T100_mf_e2_d1_s1",
+    "model": "ff",
+    "dmax": 25,
+    "bn": false,
+    "lr_bias": 1.0,
+    "lr_pos": 0.1,
+    "sigma0": 0.0,
+    "sig_frac": 0.5,
+    "no_rec": false,
+    "no_adapt": false,
+    "kw": 5,
+    "sa": 8,
+    "drop": 0.0,
+    "readout": "spk",
+    "k_out": 0,
+    "u_scale": 0.125,
+    "signed_drive": 1,
+    "threads": 2,
+    "aug_shift": 0,
+    "aug_stretch": 0.0,
+    "aug_jitter": 0,
+    "pool": 0,
+    "clip": 0.0,
+    "val_frac": 0.0,
+    "het": 0,
+    "detach_reset": false,
+    "log_grad": false,
+    "sscale_div": 0.0
+  },
+  "log": [
+    {
+      "epoch": 1,
+      "loss": 5.831744329706828,
+      "test_acc": 0.926,
+      "hidden_rate": 0.01069685947149992,
+      "sec": 176.1,
+      "read_frac": 0.2156609150528286,
+      "env_drive_theta": 2.4243249893188477
+    },
+    {
+      "epoch": 2,
+      "loss": 2.086787048975627,
+      "test_acc": 0.9166,
+      "hidden_rate": 0.010516695259138942,
+      "sec": 165.0,
+      "read_frac": 0.09387181344134274,
+      "env_drive_theta": 1.2126697301864624
+    },
+    {
+      "epoch": 3,
+      "loss": 1.193325668780009,
+      "test_acc": 0.9216,
+      "hidden_rate": 0.009858902357518674,
+      "sec": 165.3,
+      "read_frac": 0.07304586088525335,
+      "env_drive_theta": 0.6133121848106384
+    },
+    {
+      "epoch": 4,
+      "loss": 0.8370674683888754,
+      "test_acc": 0.9227,
+      "hidden_rate": 0.009595249989069998,
+      "sec": 165.2,
+      "read_frac": 0.06782402552667159,
+      "env_drive_theta": 0.41282299160957336
+    },
+    {
+      "epoch": 5,
+      "loss": 0.7219881628354391,
+      "test_acc": 0.9305,
+      "hidden_rate": 0.009809546847827732,
+      "sec": 167.2,
+      "read_frac": 0.06776798958238321,
+      "env_drive_theta": 0.36783477663993835
+    },
+    {
+      "epoch": 6,
+      "loss": 0.6924652523040772,
+      "test_acc": 0.927,
+      "hidden_rate": 0.008839730406180024,
+      "sec": 165.4,
+      "read_frac": 0.06147206690425679,
+      "env_drive_theta": 0.34676235914230347
+    }
+  ]
+}

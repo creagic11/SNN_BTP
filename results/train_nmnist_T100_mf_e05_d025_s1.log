@@ -1,0 +1,7 @@
+{"epoch": 1, "loss": 1.7432790426890055, "test_acc": 0.9581, "hidden_rate": 0.015615855436772108, "sec": 167.9, "read_frac": 0.47877186751124845, "env_drive_theta": 2.7357120513916016}
+{"epoch": 2, "loss": 0.8943682742118836, "test_acc": 0.9493, "hidden_rate": 0.015464761760085821, "sec": 165.8, "read_frac": 0.2542788171275464, "env_drive_theta": 1.9657443761825562}
+{"epoch": 3, "loss": 0.6649809044202168, "test_acc": 0.952, "hidden_rate": 0.014943363331258296, "sec": 173.6, "read_frac": 0.19168102374795407, "env_drive_theta": 1.5399163961410522}
+{"epoch": 4, "loss": 0.5601764296213786, "test_acc": 0.9536, "hidden_rate": 0.014458038983866573, "sec": 172.0, "read_frac": 0.16913509473583543, "env_drive_theta": 1.3075876235961914}
+{"epoch": 5, "loss": 0.5115581940968832, "test_acc": 0.9541, "hidden_rate": 0.014185531251132488, "sec": 185.9, "read_frac": 0.15889621014083583, "env_drive_theta": 1.2118536233901978}
+{"epoch": 6, "loss": 0.49465695015589395, "test_acc": 0.954, "hidden_rate": 0.013641374977305531, "sec": 171.8, "read_frac": 0.15256197688333425, "env_drive_theta": 1.1831238269805908}
+saved /home/claude/snn_btp/results/nmnist_T100_mf_e05_d025_s1
