@@ -88,6 +88,18 @@ Two facts to state honestly in the paper (they shape the claim):
 
 ---
 
+## A10 — published FPGA results on our dataset (Claude, 3–4 Nov, ~2 h, alongside A5)
+
+Gap: only one published FPGA design in our table reports N-MNIST (Wu, Song & So, FPT 2023). The other rows are
+MNIST or SHD (context only).
+
+| ID | Step | Done when |
+|---|---|---|
+| A10.1 | Targeted search (arXiv, IEEE/ACM venues, surveys arXiv 2502.20415 and 2407.08356, Zotero): FPGA SNN accelerators evaluated on **N-MNIST** or **DVS-Gesture**, 2021–2026 | candidate list with links |
+| A10.2 | For each: open the paper, extract FPGA, network, accuracy, LUT/FF/BRAM/DSP, clock, power, latency, energy (computed as power × latency only when not reported, marked *), and whether power is measured or estimated | table in the project format [Paper / SNN model / FPGA target / LUTs-DSPs-BRAM / Power / Key innovation] + latency, energy, accuracy columns, in `docs/literature/nmnist_dvs_fpga.md` |
+| A10.3 | Include the TCAS-I 2025 DVS accelerator (resource table still missing) | its row filled or marked "not reported" |
+| A10.4 | Add the rows to Zotero ("HUSH – Literature") and to comparison report v3 | ≥ 3 N-MNIST rows (or every one found, if fewer exist) |
+
 ## Laptop run L1 (one command for the user, ~3–4 h unattended, target 6–7 Nov)
 
 Contents: A4.5 (Spiker+ build + netlist simulation + SAIF) and A9.5 (two full-network stream-mode builds).
@@ -123,7 +135,7 @@ If nothing beats the current front, report the sweep as the Pareto front and sto
 | A8.1 | Outline + figure list: datapath, gate/theorem, headroom table, safety-vs-heuristics table, hardware table, SOTA + same-chip table, real-time table, accuracy–reads front with error bars | outline in `paper/` |
 | A8.2 | Full draft in the venue template (LaTeX), every number traced to a results file | draft PDF; a script checks each number in the text against `results/` |
 | A8.3 | Internal review pass (fresh-eyes reviewer agent), fix list applied | review notes + changes logged |
-| A8.4 | Comparison report v3 (same link) with A4, A5, A9 | report updated |
+| A8.4 | Comparison report v3 (same link) with A4, A5, A9, A10 | report updated |
 
 ---
 
@@ -131,8 +143,8 @@ If nothing beats the current front, report the sweep as the Pareto front and sto
 
 | Date | Claude | User |
 |---|---|---|
-| 3 Nov | S0; A5 starts; A4.1–A4.2 | — |
-| 4–5 Nov | A4.3–A4.4; A9.1–A9.3 | — |
+| 3 Nov | S0; A5 starts; A10.1–A10.2; A4.1–A4.2 | — |
+| 4–5 Nov | A10.3–A10.4; A4.3–A4.4; A9.1–A9.3 | — |
 | 6 Nov | A9.4; prepare and deliver laptop run L1 | run L1 (~3–4 h) |
 | 7 Nov | check L1; A4.6, A9.6; A5.3 table; A6 starts in background | — |
 | 8–11 Nov | A8.0–A8.3 | confirm venue with the professor |
