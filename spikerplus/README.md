@@ -17,3 +17,15 @@ recurrent weights (all zero for a feed-forward layer). Layer l+1 sees layer l's 
 
 Results so far (3 Nov 2026): model = GHDL on 25 random (net, input) cases; our ungated seed-0 weights reach
 **97.53 %** on Spiker+ semantics (ours: 97.59 %), full 10,000-sample test set. Full 578-256-10 design in GHDL: 82,573 cycles for test sample 0 (≈ 826 µs at 100 MHz).
+
+## FPGA harness (A4.4) — `fpga/`
+
+| File | Purpose |
+|---|---|
+| `top_spiker.vhd` | same harness as our `fpga/top_hush.sv`: 20 N-MNIST samples on chip (one 578-bit word per step, `spk.mem`), back-to-back autorun, every output spike XOR-folded into the LEDs |
+| `tb_top_spiker.vhd` | GHDL check of the harness (2 inferences: output spikes at every step = model, bit-exact) |
+| `build_spiker.tcl`, `nexys_spiker.xdc` | Vivado non-project flow (same steps and reports as `fpga/build.tcl`) |
+| `tb_spk_net.sv` | gate-level testbench for the routed netlist (SAIF run) |
+
+Note for fairness: Spiker+ stores weights in ROMs (VHDL constants), as generated. Synthesis may trim constant
+weight bits, which can only favour Spiker+ in area and power; our HUSH/BASE use writable RAMs.
