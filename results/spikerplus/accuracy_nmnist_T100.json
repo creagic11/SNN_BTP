@@ -1,0 +1,6 @@
+{
+ "weights": "nmnist_T100",
+ "n": 10000,
+ "spikerplus_acc": 0.9753,
+ "hidden_rate": 0.051051859374999994
+}
