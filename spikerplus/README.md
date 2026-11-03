@@ -13,7 +13,7 @@ LIF networks. Its generated files carry the Unlicense (public domain) header. No
 
 Spiker+ neuron semantics (differ from ours): at each step start, fire if V > θ (strict) → V − θ without leak, else
 leak V − (V >>> 4); then add the weights of the active inputs (scanning all inputs serially), then the layer's own
-recurrent weights (all zero for a feed-forward layer). Layer l+1 sees layer l's spikes one step later.
+recurrent weights (all zero for a feed-forward layer). Layer l+1 sees layer l's spikes of the same step (fixed by the full-size GHDL run).
 
 Results so far (3 Nov 2026): model = GHDL on 25 random (net, input) cases; our ungated seed-0 weights reach
-**97.53 %** on Spiker+ semantics (ours: 97.59 %), full 10,000-sample test set.
+**97.53 %** on Spiker+ semantics (ours: 97.59 %), full 10,000-sample test set. Full 578-256-10 design in GHDL: 82,573 cycles for test sample 0 (≈ 826 µs at 100 MHz).

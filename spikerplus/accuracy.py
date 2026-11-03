@@ -10,7 +10,7 @@ z = np.load(ROOT / "results" / tag / "weights.npz"); Ws = [z["W0"].astype(np.int
 R, Y = test_rasters(z, n); R = np.asarray(R, np.int8); Y = np.asarray(Y)
 correct = 0; vmax = 0; hid_rate = 0.0
 for i in range(0, len(Y), 500):
-    outs = sm.run(Ws, R[i:i+500].astype(np.int64), theta=int(z["theta"]), k=int(z["k"]), delay=1)
+    outs = sm.run(Ws, R[i:i+500].astype(np.int64), theta=int(z["theta"]), k=int(z["k"]), delay=0)
     correct += int((sm.predict(outs[1]) == Y[i:i+500]).sum()); hid_rate += outs[0].mean() * len(Y[i:i+500])
 res = {"weights": tag, "n": len(Y), "spikerplus_acc": correct / len(Y), "hidden_rate": hid_rate / len(Y)}
 print(json.dumps(res)); (ROOT / "results" / "spikerplus").mkdir(exist_ok=True)

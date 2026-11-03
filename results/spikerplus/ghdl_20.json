@@ -1,0 +1,18 @@
+{
+ "n": 1,
+ "all_match": false,
+ "mean_cycles": 82573.0,
+ "correct_hw": 1,
+ "rows": [
+  {
+   "idx": 0,
+   "label": 3,
+   "events": 2669,
+   "cycles": 82573,
+   "match": false,
+   "class_hw": 3,
+   "class_model": 3,
+   "sim_s": 66.2
+  }
+ ]
+}
