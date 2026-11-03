@@ -1,0 +1,18 @@
+{
+  "BASE": {
+    "acc": 0.96,
+    "cycles": 43473.862,
+    "latency_us": 434.73862,
+    "word_reads": 32540.108,
+    "col_reads": 130160.432
+  },
+  "HUSH": {
+    "acc": 0.952,
+    "cycles": 22103.87,
+    "latency_us": 221.0387,
+    "word_reads": 15009.94,
+    "col_reads": 19388.698
+  },
+  "speedup": 1.9667986646682234,
+  "col_read_ratio": 0.14896000037860968
+}
