@@ -1,0 +1,107 @@
+{
+  "args": {
+    "dataset": "nmnist",
+    "sizes": [
+      578,
+      256,
+      10
+    ],
+    "T": 100,
+    "k": 4,
+    "theta": 64,
+    "gain": 1,
+    "t_max": 0.3,
+    "epochs": 10,
+    "bs": 128,
+    "lr": 0.05,
+    "rate_target": 0.05,
+    "rate_lam": 5.0,
+    "env_lam": 0.0,
+    "env_benv": 8,
+    "gate_benv": 0,
+    "asleep_drive": "none",
+    "exc_lam": 0.0,
+    "init": "",
+    "seed": 2,
+    "limit": 0,
+    "tag": "nmnist_T100_s2",
+    "model": "ff",
+    "dmax": 25,
+    "bn": false,
+    "lr_bias": 1.0,
+    "lr_pos": 0.1,
+    "sigma0": 0.0,
+    "sig_frac": 0.5,
+    "no_rec": false,
+    "no_adapt": false,
+    "kw": 5,
+    "sa": 8,
+    "drop": 0.0,
+    "readout": "spk",
+    "k_out": 0,
+    "u_scale": 0.125,
+    "signed_drive": 1,
+    "threads": 2,
+    "aug_shift": 0,
+    "aug_stretch": 0.0,
+    "aug_jitter": 0,
+    "pool": 0,
+    "clip": 0.0,
+    "val_frac": 0.0,
+    "het": 0,
+    "detach_reset": false,
+    "log_grad": false,
+    "sscale_div": 0.0
+  },
+  "log": [
+    {
+      "epoch": 1,
+      "loss": 1.894267458597819,
+      "test_acc": 0.8906,
+      "hidden_rate": 0.05285849217325449,
+      "sec": 987.3
+    },
+    {
+      "epoch": 2,
+      "loss": 0.26229260755379996,
+      "test_acc": 0.943,
+      "hidden_rate": 0.05087780468165874,
+      "sec": 712.6
+    },
+    {
+      "epoch": 3,
+      "loss": 0.15398569562832515,
+      "test_acc": 0.9569,
+      "hidden_rate": 0.05003743823617697,
+      "sec": 898.6
+    },
+    {
+      "epoch": 4,
+      "loss": 0.11461373170216878,
+      "test_acc": 0.9671,
+      "hidden_rate": 0.04976214021444321,
+      "sec": 1184.7
+    },
+    {
+      "epoch": 5,
+      "loss": 0.09099168382883072,
+      "test_acc": 0.9701,
+      "hidden_rate": 0.05039551183581352,
+      "sec": 1089.4
+    },
+    {
+      "epoch": 6,
+      "loss": 0.07677398320833842,
+      "test_acc": 0.9702,
+      "hidden_rate": 0.0500809570774436,
+      "sec": 1134.4
+    },
+    {
+      "epoch": 7,
+      "loss": 0.06535310821533204,
+      "test_acc": 0.973,
+      "hidden_rate": 0.04983909353613854,
+      "sec": 876.3
+    }
+  ]
+}
