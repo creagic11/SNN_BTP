@@ -16,7 +16,7 @@ leak V − (V >>> 4); then add the weights of the active inputs (scanning all in
 recurrent weights (all zero for a feed-forward layer). Layer l+1 sees layer l's spikes of the same step (fixed by the full-size GHDL run).
 
 Results so far (3 Nov 2026): model = GHDL on 25 random (net, input) cases; our ungated seed-0 weights reach
-**97.53 %** on Spiker+ semantics (ours: 97.59 %), full 10,000-sample test set. Full 578-256-10 design in GHDL: 82,573 cycles for test sample 0 (≈ 826 µs at 100 MHz).
+**97.53 %** on Spiker+ semantics (ours: 97.59 %), full 10,000-sample test set. Full 578-256-10 design in GHDL on the 20 power samples: all bit-exact to the model, mean **81,422 cycles** (814 µs at 100 MHz; ours: BASE 302.9 µs, HUSH gentle 153.0 µs).
 
 ## FPGA harness (A4.4) — `fpga/`
 
