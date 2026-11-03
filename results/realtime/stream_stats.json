@@ -1,0 +1,50 @@
+{
+  "samples_raw": 10000,
+  "T": 100,
+  "bin_us": 3000.0,
+  "budget_cycles_per_bin": 300000,
+  "recording_length_us": {
+    "mean": 307660.0678,
+    "p50": 307777.0,
+    "p99": 312779.06,
+    "p999": 314758.188,
+    "max": 336040
+  },
+  "raw_events_per_bin": {
+    "mean": 41.930981,
+    "p50": 33.0,
+    "p99": 135.0,
+    "p999": 163.0,
+    "max": 284
+  },
+  "active_inputs_per_bin": {
+    "mean": 26.530323,
+    "p50": 25.0,
+    "p99": 66.0,
+    "p999": 76.0,
+    "max": 96
+  },
+  "uart_baud_needed_mean": 180202.15333333332,
+  "uart_baud_needed_max": 643333.3333333334,
+  "BASE_cycles_per_bin": {
+    "mean": 295.17812,
+    "p50": 284.0,
+    "p99": 624.0,
+    "p999": 699.0010000000038,
+    "max": 828
+  },
+  "BASE_headroom_at_max": 362.3188405797101,
+  "BASE_streams_per_chip_mean": 1016.3354926171357,
+  "BASE_min_fclk_MHz_for_worst_bin": 0.276,
+  "HUSH_cycles_per_bin": {
+    "mean": 185.39374,
+    "p50": 156.0,
+    "p99": 577.0,
+    "p999": 712.0030000000115,
+    "max": 840
+  },
+  "HUSH_headroom_at_max": 357.14285714285717,
+  "HUSH_streams_per_chip_mean": 1618.1776148428744,
+  "HUSH_min_fclk_MHz_for_worst_bin": 0.28,
+  "samples_work": 500
+}
