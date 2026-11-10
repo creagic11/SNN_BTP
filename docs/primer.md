@@ -8,6 +8,13 @@ energy saving, vectorless power) are wrong and must never be quoted (§8 explain
 
 ---
 
+> **Update, 11 Nov 2026 — numbers below in §0 and §7 are from 28 Oct and are superseded.** Current results
+> (whole network on chip, fair 22-epoch baseline, gate-level power): BASE 98.21 %, 279.5 µs, 42.5 µJ;
+> HUSH gentler 96.54 %, 159.8 µs (1.75×), 23.7 µJ; HUSH gentle 95.74 %, 114.9 µs (2.44×), 18.4 µJ; aggressive
+> 92.32 %, 82.9 µs, 14.4 µJ; Spiker+ on the same chip 818 µs, 254.5 µJ. Real time: every 3 ms window processed
+> within 4.5 µs (HUSH) / 6.6 µs (BASE). See `results/net_latency.md`, `results/power_l1/README.md`,
+> `results/realtime/realtime.md` and the paper draft `paper/hush_paperA.tex`.
+
 ## 0. The whole project in one page
 
 **Problem.** A spiking neural network (SNN) layer on an FPGA spends most of its time and energy fetching weights
