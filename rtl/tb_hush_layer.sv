@@ -22,7 +22,7 @@ module tb_hush_layer;
                  .W0_FILE(LOAD ? NO : "w0.hex"), .W1_FILE(LOAD ? NO : "w1.hex"), .W2_FILE(LOAD ? NO : "w2.hex"),
                  .W3_FILE(LOAD ? NO : "w3.hex"), .P_FILE(LOAD ? NO : "p.hex"), .Q_FILE(LOAD ? NO : "q.hex"),
                  .EV_FILE(LOAD ? NO : "ev.hex"), .TS2_FILE(LOAD ? NO : "ts2.hex")) dut (
-        .clk, .rst, .start, .smp(16'd0), .ld_we, .ld_sel, .ld_addr, .ld_data, .done, .out_valid, .out_t, .out_blk, .out_spk, .v_valid, .v_data,
+        .clk, .rst, .start, .smp(16'd0), .ld_we, .ld_sel, .ld_addr, .ld_data, .done, .avail(16'hFFFF), .out_ready(1'b1), .out_valid, .out_t, .out_blk, .out_spk, .v_valid, .v_data,
         .cnt_cycles(cyc), .cnt_col_reads(colr), .cnt_word_reads(wordr), .cnt_awake_sub(awk));
 
     logic ld_we = 0; logic [2:0] ld_sel = 0; logic [15:0] ld_addr = 0; logic [255:0] ld_data = 0;

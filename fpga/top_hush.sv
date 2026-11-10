@@ -31,7 +31,7 @@ module top_hush #(
     logic [255:0] ld_data;
     uart_loader u_ld (.clk(clk100), .rst, .rx(uart_rx), .ld_we, .ld_sel, .ld_addr, .ld_data);
     hush_layer #(.M(M), .N(N), .T(T), .K(K), .THETA(THETA), .THETA_H(THETA), .GATE(GATE), .MF(MF), .NEV(NEV), .NSMP(NSMP))
-        u_layer (.clk(clk100), .rst, .start, .smp, .ld_we, .ld_sel, .ld_addr, .ld_data, .done, .out_valid, .out_t, .out_blk, .out_spk, .v_valid, .v_data,
+        u_layer (.clk(clk100), .rst, .start, .smp, .ld_we, .ld_sel, .ld_addr, .ld_data, .done, .avail(16'hFFFF), .out_ready(1'b1), .out_valid, .out_t, .out_blk, .out_spk, .v_valid, .v_data,
                  .cnt_cycles(cyc), .cnt_col_reads(colr), .cnt_word_reads(wordr), .cnt_awake_sub(awk));
 
     // Observability (fix 28 Oct, A3b): fold ALL 32 spikes and all 512 state bits into the LEDs. The old version

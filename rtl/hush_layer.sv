@@ -36,6 +36,9 @@ module hush_layer #(
     parameter int MF       = 0,       // 1 = mean-field hibernation for asleep sub-blocks
     parameter int NEV      = 1024,    // event memory depth
     parameter int NSMP     = 1,       // samples stored on chip (power runs); sample s uses ts2[s*(T+1) +: T+1]
+    parameter int STREAM   = 0,       // 1 (A9.2, 10 Nov): timestep t starts only when t < avail;
+                                      //   the ETU for timestep t launches only when t < avail (A9.3: no look-ahead)
+    parameter int EVRING   = 0,       // 1 (A9.3): ev_mem is a ring, NEV a power of two; pointers wrap modulo 2*NEV
     parameter W0_FILE = "w0.hex",
     parameter W1_FILE = "w1.hex",
     parameter W2_FILE = "w2.hex",
@@ -55,6 +58,12 @@ module hush_layer #(
     input  logic [15:0]          ld_addr,
     input  logic [255:0]         ld_data,
     output logic                 done,
+    // stream control (used only when STREAM = 1): avail = number of timesteps whose events are complete in ev/ts2;
+    // out_ready = 0 holds the block loop before the next block (consumer of out_* is full; any STREAM value)
+    input  logic [15:0]          avail,
+    input  logic                 out_ready,
+    output logic                 ld_free,          // ev/ts2 port A is free this cycle (STREAM writers load only then)
+    output logic [15:0]          rd_ptr,           // first event of the oldest timestep still needed (ring flow control)
     // output spikes of one block at one timestep
     output logic                 out_valid,
     output logic [15:0]          out_t,
@@ -77,6 +86,7 @@ module hush_layer #(
     localparam int IW  = $clog2(M) > 0 ? $clog2(M) : 1;
     localparam int WAW = $clog2(G * M) > 0 ? $clog2(G * M) : 1;
     localparam int EAW = $clog2(NEV + 1);             // pointers reach NEV (one past the last event)
+    localparam int EIW = EVRING ? EAW - 1 : EAW;     // ev_mem index width (ring: pointer modulo NEV)
     localparam int TW  = $clog2(T + 1) > 0 ? $clog2(T + 1) : 1;
     localparam logic signed [AB-1:0] VMAX = (1 <<< (VB - 1)) - 1;
     localparam logic signed [AB-1:0] VMIN = -(1 <<< (VB - 1));
@@ -132,6 +142,7 @@ module hush_layer #(
     logic [8*C-1:0]       etu_prow, etu_qrow;
     logic                 etu_clear;                 // pulse: clear bank etu_bank (handled in ETU block)
     logic                 consume_bank_valid;
+    logic                 etu_pend;                  // STREAM: ETU for etu_t waits until timestep etu_t is available
     logic                 consume_bank;
 
     always_ff @(posedge clk) begin
@@ -170,6 +181,7 @@ module hush_layer #(
 
     // ETU memory ports
     wire etu_rd_ts = !rst && etu_go && !etu_busy;
+    assign ld_free = !(etu_go || etu_busy);
     wire etu_rd_ev = !rst && etu_busy && !etu_ld && (etu_ptr != etu_end);
     wire etu_rd_pq = !rst && etu_busy && !etu_ld && etu_v1;
     wire [TSW-1:0] tsa_addr = ld_ts ? TSW'(ld_addr) : TSW'(tsb + etu_t);
@@ -178,7 +190,8 @@ module hush_layer #(
             if (ld_ts) ts2_mem[tsa_addr] <= ld_data[31:0];
             etu_ts <= ts2_mem[tsa_addr];
         end
-    wire [EAW-1:0] eva_addr = ld_ev ? EAW'(ld_addr) : etu_ptr;
+    wire [EAW-1:0] eva_full = ld_ev ? EAW'(ld_addr) : etu_ptr;
+    wire [EIW-1:0] eva_addr = EIW'(eva_full);
     always_ff @(posedge clk)                                      // ev port A: load / ETU read
         if (ld_ev || etu_rd_ev) begin
             if (ld_ev) ev_mem[eva_addr] <= ld_data[15:0];
@@ -216,6 +229,7 @@ module hush_layer #(
     wire  [255:0]            pe_w;
     assign pe_start = EAW'(pe_ts[15:0]);
     assign pe_end   = EAW'(pe_ts[31:16]);
+    assign rd_ptr   = 16'(pe_start);
     logic signed [AB-1:0]    acc [32];
     logic [32*VB-1:0]        st_rd;
     logic                    first;                  // state word arrives this cycle
@@ -282,11 +296,12 @@ module hush_layer #(
     end
 
     // block-loop memory ports
-    wire pe_rd_ts = !rst && (st == S_COMBINE) && (!(GATE || MF) || bank_ready[cur_bank]);
+    wire step_ok  = !STREAM || (16'(t) < avail);
+    wire pe_rd_ts = !rst && (st == S_COMBINE) && step_ok && (!(GATE || MF) || bank_ready[cur_bank]);
     wire pe_rd_ev = !rst && (st == S_BLK_RUN) && (pe_ptr != pe_end);
     wire pe_rd_w  = !rst && (st == S_BLK_RUN) && pe_vj;
     always_ff @(posedge clk) if (pe_rd_ts) pe_ts <= ts2_mem[TSW'(tsb + t)];   // ts2 port B
-    always_ff @(posedge clk) if (pe_rd_ev) pe_j  <= ev_mem[pe_ptr];           // ev port B
+    always_ff @(posedge clk) if (pe_rd_ev) pe_j  <= ev_mem[EIW'(pe_ptr)];     // ev port B
     // timing fix 4 (28 Oct, v5): register the event index before it forms the weight address (critical path
     // was ev BRAM -> b*M + j -> weight-RAM enable decode, 11.4 ns in the 20-sample power builds). +1 cycle per
     // awake block with events. pe_jr maps onto the BRAM output register.
@@ -309,13 +324,14 @@ module hush_layer #(
 
     always_ff @(posedge clk) begin
         if (rst) begin
-            st <= S_IDLE; done <= 0; out_valid <= 0; v_valid <= 0; etu_go <= 0;
+            st <= S_IDLE; done <= 0; out_valid <= 0; v_valid <= 0; etu_go <= 0; etu_pend <= 0;
             consume_bank_valid <= 0;
             cnt_cycles <= 0; cnt_col_reads <= 0; cnt_word_reads <= 0; cnt_awake_sub <= 0;
             st_valid <= '0; fin_v <= 0; mid_v <= 0;
             for (int c = 0; c < C; c++) R[c] <= '0;
         end else begin
             out_valid <= 0; v_valid <= 0; etu_go <= 0; consume_bank_valid <= 0;
+            if (STREAM && etu_pend && !etu_busy && !etu_go && 16'(etu_t) < avail) begin etu_go <= 1; etu_pend <= 0; end
             fin_v <= 0; mid_v <= fin_v; mid_b <= fin_b;
             if (fin_v) for (int s = 0; s < 4; s++) for (int h = 0; h < 2; h++) mid[s][h] <= m2n[s][h];
             if (mid_v) for (int s = 0; s < 4; s++) R[4*mid_b + s] <= smax(mid[s][0], mid[s][1]);
@@ -326,26 +342,32 @@ module hush_layer #(
                     tsb <= TSW'(smp) * TSW'(T + 1);
                     st_valid <= '0;                                  // new inference: V = 0, R = 0
                     for (int c = 0; c < C; c++) R[c] <= '0;
-                    if (GATE || MF) begin etu_t <= 0; etu_bank <= 0; etu_go <= 1; st <= S_ETU0; end
+                    if (GATE || MF) begin
+                        etu_t <= 0; etu_bank <= 0; st <= S_ETU0;
+                        if (STREAM) etu_pend <= 1; else etu_go <= 1;
+                    end
                     else st <= S_COMBINE;
                 end
-                S_ETU0: if (bank_ready[0] && !etu_go) st <= S_COMBINE;
+                S_ETU0: if (bank_ready[0] && !etu_go && !etu_pend) st <= S_COMBINE;
                 S_COMBINE: begin
-                    if (!(GATE || MF) || bank_ready[cur_bank]) begin
+                    if (step_ok && (!(GATE || MF) || bank_ready[cur_bank])) begin
                         gate <= gate_next;
                         for (int c = 0; c < C; c++) qs_cur[c] <= qacc[cur_bank][c];
                         cnt_awake_sub <= cnt_awake_sub + $countones(gate_next);
                         consume_bank_valid <= (GATE || MF);
                         consume_bank       <= cur_bank;
                         // launch ETU for t+1 into the other bank, overlapped with this step's block loop
-                        if ((GATE || MF) && (t + 1 < T)) begin etu_t <= t + 1; etu_bank <= ~cur_bank; etu_go <= 1; end
+                        if ((GATE || MF) && (t + 1 < T)) begin
+                            etu_t <= t + 1; etu_bank <= ~cur_bank;
+                            if (STREAM) etu_pend <= 1; else etu_go <= 1;
+                        end
                         b <= 0;
                         st <= S_BLK_SEL;
                     end
                 end
                 S_BLK_SEL: begin
                     if (b == G) st <= S_STEP_END;
-                    else begin
+                    else if (out_ready) begin
                         st_rd <= st_valid[b] ? st_mem[b] : '0;   // synchronous state read
                         st    <= (|blk_gate) ? S_BLK_LOAD : S_SLP_FIN;
                     end
