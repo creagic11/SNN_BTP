@@ -22,5 +22,41 @@
  "nmnist_T100_mf_e05_d025_s2": {
   "acc_integer": 0.9538,
   "acc_train_eval": 0.9538
+ },
+ "nmnist_T100_mf_e2_d1": {
+  "acc_integer": 0.9272,
+  "acc_train_eval": 0.9272
+ },
+ "nmnist_T100_mf_e2_d1_s1": {
+  "acc_integer": 0.927,
+  "acc_train_eval": 0.927
+ },
+ "nmnist_T100_mf_e2_d1_s2": {
+  "acc_integer": 0.9154,
+  "acc_train_eval": 0.9154
+ },
+ "nmnist_T100_mf_e025_d01_ep12": {
+  "acc_integer": 0.9661,
+  "acc_train_eval": 0.9661
+ },
+ "nmnist_T100_mf_e025_d01_ep12_s1": {
+  "acc_integer": 0.9648,
+  "acc_train_eval": 0.9648
+ },
+ "nmnist_T100_mf_e025_d01_ep12_s2": {
+  "acc_integer": 0.9654,
+  "acc_train_eval": 0.9655
+ },
+ "nmnist_T100_mf_e05_d025_ep12": {
+  "acc_integer": 0.9573,
+  "acc_train_eval": 0.9573
+ },
+ "nmnist_T100_mf_e05_d025_ep12_s1": {
+  "acc_integer": 0.9581,
+  "acc_train_eval": 0.9581
+ },
+ "nmnist_T100_mf_e05_d025_ep12_s2": {
+  "acc_integer": 0.9568,
+  "acc_train_eval": 0.9569
  }
 }

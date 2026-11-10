@@ -4,3 +4,13 @@ nmnist_T100_s2 {'acc_integer': np.float64(0.9769), 'acc_train_eval': 0.9769}
 nmnist_T100_mf_e05_d025 {'acc_integer': np.float64(0.9532), 'acc_train_eval': 0.9532}
 nmnist_T100_mf_e05_d025_s1 {'acc_integer': np.float64(0.954), 'acc_train_eval': 0.954}
 nmnist_T100_mf_e05_d025_s2 {'acc_integer': np.float64(0.9538), 'acc_train_eval': 0.9538}
+nmnist_T100_mf_e2_d1 {'acc_integer': np.float64(0.9272), 'acc_train_eval': 0.9272}
+nmnist_T100_mf_e2_d1_s1 {'acc_integer': np.float64(0.927), 'acc_train_eval': 0.927}
+nmnist_T100_mf_e2_d1_s2 {'acc_integer': np.float64(0.9154), 'acc_train_eval': 0.9154}
+nmnist_T100_mf_e025_d01_ep12 {'acc_integer': np.float64(0.9661), 'acc_train_eval': 0.9661}
+nmnist_T100_mf_e025_d01_ep12_s1 {'acc_integer': np.float64(0.9648), 'acc_train_eval': 0.9648}
+nmnist_T100_mf_e025_d01_ep12_s2 {'acc_integer': np.float64(0.9654), 'acc_train_eval': 0.9655}
+nmnist_T100_mf_e05_d025_ep12 {'acc_integer': np.float64(0.9573), 'acc_train_eval': 0.9573}
+nmnist_T100_mf_e05_d025_ep12_s1 {'acc_integer': np.float64(0.9581), 'acc_train_eval': 0.9581}
+nmnist_T100_mf_e05_d025_ep12_s2 {'acc_integer': np.float64(0.9568), 'acc_train_eval': 0.9569}
+nmnist_T100_ft12_ctrl {'acc_integer': np.float64(0.9758), 'acc_train_eval': 0.9759}

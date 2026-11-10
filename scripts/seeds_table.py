@@ -11,7 +11,7 @@ rows = {}
 for k, t in tags.items():
     acc, lat, rd, sp = [], [], [], []
     for i, s in enumerate(suf):
-        m = json.load(open(R + t.format(s) + "/metrics.json")); acc.append(100 * m["log"][-1]["test_acc"])
+        acc.append(100 * json.load(open(R + "acc_integer.json"))[t.format(s)]["acc_integer"])   # hardware decision rule
         p = json.load(open(R + t.format(s) + "/rtl_perf.json"))
         b = json.load(open(R + tags["base"].format(s) + "/rtl_perf.json"))["BASE"]["latency_us"]
         L = p["BASE"]["latency_us"] if k == "base" else p["HUSH"]["latency_us"]
@@ -19,7 +19,7 @@ for k, t in tags.items():
     rows[k] = dict(acc=acc, lat=lat, rd=rd, sp=sp, E=[P[k] * x for x in lat])
 f = lambda v, d=2: f"{st.mean(v):.{d}f} ± {st.stdev(v):.{d}f}"
 out = ["# A5 + A6 — N-MNIST, three seeds (0, 1, 2): mean ± sample std\n",
-       "Accuracy on the full 10,000-sample test set; latency and weight-column reads for the whole 578-256-10 network over",
+       "Accuracy on the full 10,000-sample test set with the hardware's integer decision rule (results/acc_integer.json); latency and weight-column reads for the whole 578-256-10 network over",
        "500 test samples (exact v5 cycle model, matches gate-level simulation within 3–8 cycles); speedup vs the ungated",
        "net of the same seed; energy = gate-level SAIF power of the seed-0 builds × latency.\n",
        "| Network | Accuracy % | Latency µs | Speedup vs BASE | Weight-column reads | Energy µJ | per-seed accuracy |",
