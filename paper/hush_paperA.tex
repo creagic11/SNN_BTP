@@ -169,8 +169,8 @@ all 20 recordings (23.7\,M events/s, 1.33$\times$) and above 1,500$\times$ for t
 \textbf{Early decisions.} Because the class can be read after any window, Fig.~\ref{fig:early} reports accuracy vs.
 elapsed sensor time. Between 21\,ms and 156\,ms the gentler network is more accurate than BASE trained equally long
 (e.g.\ 87.7\,\% vs.\ 79.5\,\% at 60\,ms and 92.6\,\% vs.\ 88.9\,\% at 99\,ms); BASE leads from 159\,ms on.
-The gated networks do not spike earlier or more (fewer output spikes in the first 99\,ms: 39--41 vs.\ 54) but
-their early leading class is wrong less often (8.5--8.8\,\% vs.\ 12.3\,\% of samples at 99\,ms, 10-epoch BASE).
+The gated networks do not spike earlier or more (fewer output spikes in the first 99\,ms: 39--41 vs.\ 52) but
+their early leading class is wrong less often (8.5--8.8\,\% vs.\ 10.6\,\% of 1,000 samples at 99\,ms).
 An application that must decide within $\approx$150\,ms is therefore both faster and more accurate with HUSH.
 \begin{figure}[t]\centering\fbox{\parbox{0.9\columnwidth}{\centering\pend{Fig.: accuracy vs.\ elapsed time,
 results/realtime/early\_decision.json}}}\caption{Accuracy when the class is read after $w$ windows.}\label{fig:early}\end{figure}

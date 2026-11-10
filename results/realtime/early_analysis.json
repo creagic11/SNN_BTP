@@ -8,6 +8,15 @@
   "no_output_spike_by_99ms": 0.0,
   "wrong_leader_by_99ms": 0.123
  },
+ "control": {
+  "first_out_spike_window_median": 5.0,
+  "first_mean": 4.781,
+  "out_spikes_first20": 33.192,
+  "out_spikes_first33": 52.389,
+  "hidden_spikes_first20": 352.178,
+  "no_output_spike_by_99ms": 0.0,
+  "wrong_leader_by_99ms": 0.106
+ },
  "gentler12": {
   "first_out_spike_window_median": 6.0,
   "first_mean": 6.874,

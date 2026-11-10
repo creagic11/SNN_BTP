@@ -7,6 +7,7 @@ sys.path.insert(0, ".")
 from golden.hush import LIFParams, run_gated, run_ref
 from scripts.measure_rho import pad_hidden, test_rasters
 P = {"BASE": ("results/nmnist_T100/weights.npz", None),
+     "control": ("results/nmnist_T100_ft12_ctrl/weights.npz", None),
      "gentler12": ("results/nmnist_T100_mf_e025_d01_ep12/weights.npz", "mean"),
      "gentle12": ("results/nmnist_T100_mf_e05_d025_ep12/weights.npz", "mean")}
 n = int(sys.argv[1]) if len(sys.argv) > 1 else 1000
