@@ -27,7 +27,7 @@ sub-block with a per-input proxy table; it is computed while the previous timest
 checked formally on the RTL arithmetic. Trained with the gate in the loop, a 578-256-10 integer network on N-MNIST
 runs on a Xilinx Artix-7 XC7A100T at 100\,MHz entirely on chip, from raw sensor events to the class: at 95.74\,\%
 accuracy it is 2.44$\times$ faster than the same hardware with the gate off (115\,\textmu s vs.\ 280\,\textmu s per
-inference), and at 96.54\,\% 1.75$\times$ faster, with \pend{x}\,\% less energy per inference. On the same chip and
+inference; 98.21\,\% accuracy), and at 96.54\,\% 1.75$\times$ faster, with \pend{x}\,\% less energy per inference. On the same chip and
 weights, the open Spiker+ generator needs 814\,\textmu s. On a live event stream every 3\,ms window is processed
 within 4.5\,\textmu s of its end, and the design sustains up to 1.33--2$\times$ the event rate of the ungated design
 with the same 1,024-event input buffer.
@@ -125,10 +125,11 @@ Accuracy on the full 10,000-sample N-MNIST test set ($T=100$ windows of 3\,ms); 
 \setlength{\tabcolsep}{3pt}\small
 \begin{tabular}{lcccc}\toprule
 Design & Acc.\ (\%) & Col.\ reads & Latency (\textmu s) & Speedup\\\midrule
-BASE (gate off) & 97.66$\pm$0.07 & 1.000 & 279.5 & 1.00$\times$\\
+BASE (gate off)$^b$ & 98.21$\pm$0.13 & 1.000 & 279.5 & 1.00$\times$\\
 HUSH gentler & 96.54$\pm$0.07 & 0.204 & 159.8$\pm$8.1 & 1.75$\times$\\
 HUSH gentle & 95.74$\pm$0.07 & 0.118 & 114.9$\pm$7.0 & 2.44$\times$\\
 HUSH aggressive & 92.32$\pm$0.68 & 0.070 & 82.9$\pm$7.8 & 3.39$\times$\\\bottomrule
+\multicolumn{5}{l}{\footnotesize $^b$ trained as long as the gated nets (10 + 12 epochs); 10 epochs only: 97.66$\pm$0.07.}
 \end{tabular}\end{table}
 
 \begin{table}[t]\centering\caption{Hardware on XC7A100T, 100\,MHz (whole network, 20 on-chip samples).}\label{tab:hw}
@@ -141,8 +142,10 @@ Spiker+~\cite{spikerplus} & 13,564 & 70.5 & $-$0.241$^a$ & \pend{L1} & \pend{L1}
 \multicolumn{6}{l}{\footnotesize $^a$ Fmax 97.6\,MHz; latency 834\,\textmu s at that clock (814\,\textmu s at 100\,MHz).}
 \end{tabular}\end{table}
 
-\textbf{Accuracy--savings front.} Table~\ref{tab:front}: the gate costs 1.1--5.3 points against the ungated network
-and reads 7--20\,\% of the weight columns. Training longer with the gate (12 instead of 6 epochs) improved every
+\textbf{Accuracy--savings front.} Table~\ref{tab:front}. The gated networks are fine-tuned for 12 epochs from the
+10-epoch ungated network; the same fine-tuning without the gate raises the ungated network from 97.66\,\% to
+98.21\,\%, so we use that network as BASE. Against it the gate costs 1.7--5.9 points and reads 7--20\,\% of the
+weight columns. Training longer with the gate (12 instead of 6 epochs) improved every
 axis of the gentle point (95.37\,\%, 1.98$\times$ $\rightarrow$ 95.74\,\%, 2.44$\times$). A wider hidden layer (384)
 raised the ungated accuracy to 98.0\,\% but not the gated one (95.9\,\%), so the remaining gap is caused by gating.
 
@@ -164,8 +167,11 @@ ring never holds more than 127 events.
 with the same 1,024-event buffer, BASE drops events above 750$\times$ real time, HUSH gentle above 1,000$\times$ on
 all 20 recordings (23.7\,M events/s, 1.33$\times$) and above 1,500$\times$ for the median recording (2.0$\times$).
 \textbf{Early decisions.} Because the class can be read after any window, Fig.~\ref{fig:early} reports accuracy vs.
-elapsed sensor time: up to about 150\,ms every gated network is more accurate than BASE (e.g.\ 92.6\,\% vs.\ 86.1\,\%
-at 99\,ms for the gentler point) \pend{explanation after the fine-tune control run}.
+elapsed sensor time. Between 21\,ms and 156\,ms the gentler network is more accurate than BASE trained equally long
+(e.g.\ 87.7\,\% vs.\ 79.5\,\% at 60\,ms and 92.6\,\% vs.\ 88.9\,\% at 99\,ms); BASE leads from 159\,ms on.
+The gated networks do not spike earlier or more (fewer output spikes in the first 99\,ms: 39--41 vs.\ 54) but
+their early leading class is wrong less often (8.5--8.8\,\% vs.\ 12.3\,\% of samples at 99\,ms, 10-epoch BASE).
+An application that must decide within $\approx$150\,ms is therefore both faster and more accurate with HUSH.
 \begin{figure}[t]\centering\fbox{\parbox{0.9\columnwidth}{\centering\pend{Fig.: accuracy vs.\ elapsed time,
 results/realtime/early\_decision.json}}}\caption{Accuracy when the class is read after $w$ windows.}\label{fig:early}\end{figure}
 

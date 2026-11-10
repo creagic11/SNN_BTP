@@ -62,5 +62,13 @@
  "nmnist_T100_ft12_ctrl": {
   "acc_integer": 0.9808,
   "acc_train_eval": 0.9808
+ },
+ "nmnist_T100_ft12_ctrl_s1": {
+  "acc_integer": 0.9822,
+  "acc_train_eval": 0.9822
+ },
+ "nmnist_T100_ft12_ctrl_s2": {
+  "acc_integer": 0.9833,
+  "acc_train_eval": 0.9833
  }
 }
