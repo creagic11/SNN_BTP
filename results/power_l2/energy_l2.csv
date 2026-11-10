@@ -1,0 +1,2 @@
+case,inferences,mean_cycles,latency_us,total_mW,dynamic_mW,static_mW,E_total_uJ,E_dyn_uJ,nets_matched
+netpwr/base_ctrl,20,27953.1,279.53,152,51,101,42.49,14.26,100%   (22039/22058)

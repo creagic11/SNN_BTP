@@ -1,0 +1,43 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (win64) Build 5076996 Wed May 22 18:37:14 MDT 2024
+| Date         : Tue Nov 10 23:24:43 2026
+| Host         : LAPTOP-GFP075F7 running 64-bit major release  (build 9200)
+| Command      : report_utilization -hierarchical -file C:/Users/Anubhav/hush_fpga/out_l2/netstream/base/util_hier.rpt
+| Design       : top_net
+| Device       : xc7a100tcsg324-1
+| Speed File   : -1
+| Design State : Routed
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++-------------------------+----------------------------+------------+------------+---------+------+------+--------+--------+------------+
+|         Instance        |           Module           | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | DSP Blocks |
++-------------------------+----------------------------+------------+------------+---------+------+------+--------+--------+------------+
+| top_net                 |                      (top) |       8736 |       8155 |     580 |    1 | 6791 |     48 |      1 |          0 |
+|   (top_net)             |                      (top) |         24 |         23 |       0 |    1 |   70 |      0 |      0 |          0 |
+|   u_ld                  |                uart_loader |        155 |        155 |       0 |    0 |  315 |      0 |      0 |          0 |
+|   u_net                 |                   hush_net |       8562 |       7982 |     580 |    0 | 6406 |     48 |      1 |          0 |
+|     (u_net)             |                   hush_net |        949 |        881 |      68 |    0 | 1354 |      0 |      0 |          0 |
+|     u_l1                |                 hush_layer |       4482 |       3970 |     512 |    0 | 2289 |     41 |      1 |          0 |
+|     u_l2                | hush_layer__parameterized0 |       3142 |       3142 |       0 |    0 | 2763 |      7 |      0 |          0 |
+|       (u_l2)            | hush_layer__parameterized0 |       2848 |       2848 |       0 |    0 | 2763 |      7 |      0 |          0 |
+|       g_lane[17].u_lane |                  hush_lane |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|       g_lane[18].u_lane |                hush_lane_0 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|       g_lane[19].u_lane |                hush_lane_1 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|       g_lane[1].u_lane  |                hush_lane_2 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|       g_lane[20].u_lane |                hush_lane_3 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|       g_lane[21].u_lane |                hush_lane_4 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
+|       g_lane[23].u_lane |                hush_lane_5 |         44 |         44 |       0 |    0 |    0 |      0 |      0 |          0 |
++-------------------------+----------------------------+------------+------------+---------+------+------+--------+--------+------------+
+* Note: The sum of lower-level cells may be larger than their parent cells total, due to cross-hierarchy LUT combining
+
+

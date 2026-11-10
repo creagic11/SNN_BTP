@@ -1,0 +1,14 @@
+run_l2 start 10-11-2026 23:09:09.62
+23:09:13 prep_l2 start, vivado 2024.1
+23:15:13 netpwr/base_ctrl build OK  WNS=0.956 ns
+23:17:38 netpwr/base_ctrl netlist + snapshot OK
+23:24:56 netstream/base build OK  WNS=0.252 ns
+23:34:24 netstream/mf_gentle12 build OK  WNS=0.256 ns
+23:55:54 spiker_hi build OK  WNS=0.005 ns
+23:56:00 prep_l2 done
+netpwr\base_ctrl sim start 23:56:09.44
+netpwr\base_ctrl sim OK  1:09:46.51
+01:09:53 netpwr/base_ctrl SAIF names: bus 11757 scalar 16050 dropped 0 left-escaped 0 paren-balance 0
+01:10:55 netpwr/base_ctrl power OK: netpwr/base_ctrl,20,27953.1,279.53,152,51,101,42.49,14.26,100%   (22039/22058)
+01:10:55 ALL DONE
+run_l2 finished  1:10:57.09

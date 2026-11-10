@@ -124,7 +124,8 @@ The class is the integer argmax of spike counts, ties broken by the summed pre-r
 \textbf{Stream front-end.} Raw DVS events $(x,y,p)$ are pooled $2\times2$ into the 578 inputs, de-duplicated per
 window (the model's input is a 0/1 raster), and written into a ring of 1,024 events (one RAMB18); an end-of-window
 marker closes the window, writes its range and lets the hidden layer start its envelope pass for that window.
-Markers have reserved FIFO space, so overload can only drop events.
+Markers have reserved FIFO space, so overload can only drop events. In stream mode the whole network takes
+8,736 LUTs / 48.5 BRAMs (BASE) and 14,606 / 62.5 (HUSH), both at 100\,MHz.
 
 \section{Verification}
 A golden integer model (Python) defines the behaviour. The RTL matches it bit for bit on 80 randomised layer
@@ -142,8 +143,8 @@ netlists reproduces the model's cycle count for every inference (+3 cycles of re
 20 test inferences per design on the routed netlist; energy per inference $=$ power $\times$ latency.
 Accuracy on the full 10,000-sample N-MNIST test set ($T=100$ windows of 3\,ms) with the hardware's integer decision
 rule; accuracy and latency over three training seeds; area, power and energy for the seed-0 networks on 20 samples.
-BASE power was measured with the 10-epoch BASE weights; the 22-epoch BASE has the same latency \pend{its own SAIF
-run is in laptop run L2}.
+BASE's power and energy were measured with its own (22-epoch) weights; they equal those of the 10-epoch BASE
+(152\,mW, 42.5\,\textmu J).
 
 \begin{table}[t]\centering\caption{Accuracy and latency, whole network on chip (mean $\pm$ std, 3 seeds; latency over 500 test samples).}\label{tab:front}
 \setlength{\tabcolsep}{2.5pt}\small
@@ -165,9 +166,9 @@ BASE & 7,745 & 80 & +0.956 & 279.5 & 152 & 42.5\\
 HUSH gentler & 13,885 & 95 & +0.450 & 151.2 & 157 & 23.7\\
 HUSH gentle & 13,885 & 95 & +0.450 & 115.3 & 160 & 18.4\\
 HUSH aggr. & 13,885 & 95 & +0.450 & 87.7 & 164 & 14.4\\
-Spiker+~\cite{spikerplus} & 13,564 & 70.5 & $-$0.241$^a$ & 818.4 & 311 & 254.5\\\bottomrule
+Spiker+~\cite{spikerplus} & 13,548$^a$ & 70.5 & +0.005$^a$ & 818.4 & 311 & 254.5\\\bottomrule
 \multicolumn{7}{p{0.95\columnwidth}}{\footnotesize Latency and power over the 20 simulated inferences; static power 101--102\,mW.}\\
-\multicolumn{7}{p{0.95\columnwidth}}{\footnotesize $^a$ Fmax 97.6\,MHz: 839\,\textmu s, $\approx$256\,\textmu J at that clock.}
+\multicolumn{7}{p{0.95\columnwidth}}{\footnotesize $^a$ high-effort implementation; power measured on the default-effort netlist (WNS $-$0.241\,ns).}
 \end{tabular}\end{table}
 
 \textbf{Accuracy--savings front.} Table~\ref{tab:front}. The gated networks are fine-tuned for 12 epochs from the
@@ -180,8 +181,10 @@ axis of the gentle point (95.37\,\%, 1.98$\times$ $\rightarrow$ 95.74\,\%, 2.44$
 \textbf{Same chip.} Table~\ref{tab:hw}. HUSH adds 6.1k LUTs and 15 BRAMs (envelope unit, proxy and mean tables,
 sub-block control). Spiker+ (clock-driven, ungated) runs BASE's 10-epoch INT8 weights (97.53\,\% on its neuron semantics, fixed point
 with 6 fractional bits), scans all 578 inputs serially each timestep and needs 81.8k cycles per inference in our
-harness (81.4k for the bare generated network). It misses 100\,MHz by 0.24\,ns; at its 97.6\,MHz Fmax it needs
-839\,\textmu s and $\approx$256\,\textmu J \pend{L2 high-effort rebuild}. With the gate, HUSH spends 44--66\,\% less energy
+harness (81.4k for the bare generated network). With default implementation settings it misses 100\,MHz by
+0.24\,ns; with high-effort directives it meets 100\,MHz (+0.005\,ns, 13,548 LUTs). Its power was measured on the
+default-effort netlist; the high-effort one is estimated 4\,\% higher, so the reported Spiker+ energy is a lower
+bound. With the gate, HUSH spends 44--66\,\% less energy
 per inference than BASE although its power is 3--8\,\% higher: the extra envelope logic costs less than the time it
 saves. Spiker+ draws 311\,mW, 140\,mW of it in block RAM, which it reads every cycle (ours: 12\,mW, read only for
 awake sub-blocks), and needs 6.0$\times$ the energy of BASE and 13.8$\times$ that of HUSH gentle. Energies in
