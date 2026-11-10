@@ -1,0 +1,57 @@
+#-----------------------------------------------------------
+# xsim v2024.1 (64-bit)
+# SW Build 5076996 on Wed May 22 18:37:14 MDT 2024
+# IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+# SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+# Start of session at: Tue Nov 10 13:50:06 2026
+# Process ID: 33908
+# Current directory: C:/Users/Anubhav/hush_fpga/out_l1/netpwr/mf_aggr
+# Command line: xsim.exe -log sim_try1.log -mode tcl -source {xsim.dir/snap_net/xsim_script.tcl}
+# Log file: C:/Users/Anubhav/hush_fpga/out_l1/netpwr/mf_aggr/sim_try1.log
+# Journal file: C:/Users/Anubhav/hush_fpga/out_l1/netpwr/mf_aggr\xsim.jou
+# Running On        :LAPTOP-GFP075F7
+# Platform          :Windows Server 2016 or Windows 10
+# Operating System  :26200
+# Processor Detail  :13th Gen Intel(R) Core(TM) i5-1340P
+# CPU Frequency     :2189 MHz
+# CPU Physical cores:12
+# CPU Logical cores :16
+# Host memory       :16803 MB
+# Swap memory       :24696 MB
+# Total Virtual     :41499 MB
+# Available Virtual :14000 MB
+#-----------------------------------------------------------
+source xsim.dir/snap_net/xsim_script.tcl
+# xsim {snap_net} -autoloadwcfg -tclbatch {saif.tcl}
+Time resolution is 1 ps
+source saif.tcl
+## open_saif C:/Users/Anubhav/hush_fpga/out_l1/netpwr/mf_aggr/act.saif
+get_objects: Time (s): cpu = 00:09:53 ; elapsed = 00:10:23 . Memory (MB): peak = 247.227 ; gain = 0.000
+## log_saif [get_objects -r /tb_netl1/u_top/*]
+## run all
+I 0 5637
+I 1 9019
+I 2 6551
+I 3 9943
+I 4 7543
+I 5 10421
+I 6 9206
+I 7 11181
+I 8 8172
+I 9 5429
+I 10 8437
+I 11 8843
+I 12 14128
+I 13 5797
+I 14 9096
+I 15 9935
+I 16 5400
+I 17 9213
+I 18 10229
+I 19 8146
+$finish called at time : 1723655 ns : File "C:/Users/Anubhav/hush_fpga/fpga/tb_netl1.sv" Line 16
+run: Time (s): cpu = 00:00:01 ; elapsed = 00:20:58 . Memory (MB): peak = 247.227 ; gain = 0.000
+## close_saif
+## quit
+INFO: xsimkernel Simulation Memory Usage: 186700 KB (Peak: 186700 KB), Simulation CPU Usage: 1172640 ms
+INFO: [Common 17-206] Exiting xsim at Tue Nov 10 14:21:30 2026...

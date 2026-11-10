@@ -1,0 +1,385 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (win64) Build 5076996 Wed May 22 18:37:14 MDT 2024
+| Date         : Tue Nov 10 11:01:50 2026
+| Host         : LAPTOP-GFP075F7 running 64-bit major release  (build 9200)
+| Command      : report_ram_utilization -file C:/Users/Anubhav/hush_fpga/out_l1/netstream/mf_gentle12/ram_util.rpt
+| Design       : top_net
+| Device       : xc7a100tcsg324-1
+| Speed File   : -1
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+RAM Usage Information
+
+Table of Contents
+-----------------
+1. Summary
+2. Memory Description
+3. Memory Utilization - Inferred
+4. Memory Performance - Inferred
+5. Block Ram / URAM Memory Power - Inferred
+
+1. Summary
+----------
+
++--------------------------+------------+-----------+-------+-----------+
+| Memory Type              | Total Used | Available | Util% | Inferred% |
++--------------------------+------------+-----------+-------+-----------+
+| BlockRAM                 |       62.5 |       135 | 46.30 |    100.00 |
+|  RAMB36E1                |         61 |           |       |    100.00 |
+|  RAMB18E1                |          3 |           |       |    100.00 |
+| LUTMs as Distributed RAM |        562 |     19000 |  2.96 |    100.00 |
+|  LUTMs as RAM64X1D       |          2 |           |       |    100.00 |
+|  LUTMs as RAM64M         |         16 |           |       |    100.00 |
+|  LUTMs as RAM32X1S       |        512 |           |       |    100.00 |
+|  LUTMs as RAM32M         |         32 |           |       |    100.00 |
++--------------------------+------------+-----------+-------+-----------+
+*  Each RAMB18 is calculated as 0.5 BlockRAM
+**  Tables 2, 3, 4 and 5 cover RAMs inferred by Vivado Synthesis using XPMs or RTL inference
+***  XRAMs are not reported for detailed tables
+
+
+2. Memory Description
+---------------------
+
++--------------------------------------+------------+-------------+-------------------------+------------------------+
+| Memory Name                          | Array Size | Memory Type | Port 1 Dimension / Map  | Port 2 Dimension / Map |
++--------------------------------------+------------+-------------+-------------------------+------------------------+
+| u_net/u_l1/g_wcol[0].mem             |     295936 | RAM_SP      | 4624x64                 |                        |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_0 |      36864 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_1 |      36864 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_2 |      36864 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_3 |      36864 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_4 |      19008 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_5 |      28672 |             |  A:A:1024x28            |                        |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_6 |      28672 |             |  A:A:1024x28            |                        |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_7 |      28672 |             |  A:A:1024x28            |                        |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_8 |      28672 |             |  A:A:1024x28            |                        |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_9 |      14784 |             |  A:A:1024x28            |                        |
+| u_net/u_l1/g_wcol[1].mem             |     295936 | RAM_SP      | 4624x64                 |                        |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_0 |      36864 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_1 |      36864 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_2 |      36864 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_3 |      36864 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_4 |      19008 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_5 |      28672 |             |  A:A:1024x28            |                        |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_6 |      28672 |             |  A:A:1024x28            |                        |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_7 |      28672 |             |  A:A:1024x28            |                        |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_8 |      28672 |             |  A:A:1024x28            |                        |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_9 |      14784 |             |  A:A:1024x28            |                        |
+| u_net/u_l1/g_wcol[2].mem             |     295936 | RAM_SP      | 4624x64                 |                        |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_0 |      36864 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_1 |      36864 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_2 |      36864 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_3 |      36864 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_4 |      19008 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_5 |      28672 |             |  A:A:1024x28            |                        |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_6 |      28672 |             |  A:A:1024x28            |                        |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_7 |      28672 |             |  A:A:1024x28            |                        |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_8 |      28672 |             |  A:A:1024x28            |                        |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_9 |      14784 |             |  A:A:1024x28            |                        |
+| u_net/u_l1/g_wcol[3].mem             |     295936 | RAM_SP      | 4624x64                 |                        |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_0 |      36864 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_1 |      36864 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_2 |      36864 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_3 |      36864 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_4 |      19008 |             |  A:A:1024x36            |                        |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_5 |      28672 |             |  A:A:1024x28            |                        |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_6 |      28672 |             |  A:A:1024x28            |                        |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_7 |      28672 |             |  A:A:1024x28            |                        |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_8 |      28672 |             |  A:A:1024x28            |                        |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_9 |      14784 |             |  A:A:1024x28            |                        |
+| u_net/u_l1/g_q.q_mem                 |     147968 | RAM_SP      | 1024x256                | 1024x256               |
+|  u_net/u_l1/g_q.q_mem_reg_0          |      36864 |             |  A:A:1024x36            |  B:B:1024x36           |
+|  u_net/u_l1/g_q.q_mem_reg_1          |      36864 |             |  A:A:1024x36            |  B:B:1024x36           |
+|  u_net/u_l1/g_q.q_mem_reg_2          |      36864 |             |  A:A:1024x36            |  B:B:1024x36           |
+|  u_net/u_l1/g_q.q_mem_reg_3          |      36864 |             |  A:A:1024x36            |  B:B:1024x36           |
+|  u_net/u_l1/g_q.q_mem_reg_4          |      36864 |             |  A:A:1024x36            |  B:B:1024x36           |
+|  u_net/u_l1/g_q.q_mem_reg_5          |      36864 |             |  A:A:1024x36            |  B:B:1024x36           |
+|  u_net/u_l1/g_q.q_mem_reg_6          |      36864 |             |  A:A:1024x36            |  B:B:1024x36           |
+|  u_net/u_l1/g_q.q_mem_reg_7          |       4096 |             |  A:A:1024x4             |  B:B:1024x4            |
+| u_net/u_l1/p_mem                     |     147968 | RAM_SP      | 1024x256                | 1024x256               |
+|  u_net/u_l1/p_mem_reg_0              |      36864 |             |  A:A:1024x36            |  B:B:1024x36           |
+|  u_net/u_l1/p_mem_reg_1              |      36864 |             |  A:A:1024x36            |  B:B:1024x36           |
+|  u_net/u_l1/p_mem_reg_2              |      36864 |             |  A:A:1024x36            |  B:B:1024x36           |
+|  u_net/u_l1/p_mem_reg_3              |      36864 |             |  A:A:1024x36            |  B:B:1024x36           |
+|  u_net/u_l1/p_mem_reg_4              |      36864 |             |  A:A:1024x36            |  B:B:1024x36           |
+|  u_net/u_l1/p_mem_reg_5              |      36864 |             |  A:A:1024x36            |  B:B:1024x36           |
+|  u_net/u_l1/p_mem_reg_6              |      36864 |             |  A:A:1024x36            |  B:B:1024x36           |
+|  u_net/u_l1/p_mem_reg_7              |       4096 |             |  A:A:1024x4             |  B:B:1024x4            |
+| u_net/u_l2/ev_mem                    |      65536 | RAM_TDP     | 4096x16                 | 4096x16                |
+|  u_net/u_l2/ev_mem_reg_bram_0        |      32768 |             |  A:A:2048x16            |  B:B:2048x8            |
+|  u_net/u_l2/ev_mem_reg_bram_1        |      32768 |             |  A:A:2048x16            |  B:B:2048x8            |
+| u_net/u_l1/ev_mem                    |      16384 | RAM_TDP     | 1024x16                 | 1024x16                |
+|  u_net/u_l1/ev_mem_reg_bram_0        |      16384 |             |  A:A:1024x16            |  B:B:1024x10           |
+| u_net/u_l2/g_wcol[0].mem             |      16384 | RAM_SP      | 256x64                  |                        |
+|  u_net/u_l2/g_wcol[0].mem_reg        |      16384 |             |  A:A:256x36 B:B:256x28  |                        |
+| u_net/u_l2/g_wcol[1].mem             |      16384 | RAM_SP      |                         | 256x64                 |
+|  u_net/u_l2/g_wcol[1].mem_reg        |      16384 |             |  A:A:256x36 B:B:256x28  |                        |
+| u_net/u_l2/g_wcol[2].mem             |      16384 | RAM_SP      |                         | 256x64                 |
+|  u_net/u_l2/g_wcol[2].mem_reg        |      16384 |             |  A:A:256x36 B:B:256x28  |                        |
+| u_net/u_l2/ts2_mem                   |       2929 | RAM_TDP     | 1024x29                 | 1024x29                |
+|  u_net/u_l2/ts2_mem_reg              |      29696 |             |  A:A:128x29             |  B:B:128x26            |
+| u_net/u_l1/ts2_mem                   |       2727 | RAM_TDP     | 1024x27                 | 1024x27                |
+|  u_net/u_l1/ts2_mem_reg              |      27648 |             |  A:A:128x27             |  B:B:128x22            |
++--------------------------------------+------------+-------------+-------------------------+------------------------+
+
+
+3. Memory Utilization - Inferred
+--------------------------------
+
++--------------------------------------+-----------+----------------+-----------+-----------+---------+---------------+---------------+---------+---------------+---------------+---------+---------------+---------------+---------+---------------+---------------+
+| Memory Name                          | Primitive | Available Bits | Used Bits | Bit Util% | A Depth | A Depth Avail | A Depth Util% | A Width | A Width Avail | A Width Util% | B Depth | B Depth Avail | B Depth Util% | B Width | B Width Avail | B Width Util% |
++--------------------------------------+-----------+----------------+-----------+-----------+---------+---------------+---------------+---------+---------------+---------------+---------+---------------+---------------+---------+---------------+---------------+
+| u_net/u_l1/g_wcol[0].mem             |           |                |           |           |         |               |               |         |               |               |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_0 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_1 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_2 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_3 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_4 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_5 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_6 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_7 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_8 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_9 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+| u_net/u_l1/g_wcol[1].mem             |           |                |           |           |         |               |               |         |               |               |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_0 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_1 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_2 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_3 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_4 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_5 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_6 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_7 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_8 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_9 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+| u_net/u_l1/g_wcol[2].mem             |           |                |           |           |         |               |               |         |               |               |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_0 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_1 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_2 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_3 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_4 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_5 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_6 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_7 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_8 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_9 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+| u_net/u_l1/g_wcol[3].mem             |           |                |           |           |         |               |               |         |               |               |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_0 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_1 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_2 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_3 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_4 | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_5 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_6 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_7 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_8 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_9 | RAMB36E1  |          36864 |     28672 |     77.78 |    1024 |          1024 |        100.00 |      28 |            36 |         77.78 |         |               |               |         |               |               |
+| u_net/u_l1/g_q.q_mem                 |           |                |           |           |         |               |               |         |               |               |         |               |               |         |               |               |
+|  u_net/u_l1/g_q.q_mem_reg_0          | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |
+|  u_net/u_l1/g_q.q_mem_reg_1          | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |
+|  u_net/u_l1/g_q.q_mem_reg_2          | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |
+|  u_net/u_l1/g_q.q_mem_reg_3          | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |
+|  u_net/u_l1/g_q.q_mem_reg_4          | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |
+|  u_net/u_l1/g_q.q_mem_reg_5          | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |
+|  u_net/u_l1/g_q.q_mem_reg_6          | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |
+|  u_net/u_l1/g_q.q_mem_reg_7          | RAMB18E1  |          18432 |      4096 |     22.22 |    1024 |          1024 |        100.00 |       4 |            18 |         22.22 |    1024 |          1024 |        100.00 |       4 |            18 |         22.22 |
+| u_net/u_l1/p_mem                     |           |                |           |           |         |               |               |         |               |               |         |               |               |         |               |               |
+|  u_net/u_l1/p_mem_reg_0              | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |
+|  u_net/u_l1/p_mem_reg_1              | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |
+|  u_net/u_l1/p_mem_reg_2              | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |
+|  u_net/u_l1/p_mem_reg_3              | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |
+|  u_net/u_l1/p_mem_reg_4              | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |
+|  u_net/u_l1/p_mem_reg_5              | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |
+|  u_net/u_l1/p_mem_reg_6              | RAMB36E1  |          36864 |     36864 |    100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |    1024 |          1024 |        100.00 |      36 |            36 |        100.00 |
+|  u_net/u_l1/p_mem_reg_7              | RAMB18E1  |          18432 |      4096 |     22.22 |    1024 |          1024 |        100.00 |       4 |            18 |         22.22 |    1024 |          1024 |        100.00 |       4 |            18 |         22.22 |
+| u_net/u_l2/ev_mem                    |           |                |           |           |         |               |               |         |               |               |         |               |               |         |               |               |
+|  u_net/u_l2/ev_mem_reg_bram_0        | RAMB36E1  |          36864 |     32768 |     88.89 |    2048 |          2048 |        100.00 |      16 |            18 |         88.89 |    2048 |          2048 |        100.00 |       8 |            18 |         44.44 |
+|  u_net/u_l2/ev_mem_reg_bram_1        | RAMB36E1  |          36864 |     32768 |     88.89 |    2048 |          2048 |        100.00 |      16 |            18 |         88.89 |    2048 |          2048 |        100.00 |       8 |            18 |         44.44 |
+| u_net/u_l1/ev_mem                    |           |                |           |           |         |               |               |         |               |               |         |               |               |         |               |               |
+|  u_net/u_l1/ev_mem_reg_bram_0        | RAMB18E1  |          18432 |     16384 |     88.89 |    1024 |          1024 |        100.00 |      16 |            18 |         88.89 |    1024 |          1024 |        100.00 |      10 |            18 |         55.56 |
+| u_net/u_l2/g_wcol[0].mem             |           |                |           |           |         |               |               |         |               |               |         |               |               |         |               |               |
+|  u_net/u_l2/g_wcol[0].mem_reg        | RAMB36E1  |          36864 |     16384 |     44.44 |     256 |          1024 |         25.00 |      36 |            36 |        100.00 |     256 |          1024 |         25.00 |      28 |            36 |         77.78 |
+| u_net/u_l2/g_wcol[1].mem             |           |                |           |           |         |               |               |         |               |               |         |               |               |         |               |               |
+|  u_net/u_l2/g_wcol[1].mem_reg        | RAMB36E1  |          36864 |     16384 |     44.44 |     256 |          1024 |         25.00 |      36 |            36 |        100.00 |     256 |          1024 |         25.00 |      28 |            36 |         77.78 |
+| u_net/u_l2/g_wcol[2].mem             |           |                |           |           |         |               |               |         |               |               |         |               |               |         |               |               |
+|  u_net/u_l2/g_wcol[2].mem_reg        | RAMB36E1  |          36864 |     16384 |     44.44 |     256 |          1024 |         25.00 |      36 |            36 |        100.00 |     256 |          1024 |         25.00 |      28 |            36 |         77.78 |
+| u_net/u_l2/ts2_mem                   |           |                |           |           |         |               |               |         |               |               |         |               |               |         |               |               |
+|  u_net/u_l2/ts2_mem_reg              | RAMB36E1  |          36864 |      3712 |     10.07 |     128 |          1024 |         12.50 |      29 |            36 |         80.56 |     128 |          1024 |         12.50 |      26 |            36 |         72.22 |
+| u_net/u_l1/ts2_mem                   |           |                |           |           |         |               |               |         |               |               |         |               |               |         |               |               |
+|  u_net/u_l1/ts2_mem_reg              | RAMB36E1  |          36864 |      3456 |      9.38 |     128 |          1024 |         12.50 |      27 |            36 |         75.00 |     128 |          1024 |         12.50 |      22 |            36 |         61.11 |
++--------------------------------------+-----------+----------------+-----------+-----------+---------+---------------+---------------+---------+---------------+---------------+---------+---------------+---------------+---------+---------------+---------------+
+
+
+4. Memory Performance - Inferred
+--------------------------------
+
++--------------------------------------+-----------+-------------------------+------------------------+--------------+-------------------------+-------------+-------------------------+-----------+--------+--------+---------+-----------+--------+--------+---------+
+| Memory Name                          | Primitive | Port 1 Dimension / Map  | Port 2 Dimension / Map | Port A Type  | Port A Requirement (ns) | Port B Type | Port B Requirement (ns) | A Cascade | IREG_A | OREG_A | DOA_REG | B Cascade | IREG_B | OREG_B | DOB_REG |
++--------------------------------------+-----------+-------------------------+------------------------+--------------+-------------------------+-------------+-------------------------+-----------+--------+--------+---------+-----------+--------+--------+---------+
+| u_net/u_l1/g_wcol[0].mem             |           | 4624x64                 |                        |              |                         |             |                         |           |        |        |         |           |        |        |         |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_0 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_1 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_2 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_3 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_4 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_5 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_6 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_7 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_8 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_9 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+| u_net/u_l1/g_wcol[1].mem             |           | 4624x64                 |                        |              |                         |             |                         |           |        |        |         |           |        |        |         |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_0 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_1 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_2 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_3 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_4 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_5 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_6 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_7 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_8 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_9 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+| u_net/u_l1/g_wcol[2].mem             |           | 4624x64                 |                        |              |                         |             |                         |           |        |        |         |           |        |        |         |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_0 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_1 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_2 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_3 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_4 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_5 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_6 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_7 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_8 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_9 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+| u_net/u_l1/g_wcol[3].mem             |           | 4624x64                 |                        |              |                         |             |                         |           |        |        |         |           |        |        |         |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_0 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_1 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_2 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_3 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_4 | RAMB36E1  |  A:A:1024x36            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_5 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_6 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_7 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_8 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_9 | RAMB36E1  |  A:A:1024x28            |                        | Read / Write |                    10.0 |             |                         |           |        |        |       0 |           |        |        |         |
+| u_net/u_l1/g_q.q_mem                 |           | 1024x256                | 1024x256               |              |                         |             |                         |           |        |        |         |           |        |        |         |
+|  u_net/u_l1/g_q.q_mem_reg_0          | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |        Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+|  u_net/u_l1/g_q.q_mem_reg_1          | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |        Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+|  u_net/u_l1/g_q.q_mem_reg_2          | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |        Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+|  u_net/u_l1/g_q.q_mem_reg_3          | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |        Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+|  u_net/u_l1/g_q.q_mem_reg_4          | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |        Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+|  u_net/u_l1/g_q.q_mem_reg_5          | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |        Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+|  u_net/u_l1/g_q.q_mem_reg_6          | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |        Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+|  u_net/u_l1/g_q.q_mem_reg_7          | RAMB18E1  |  A:A:1024x4             |  B:B:1024x4            |        Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+| u_net/u_l1/p_mem                     |           | 1024x256                | 1024x256               |              |                         |             |                         |           |        |        |         |           |        |        |         |
+|  u_net/u_l1/p_mem_reg_0              | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |        Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+|  u_net/u_l1/p_mem_reg_1              | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |        Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+|  u_net/u_l1/p_mem_reg_2              | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |        Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+|  u_net/u_l1/p_mem_reg_3              | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |        Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+|  u_net/u_l1/p_mem_reg_4              | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |        Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+|  u_net/u_l1/p_mem_reg_5              | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |        Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+|  u_net/u_l1/p_mem_reg_6              | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |        Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+|  u_net/u_l1/p_mem_reg_7              | RAMB18E1  |  A:A:1024x4             |  B:B:1024x4            |        Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+| u_net/u_l2/ev_mem                    |           | 4096x16                 | 4096x16                |              |                         |             |                         |           |        |        |         |           |        |        |         |
+|  u_net/u_l2/ev_mem_reg_bram_0        | RAMB36E1  |  A:A:2048x16            |  B:B:2048x8            |        Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+|  u_net/u_l2/ev_mem_reg_bram_1        | RAMB36E1  |  A:A:2048x16            |  B:B:2048x8            |        Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+| u_net/u_l1/ev_mem                    |           | 1024x16                 | 1024x16                |              |                         |             |                         |           |        |        |         |           |        |        |         |
+|  u_net/u_l1/ev_mem_reg_bram_0        | RAMB18E1  |  A:A:1024x16            |  B:B:1024x10           | Read / Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       1 |
+| u_net/u_l2/g_wcol[0].mem             |           | 256x64                  |                        |              |                         |             |                         |           |        |        |         |           |        |        |         |
+|  u_net/u_l2/g_wcol[0].mem_reg        | RAMB36E1  |  A:A:256x36 B:B:256x28  |                        | Read / Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+| u_net/u_l2/g_wcol[1].mem             |           |                         | 256x64                 |              |                         |             |                         |           |        |        |         |           |        |        |         |
+|  u_net/u_l2/g_wcol[1].mem_reg        | RAMB36E1  |  A:A:256x36 B:B:256x28  |                        |         Read |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+| u_net/u_l2/g_wcol[2].mem             |           |                         | 256x64                 |              |                         |             |                         |           |        |        |         |           |        |        |         |
+|  u_net/u_l2/g_wcol[2].mem_reg        | RAMB36E1  |  A:A:256x36 B:B:256x28  |                        |         Read |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+| u_net/u_l2/ts2_mem                   |           | 1024x29                 | 1024x29                |              |                         |             |                         |           |        |        |         |           |        |        |         |
+|  u_net/u_l2/ts2_mem_reg              | RAMB36E1  |  A:A:128x29             |  B:B:128x26            |        Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
+| u_net/u_l1/ts2_mem                   |           | 1024x27                 | 1024x27                |              |                         |             |                         |           |        |        |         |           |        |        |         |
+|  u_net/u_l1/ts2_mem_reg              | RAMB36E1  |  A:A:128x27             |  B:B:128x22            | Read / Write |                    10.0 |        Read |                    10.0 |           |        |        |       0 |           |        |        |       0 |
++--------------------------------------+-----------+-------------------------+------------------------+--------------+-------------------------+-------------+-------------------------+-----------+--------+--------+---------+-----------+--------+--------+---------+
+
+
+5. Block Ram / URAM Memory Power - Inferred
+-------------------------------------------
+
++--------------------------------------+-----------+-------------------------+------------------------+--------------------+---------------+-------------------+-----------+--------------------+---------------+-------------------+-----------+
+| Memory Name                          | Primitive | Port 1 Dimension / Map  | Port 2 Dimension / Map | Port A Power Gated | Port A Enable | Port A WRITE_MODE | A Cascade | Port B Power Gated | Port B Enable | Port B WRITE_MODE | B Cascade |
++--------------------------------------+-----------+-------------------------+------------------------+--------------------+---------------+-------------------+-----------+--------------------+---------------+-------------------+-----------+
+| u_net/u_l1/g_wcol[0].mem             |           | 4624x64                 |                        |                    |               |                   |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_0 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_1 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_2 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_3 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_4 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_5 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_6 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_7 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_8 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[0].mem_reg_bram_9 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+| u_net/u_l1/g_wcol[1].mem             |           | 4624x64                 |                        |                    |               |                   |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_0 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_1 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_2 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_3 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_4 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_5 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_6 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_7 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_8 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[1].mem_reg_bram_9 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+| u_net/u_l1/g_wcol[2].mem             |           | 4624x64                 |                        |                    |               |                   |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_0 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_1 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_2 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_3 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_4 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_5 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_6 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_7 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_8 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[2].mem_reg_bram_9 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+| u_net/u_l1/g_wcol[3].mem             |           | 4624x64                 |                        |                    |               |                   |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_0 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_1 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_2 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_3 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_4 | RAMB36E1  |  A:A:1024x36            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_5 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_6 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_7 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_8 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+|  u_net/u_l1/g_wcol[3].mem_reg_bram_9 | RAMB36E1  |  A:A:1024x28            |                        |                    |        SIGNAL |        READ_FIRST |           |                    |               |                   |           |
+| u_net/u_l1/g_q.q_mem                 |           | 1024x256                | 1024x256               |                    |               |                   |           |                    |               |                   |           |
+|  u_net/u_l1/g_q.q_mem_reg_0          | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+|  u_net/u_l1/g_q.q_mem_reg_1          | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+|  u_net/u_l1/g_q.q_mem_reg_2          | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+|  u_net/u_l1/g_q.q_mem_reg_3          | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+|  u_net/u_l1/g_q.q_mem_reg_4          | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+|  u_net/u_l1/g_q.q_mem_reg_5          | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+|  u_net/u_l1/g_q.q_mem_reg_6          | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+|  u_net/u_l1/g_q.q_mem_reg_7          | RAMB18E1  |  A:A:1024x4             |  B:B:1024x4            |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+| u_net/u_l1/p_mem                     |           | 1024x256                | 1024x256               |                    |               |                   |           |                    |               |                   |           |
+|  u_net/u_l1/p_mem_reg_0              | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+|  u_net/u_l1/p_mem_reg_1              | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+|  u_net/u_l1/p_mem_reg_2              | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+|  u_net/u_l1/p_mem_reg_3              | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+|  u_net/u_l1/p_mem_reg_4              | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+|  u_net/u_l1/p_mem_reg_5              | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+|  u_net/u_l1/p_mem_reg_6              | RAMB36E1  |  A:A:1024x36            |  B:B:1024x36           |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+|  u_net/u_l1/p_mem_reg_7              | RAMB18E1  |  A:A:1024x4             |  B:B:1024x4            |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+| u_net/u_l2/ev_mem                    |           | 4096x16                 | 4096x16                |                    |               |                   |           |                    |               |                   |           |
+|  u_net/u_l2/ev_mem_reg_bram_0        | RAMB36E1  |  A:A:2048x16            |  B:B:2048x8            |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+|  u_net/u_l2/ev_mem_reg_bram_1        | RAMB36E1  |  A:A:2048x16            |  B:B:2048x8            |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+| u_net/u_l1/ev_mem                    |           | 1024x16                 | 1024x16                |                    |               |                   |           |                    |               |                   |           |
+|  u_net/u_l1/ev_mem_reg_bram_0        | RAMB18E1  |  A:A:1024x16            |  B:B:1024x10           |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+| u_net/u_l2/g_wcol[0].mem             |           | 256x64                  |                        |                    |               |                   |           |                    |               |                   |           |
+|  u_net/u_l2/g_wcol[0].mem_reg        | RAMB36E1  |  A:A:256x36 B:B:256x28  |                        |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |        READ_FIRST |           |
+| u_net/u_l2/g_wcol[1].mem             |           | 256x64                  |                        |                    |               |                   |           |                    |               |                   |           |
+|  u_net/u_l2/g_wcol[1].mem_reg        | RAMB36E1  |  A:A:256x36 B:B:256x28  |                        |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |        READ_FIRST |           |
+| u_net/u_l2/g_wcol[2].mem             |           | 256x64                  |                        |                    |               |                   |           |                    |               |                   |           |
+|  u_net/u_l2/g_wcol[2].mem_reg        | RAMB36E1  |  A:A:256x36 B:B:256x28  |                        |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |        READ_FIRST |           |
+| u_net/u_l2/ts2_mem                   |           | 1024x29                 | 1024x29                |                    |               |                   |           |                    |               |                   |           |
+|  u_net/u_l2/ts2_mem_reg              | RAMB36E1  |  A:A:128x29             |  B:B:128x26            |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
+| u_net/u_l1/ts2_mem                   |           | 1024x27                 | 1024x27                |                    |               |                   |           |                    |               |                   |           |
+|  u_net/u_l1/ts2_mem_reg              | RAMB36E1  |  A:A:128x27             |  B:B:128x22            |                    |        SIGNAL |        READ_FIRST |           |                    |        SIGNAL |       WRITE_FIRST |           |
++--------------------------------------+-----------+-------------------------+------------------------+--------------------+---------------+-------------------+-----------+--------------------+---------------+-------------------+-----------+
+
+
