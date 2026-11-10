@@ -65,8 +65,18 @@ active inputs; it spikes if $U\ge\theta$ ($\theta=64$) and keeps $V' = U-\theta 
 
 \textbf{FPGA SNN accelerators on N-MNIST.} Table~\ref{tab:sota} lists the designs we found that report N-MNIST
 results on an FPGA. They differ in network (convolutional, recurrent, fully connected), device and power method;
-two report no latency. \pend{related-work paragraph on output-side skipping (SITRA-style, early termination) and
-input-side event-driven designs; cite from docs/literature/novelty\_check.md}
+two report no latency.
+
+\textbf{Output-side skipping.} Three recent designs skip work for neurons predicted not to fire:
+Early~\cite{early} stops accumulation for neurons whose partial sum of the largest weights stays below a tuned
+threshold; SITRA~\cite{sitra} scores each output of a spiking transformer with a weight-MSB dot product and skips the
+weight fetches of outputs it predicts silent, overlapping detection with the previous token; PS4~\cite{ps4}
+speculates over a time window and recomputes failed speculations. All three are heuristics with tuned thresholds and
+report 0.5--2\,\% accuracy loss from mispredictions, and all are evaluated in ASIC simulation. SPARSH~\cite{sparsh}
+skips zero weights, zero spikes and refractory neurons; C-STEP~\cite{cstep} and the early-stop of~\cite{cheng2025}
+end inference early in time. HUSH differs in that its prediction is a proven bound: a sleeping sub-block cannot
+contain a neuron that would fire at that timestep, the bound carries membrane state across timesteps, and its
+granularity matches a block-RAM column, so a skip removes whole memory reads on an FPGA.
 
 \section{The HUSH gate}
 Neurons are grouped into sub-blocks $c$ of $b=8$. Two tables are derived offline from the weights: the proxy
@@ -180,8 +190,7 @@ elapsed sensor time. Between 21\,ms and 156\,ms the gentler network is more accu
 The gated networks do not spike earlier or more (fewer output spikes in the first 99\,ms: 39--41 vs.\ 52) but
 their early leading class is wrong less often (8.5--8.8\,\% vs.\ 10.6\,\% of 1,000 samples at 99\,ms).
 An application that must decide within $\approx$150\,ms is therefore both faster and more accurate with HUSH.
-\begin{figure}[t]\centering\fbox{\parbox{0.9\columnwidth}{\centering\pend{Fig.: accuracy vs.\ elapsed time,
-results/realtime/early\_decision.json}}}\caption{Accuracy when the class is read after $w$ windows.}\label{fig:early}\end{figure}
+\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{fig_early.pdf}\caption{Accuracy when the class is read after the first windows of a recording (10,000 test samples). BASE is trained as long as the gated networks.}\label{fig:early}\end{figure}
 
 \section{Comparison with the state of the art}
 \begin{table}[t]\centering\caption{FPGA SNN accelerators on N-MNIST.}\label{tab:sota}
