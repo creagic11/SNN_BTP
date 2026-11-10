@@ -205,6 +205,12 @@ N-MNIST recordings deliver on average 41.9 raw events per 3\,ms window (26.5 dis
 $\le 0.22$\,\% of the window; the class is ready 0.89\,\textmu s (2.03\,\textmu s) after the last window; the input
 ring never holds more than 127 events. HUSH shortens the average window (by 37\,\%), not the busiest one, where
 most blocks wake up (840 vs.\ 828 cycles).
+\textbf{Energy in real-time operation.} At sensor speed the chip idles more than 99.9\,\% of the time, so a 300\,ms
+recording costs $\approx$30.3\,mJ of static energy (101\,mW) for either design and HUSH saves only its dynamic share
+(6.7 vs.\ 14.3\,\textmu J per inference). HUSH's gain appears when the chip is kept busy, e.g.\ serving recordings
+faster than real time: at the highest replay speed that drops nothing on the heaviest recordings (750$\times$ BASE,
+1,000$\times$ HUSH gentle) a recording costs 152\,mW$\times$0.40\,ms $=$ 61\,\textmu J with BASE and
+160\,mW$\times$0.30\,ms $=$ 48\,\textmu J with HUSH.
 \textbf{Faster than real time.} Replaying the 20 test recordings with the most events (1.7$\times$ the mean rate)
 with the same 1,024-event buffer, BASE drops events above 750$\times$ real time, HUSH gentle above 1,000$\times$ on
 all 20 recordings (23.7\,M events/s, 1.33$\times$) and above 1,500$\times$ for the median recording (2.0$\times$).
