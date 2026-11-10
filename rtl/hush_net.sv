@@ -12,10 +12,20 @@
 //       after L2's last timestep, argmax = golden.hush.predict (most spikes, then larger summed U, then lower index).
 //
 // Event order inside a timestep does not matter: the layer accumulates exact sums before the single clip.
+//
+// STREAM = 1 (A9.3, 10 Nov): live sensor input instead of preloaded events. Front-end:
+//   raw DVS event (x, y, p) -> pooled index p*SIDE*SIDE + (y/POOL)*SIDE + x/POOL; dropped if already seen in this
+//   window (the model's input is a 0/1 raster per window); accepted events and end-of-window markers go through a
+//   small FIFO into L1's ring event memory (NEV1 entries, power of two) and ts2, written only when L1's port A is
+//   free (ld_free). A marker closes window w: ts2[w] = {end, start}, avail = w + 1, and the seen-bitmap clears.
+//   L1 (STREAM = 1, EVRING = 1) starts its envelope pass and its timestep w only when window w is closed.
+//   An event is dropped (counted in drops) if the FIFO is full or the ring holds NEV1 events not yet consumed;
+//   drops = 0 is required for a valid run. The host load port still loads weights and tables while idle.
 `default_nettype none
 module hush_net #(
     parameter int M1 = 578, N1 = 256, N2 = 32, NOUT = 10, T = 100, K = 4, THETA = 64, THETA_H = 64,
     parameter int GATE = 1, MF = 1, NEV1 = 4096, NEV2 = 4096, NSMP = 1, FIFO_D = 32,
+    parameter int STREAM = 0, SIDE = 17, POOL = 2, IN_D = 64,
     parameter W0_FILE = "w0.hex", W1_FILE = "w1.hex", W2_FILE = "w2.hex", W3_FILE = "w3.hex",
     parameter P_FILE = "p.hex", Q_FILE = "q.hex", EV_FILE = "ev.hex", TS2_FILE = "ts2.hex",
     parameter O0_FILE = "o0.hex", O1_FILE = "o1.hex", O2_FILE = "o2.hex", O3_FILE = "o3.hex"
@@ -43,21 +53,98 @@ module hush_net #(
     output logic [47:0]        cnt_cycles,    // start -> done
     output logic [47:0]        l1_col_reads,
     output logic [47:0]        l1_cycles,
-    output logic [15:0]        fifo_peak
+    output logic [15:0]        fifo_peak,
+    // live sensor port (STREAM = 1): one raw event or one end-of-window marker per cycle
+    input  wire logic          ev_valid,
+    input  wire logic [5:0]    ev_x, ev_y,
+    input  wire logic          ev_p,
+    input  wire logic          eow,
+    output logic [31:0]        drops,
+    output logic [15:0]        in_peak,       // peak input-FIFO occupancy
+    output logic [15:0]        ring_peak      // peak ring occupancy (events accepted, not yet consumed)
 );
     localparam int G1 = N1 / 32;
     localparam int FW = $clog2(FIFO_D);
     localparam string NO = "none.hex";
 
+    // ---------------- sensor front-end (STREAM = 1) ----------------
+    localparam int IW1 = $clog2(M1);
+    localparam int RW  = $clog2(NEV1) + 1;               // ring pointer width (= L1's EAW for a power-of-two NEV1)
+    localparam int IFW = $clog2(IN_D);
+    logic          l1_free;
+    logic [15:0]   l1_rd;
+    logic          fe_we;
+    logic [2:0]    fe_sel;
+    logic [15:0]   fe_addr;
+    logic [15:0]   fe_data;
+    logic [15:0]   avail1, avail1_p;
+    logic [M1-1:0] seen;
+    logic [16:0]   inq [IN_D];                            // {eow, index}
+    logic [IFW:0]  iq_w, iq_r, iq_n;
+    logic [RW-1:0] acc_ptr, wptr1, wstart1, base1;
+    logic [15:0]   win;
+    logic          got_rd;                                // L1 has read ts2 of this inference (rd_ptr valid)
+    assign iq_n = iq_w - iq_r;
+    wire [15:0] pidx = 16'(ev_p) * 16'(SIDE * SIDE) + 16'(ev_y / POOL) * 16'(SIDE) + 16'(ev_x / POOL);
+    wire [RW-1:0] occ = acc_ptr - (got_rd ? RW'(l1_rd) : base1);
+    wire iq_full = (iq_n == (IFW+1)'(IN_D));
+    assign fe_we   = (STREAM != 0) && (iq_n != 0) && l1_free;
+    wire [16:0] iq_head = inq[iq_r[IFW-1:0]];
+    assign fe_sel  = iq_head[16] ? 3'd4 : 3'd3;
+    assign fe_addr = iq_head[16] ? win : 16'(wptr1);
+    assign fe_data = iq_head[15:0];
+    if (STREAM) begin : g_fe
+        always_ff @(posedge clk) begin
+            if (rst || start) begin
+                iq_w <= '0; iq_r <= '0; seen <= '0; win <= '0; avail1 <= '0; avail1_p <= '0; got_rd <= 0;
+                base1 <= acc_ptr; wstart1 <= wptr1; in_peak <= '0; ring_peak <= '0;
+                if (rst) begin acc_ptr <= '0; wptr1 <= '0; base1 <= '0; wstart1 <= '0; drops <= '0; end
+                else drops <= '0;
+            end else begin
+                avail1 <= avail1_p;
+                if (l1_valid) got_rd <= 1;                      // first COMBINE has latched pe_ts
+                if (16'(iq_n) > in_peak) in_peak <= 16'(iq_n);
+                if (16'(occ) > ring_peak) ring_peak <= 16'(occ);
+                // accept (one raw event or one marker per cycle)
+                if (eow) begin
+                    if (!iq_full) begin inq[iq_w[IFW-1:0]] <= {1'b1, 16'(acc_ptr)}; iq_w <= iq_w + 1'b1; end
+                    else drops <= drops + 1'b1;
+                    seen <= '0;
+                end else if (ev_valid && !seen[pidx[IW1-1:0]]) begin
+                    if (!iq_full && occ < RW'(NEV1)) begin
+                        inq[iq_w[IFW-1:0]] <= {1'b0, pidx};
+                        iq_w <= iq_w + 1'b1;
+                        acc_ptr <= acc_ptr + 1'b1;
+                        seen[pidx[IW1-1:0]] <= 1'b1;
+                    end else drops <= drops + 1'b1;
+                end
+                // write into L1 (event -> ring, marker -> ts2[win] = {end, start})
+                if (fe_we) begin
+                    iq_r <= iq_r + 1'b1;
+                    if (iq_head[16]) begin
+                        wstart1 <= wptr1; win <= win + 1'b1; avail1_p <= win + 1'b1;
+                    end else wptr1 <= wptr1 + 1'b1;
+                end
+            end
+        end
+    end else begin : g_nofe
+        assign drops = '0; assign in_peak = '0; assign ring_peak = '0; assign avail1 = 16'hFFFF;
+    end
+    // L1 load port: front-end while streaming, host otherwise
+    wire          l1_we   = fe_we || ld_we;
+    wire [2:0]    l1_sel  = fe_we ? fe_sel : ld_sel;
+    wire [15:0]   l1_addr = fe_we ? fe_addr : ld_addr;
+    wire [255:0]  l1_data = fe_we ? (iq_head[16] ? 256'({16'(wptr1), 16'(wstart1)}) : 256'(fe_data)) : ld_data;
+
     // ---------------- L1 ----------------
     logic l1_done, l1_ready;
     logic [47:0] l1_wr, l1_aw;
     hush_layer #(.M(M1), .N(N1), .T(T), .K(K), .THETA(THETA), .THETA_H(THETA_H), .GATE(GATE), .MF(MF),
-                 .NEV(NEV1), .NSMP(NSMP), .STREAM(0),
+                 .NEV(NEV1), .NSMP(NSMP), .STREAM(STREAM), .EVRING(STREAM),
                  .W0_FILE(W0_FILE), .W1_FILE(W1_FILE), .W2_FILE(W2_FILE), .W3_FILE(W3_FILE),
                  .P_FILE(P_FILE), .Q_FILE(Q_FILE), .EV_FILE(EV_FILE), .TS2_FILE(TS2_FILE)) u_l1 (
-        .clk, .rst, .start, .smp, .ld_we, .ld_sel, .ld_addr, .ld_data, .done(l1_done),
-        .avail(16'hFFFF), .out_ready(l1_ready),
+        .clk, .rst, .start, .smp, .ld_we(l1_we), .ld_sel(l1_sel), .ld_addr(l1_addr), .ld_data(l1_data), .done(l1_done),
+        .avail(avail1), .out_ready(l1_ready), .ld_free(l1_free), .rd_ptr(l1_rd),
         .out_valid(l1_valid), .out_t(l1_t), .out_blk(l1_blk), .out_spk(l1_spk), .v_valid(), .v_data(l1_v),
         .cnt_cycles(l1_cycles), .cnt_col_reads(l1_col_reads), .cnt_word_reads(l1_wr), .cnt_awake_sub(l1_aw));
 
