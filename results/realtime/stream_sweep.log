@@ -1,2 +1,9 @@
 picked samples, active events: 4021 - 4458 (test-set mean 2653.0323 )
 picked samples, active events: 4104 - 4458 (test-set mean 2653.0323 )
+BASE 250.0 done
+BASE 500.0 done
+BASE 750.0 done
+BASE 1000.0 done
+BASE 1500.0 done
+BASE 2000.0 done
+HUSH gentle 12ep 250.0 done
