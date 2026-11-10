@@ -22,7 +22,8 @@ from run_net import golden, pad_out  # noqa: E402
 from scripts.measure_rho import pad_hidden, test_rasters  # noqa: E402
 
 CASES = {"base": ("nmnist_T100", 0), "mf_gentle12": ("nmnist_T100_mf_e05_d025_ep12", 1),
-         "mf_gentler12": ("nmnist_T100_mf_e025_d01_ep12", 1), "mf_aggr": ("nmnist_T100_mf_e2_d1", 1)}
+         "mf_gentler12": ("nmnist_T100_mf_e025_d01_ep12", 1), "mf_aggr": ("nmnist_T100_mf_e2_d1", 1),
+         "base_ctrl": ("nmnist_T100_ft12_ctrl", 0)}   # 10 Nov: BASE trained as long as the gated nets (paper's BASE)
 
 
 def main():
@@ -43,7 +44,7 @@ def main():
         W1, W2, _ = pad_hidden(z["W0"].astype(np.int64), z["W1"].astype(np.int64), 32)
         Wo = pad_out(W2, W2.shape[1])
         k, th = int(z["k"]), int(z["theta"])
-        for sub in ("netpwr", "netstream"):
+        for sub in (("netpwr",) if name == "base_ctrl" else ("netpwr", "netstream")):
             d = ROOT / "fpga" / sub / name
             d.mkdir(parents=True, exist_ok=True)
             write_mems(d, W1, R[0].astype(np.int64))                  # w0..w3, p, q (ev/ts overwritten below)
