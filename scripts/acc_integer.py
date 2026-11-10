@@ -13,7 +13,7 @@ tags = ["nmnist_T100", "nmnist_T100_mf_e05_d025", "nmnist_T100_mf_e2_d1", "nmnis
         "nmnist_T100_mf_e05_d025_ep12"]
 out = ROOT / "results" / "acc_integer.json"
 res = json.load(open(out)) if out.exists() else {}
-runs = [t + s for t in tags for s in ("", "_s1", "_s2")] + ["nmnist_T100_ft12_ctrl"]
+runs = [t + s for t in tags for s in ("", "_s1", "_s2")] + ["nmnist_T100_ft12_ctrl", "nmnist_T100_ft12_ctrl_s1", "nmnist_T100_ft12_ctrl_s2"]
 R = Y = None
 for run in runs:
     w = ROOT / "results" / run / "weights.npz"

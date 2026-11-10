@@ -14,3 +14,4 @@ nmnist_T100_mf_e05_d025_ep12 {'acc_integer': np.float64(0.9573), 'acc_train_eval
 nmnist_T100_mf_e05_d025_ep12_s1 {'acc_integer': np.float64(0.9581), 'acc_train_eval': 0.9581}
 nmnist_T100_mf_e05_d025_ep12_s2 {'acc_integer': np.float64(0.9568), 'acc_train_eval': 0.9569}
 nmnist_T100_ft12_ctrl {'acc_integer': np.float64(0.9758), 'acc_train_eval': 0.9759}
+nmnist_T100_ft12_ctrl {'acc_integer': np.float64(0.9808), 'acc_train_eval': 0.9808}

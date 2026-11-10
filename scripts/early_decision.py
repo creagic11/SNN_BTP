@@ -19,7 +19,8 @@ from scripts.measure_rho import pad_hidden, test_rasters  # noqa: E402
 POINTS = {"BASE": ("results/nmnist_T100/weights.npz", None),
           "HUSH gentler 12ep": ("results/nmnist_T100_mf_e025_d01_ep12/weights.npz", "mean"),
           "HUSH gentle 12ep": ("results/nmnist_T100_mf_e05_d025_ep12/weights.npz", "mean"),
-          "HUSH aggressive": ("results/nmnist_T100_mf_e2_d1/weights.npz", "mean")}
+          "HUSH aggressive": ("results/nmnist_T100_mf_e2_d1/weights.npz", "mean"),
+          "BASE + 12 ep fine-tune, no gate (control)": ("results/nmnist_T100_ft12_ctrl/weights.npz", None)}
 
 
 def prefix_predict(spk, U, nout):
@@ -41,8 +42,10 @@ def main():
     ap.add_argument("--n", type=int, default=10000)
     ap.add_argument("--out", default=str(ROOT / "results" / "realtime" / "early_decision.json"))
     a = ap.parse_args()
-    res = {}
+    res = json.load(open(a.out)) if Path(a.out).exists() and a.n == 10000 else {}
     for name, (w, drive) in POINTS.items():
+        if name in res:
+            continue
         z = np.load(ROOT / w)
         W1, W2, _ = pad_hidden(z["W0"].astype(np.int64), z["W1"].astype(np.int64), 32)
         nout = W2.shape[1]

@@ -58,5 +58,9 @@
  "nmnist_T100_mf_e05_d025_ep12_s2": {
   "acc_integer": 0.9568,
   "acc_train_eval": 0.9569
+ },
+ "nmnist_T100_ft12_ctrl": {
+  "acc_integer": 0.9808,
+  "acc_train_eval": 0.9808
  }
 }

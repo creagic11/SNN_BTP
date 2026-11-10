@@ -10,6 +10,10 @@ done_ep() { python3 -c "import json,sys;m=json.load(open('results/$1/metrics.jso
 if [ "$kind" = ungated ]; then tag=nmnist_T100_s$s; ep=10
   [ "$(done_ep $tag)" -ge $ep ] && { echo "skip $tag"; exit 0; }
   python3 -u train/train_snn.py $nm --epochs $ep --seed $s --rate_target 0.05 --rate_lam 5 --tag $tag > results/train_$tag.log 2>&1
+elif [ "$kind" = ctrl12 ]; then tag=nmnist_T100_ft12_ctrl_s$s; ep=12     # control (10 Nov): same 12-epoch fine-tune, no gate
+  [ "$(done_ep $tag)" -ge $ep ] && { echo "skip $tag"; exit 0; }
+  python3 -u train/train_snn.py $nm --epochs $ep --init results/nmnist_T100_s$s/weights.npz --lr 0.02 --seed $s \
+    --rate_target 0.05 --rate_lam 5 --tag $tag > results/train_$tag.log 2>&1
 else tag=nmnist_T100_mf_${kind}_s$s; ep=6; case $kind in *_ep12) ep=12;; esac
   [ "$(done_ep $tag)" -ge $ep ] && { echo "skip $tag"; exit 0; }
   case $kind in e05_d025*) exc=0.5; env=0.25;; e2_d1) exc=2; env=1;; e025_d01*) exc=0.25; env=0.1;; esac
