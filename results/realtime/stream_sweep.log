@@ -38,3 +38,20 @@ BASE 250.0 done
 BASE 500.0 done
 BASE 750.0 done
 BASE 1000.0 done
+BASE 1250.0 done
+BASE 1500.0 done
+BASE 2000.0 done
+HUSH gentle 12ep 250.0 done
+HUSH gentle 12ep 500.0 done
+HUSH gentle 12ep 750.0 done
+HUSH gentle 12ep 1000.0 done
+HUSH gentle 12ep 1250.0 done
+HUSH gentle 12ep 1500.0 done
+HUSH gentle 12ep 2000.0 done
+HUSH gentler 12ep 250.0 done
+HUSH gentler 12ep 500.0 done
+HUSH gentler 12ep 750.0 done
+HUSH gentler 12ep 1000.0 done
+HUSH gentler 12ep 1250.0 done
+HUSH gentler 12ep 1500.0 done
+HUSH gentler 12ep 2000.0 done

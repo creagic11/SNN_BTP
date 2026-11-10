@@ -67,10 +67,24 @@ def main():
                        f"{max((r['ring_peak'] for r in fin), default=-1)} |")
             if ok == len(rs):
                 best[d] = max(best.get(d, 0), s)
-        out += ["", "| Design | Fastest speed with no drops on all of them | Sustained raw-event rate at that speed (test-set mean 13.97 k ev/s × speed) |",
-                "|---|---|---|"]
+        ev_rate = np.mean([r["events"] for r in sw if "events" in r]) / (T * WIN_US * 1e-6)   # raw events/s, these recordings
+        per = defaultdict(list)
+        m = defaultdict(dict)
+        for r in sw:
+            m[(r["design"], r["sample"])][r["speed"]] = r["ok"]
+        for (d, smp), v in m.items():
+            b = 0
+            for x in sorted(v):
+                if not v[x]:
+                    break
+                b = x
+            per[d].append(b)
+        out += ["", f"These recordings average {ev_rate / 1e3:.1f} k raw events/s at sensor speed (test-set mean 13.97 k).\n",
+                "| Design | Fastest speed passing on all of them | Raw-event rate sustained | Median per-recording limit | vs BASE |",
+                "|---|---|---|---|---|"]
         for d, s in best.items():
-            out.append(f"| {d} | {s:g}× | {13.97e3 * s / 1e6:.1f} M events/s |")
+            out.append(f"| {d} | {s:g}× | {ev_rate * s / 1e6:.1f} M events/s | {np.median(per[d]):g}× | "
+                       f"{s / best['BASE']:.2f}× (all) / {np.median(per[d]) / np.median(per['BASE']):.2f}× (median) |")
     rows = []
     for d, (tag, mode) in NETS.items():
         p = ROOT / "results" / tag / "net_perf.json"

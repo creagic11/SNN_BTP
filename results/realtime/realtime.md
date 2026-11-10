@@ -20,18 +20,31 @@ nothing is dropped and every result is bit-exact. Delay = output layer done for 
 | BASE | 500 | 20/20 | 23.65 | 5.54 | 369 |
 | BASE | 750 | 20/20 | 65.97 | 20.96 | 826 |
 | BASE | 1000 | 0/20 | 96.99 | 48.19 | 1024 |
+| BASE | 1250 | 0/20 | 102.20 | 53.60 | 1024 |
 | BASE | 1500 | 0/20 | 100.31 | 53.26 | 1024 |
 | BASE | 2000 | 0/20 | 93.86 | 49.10 | 1024 |
 | HUSH gentle 12ep | 250 | 20/20 | 8.68 | 2.18 | 197 |
 | HUSH gentle 12ep | 500 | 20/20 | 14.10 | 2.21 | 278 |
 | HUSH gentle 12ep | 750 | 20/20 | 40.76 | 2.94 | 602 |
 | HUSH gentle 12ep | 1000 | 20/20 | 59.18 | 4.88 | 836 |
+| HUSH gentle 12ep | 1250 | 19/20 | 71.18 | 8.38 | 1024 |
 | HUSH gentle 12ep | 1500 | 15/20 | 75.34 | 12.85 | 1024 |
+| HUSH gentle 12ep | 2000 | 3/20 (2 never finished) | 77.53 | 22.78 | 1024 |
+| HUSH gentler 12ep | 250 | 20/20 | 9.68 | 3.04 | 197 |
+| HUSH gentler 12ep | 500 | 20/20 | 24.26 | 3.42 | 379 |
+| HUSH gentler 12ep | 750 | 20/20 | 55.50 | 7.15 | 713 |
+| HUSH gentler 12ep | 1000 | 18/20 | 74.85 | 17.29 | 1024 |
+| HUSH gentler 12ep | 1250 | 8/20 | 84.71 | 29.31 | 1024 |
+| HUSH gentler 12ep | 1500 | 3/20 | 86.08 | 36.56 | 1024 |
+| HUSH gentler 12ep | 2000 | 0/20 | 88.91 | 41.45 | 1024 |
 
-| Design | Fastest speed with no drops on all of them | Sustained raw-event rate at that speed (test-set mean 13.97 k ev/s × speed) |
-|---|---|---|
-| BASE | 750× | 10.5 M events/s |
-| HUSH gentle 12ep | 1000× | 14.0 M events/s |
+These recordings average 23.7 k raw events/s at sensor speed (test-set mean 13.97 k).
+
+| Design | Fastest speed passing on all of them | Raw-event rate sustained | Median per-recording limit | vs BASE |
+|---|---|---|---|---|
+| BASE | 750× | 17.8 M events/s | 750× | 1.00× (all) / 1.00× (median) |
+| HUSH gentle 12ep | 1000× | 23.7 M events/s | 1500× | 1.33× (all) / 2.00× (median) |
+| HUSH gentler 12ep | 750× | 17.8 M events/s | 1000× | 1.00× (all) / 1.33× (median) |
 
 ## Average-load bound (no buffer limit): 300 ms of sensor time / mean cycles per recording
 
