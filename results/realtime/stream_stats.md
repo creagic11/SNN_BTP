@@ -35,3 +35,25 @@ Each bin is costed on its own (upper bound: the envelope pre-pass is counted per
    static power for both designs; HUSH's real-time claim must be framed as **capacity (≈ 1.6× more streams
    per chip) and dynamic energy**, or tested on a stream heavy enough to load the chip (full 34×34 input,
    or a higher-rate sensor dataset).
+
+## A9.1b — speedup falls as the stream gets busier (10 Nov; gentle 12-ep weights, 500 samples)
+
+`scripts/activity_buckets.py results/nmnist_T100_mf_e05_d025_ep12/weights.npz`
+
+| Active inputs in the bin | Share of bins | BASE cycles | HUSH cycles | Speedup | Awake block fraction |
+|---|---|---|---|---|---|
+| 0 | 0.7 % | 51 | 39 | 1.31× | 0.00 |
+| 1–9 | 21.2 % | 118 | 53 | 2.22× | 0.07 |
+| 10–19 | 18.9 % | 195 | 92 | 2.12× | 0.21 |
+| 20–29 | 16.6 % | 280 | 143 | 1.96× | 0.30 |
+| 30–39 | 16.8 % | 362 | 187 | 1.94× | 0.33 |
+| 40–59 | 22.3 % | 469 | 260 | 1.81× | 0.38 |
+| ≥ 60 | 3.4 % | 610 | 384 | 1.59× | 0.47 |
+
+The awake fraction rises with input activity, so a heavier stream would shrink HUSH's speedup toward 1×.
+
+## Multi-stream capacity is memory-bound (estimate, 10 Nov)
+
+Per-stream state = 256 × 16 b (hidden, now in LUTRAM) + 32 × 16 b (output) ≈ 4.6 kb. Free RAMB36 on the XC7A100T
+(135 total): BASE 92, HUSH 76 → at most ≈ 730 (BASE) vs ≈ 600 (HUSH) streams with ideal packing, below the
+cycle-bound capacities (≈ 1,016 vs ≈ 1,600–1,900). On one chip, BASE would hold more streams than HUSH.
