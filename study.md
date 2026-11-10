@@ -133,3 +133,13 @@ Work through this in order. Each item says what you must be able to do at the bo
 - Why BRAM dynamic power is only 11-14 mW: each read enables one BRAM (ram_decomp = "power" splits deep RAMs by address) and HUSH reads only the weight columns of awake sub-blocks.
 - Headline: at +4-8% power, HUSH-MF cuts latency 1.9-3.2× and energy per inference 1.8-3.0× (dynamic 1.75-2.6×) against the same-chip dense baseline. Costs: 2.6× LUTs, +35% BRAM (P/Q tables, envelope units).
 - Static power (~101 mW) is the XC7A100T's and dominates total power; the energy gain comes from finishing sooner as well as from switching less.
+
+## Phase 4 — Whole network, real time, paper (added 11 Nov 2026)
+
+- [ ] Explain how the output layer runs one timestep behind the hidden layer through a spike FIFO and a drain, and why the output layer then costs only ≈ 0.3 µs extra. [`rtl/hush_net.sv`, `rtl/sim/net_cycle_model.py`]
+- [ ] Explain the stream front-end: 2×2 pooling, per-window de-duplication, ring of 1,024 events, end-of-window marker, and why markers need reserved FIFO space. [`rtl/hush_net.sv`, progress.md 10 Nov]
+- [ ] State the real-time guarantee in sensor time (worst window 4.5–6.6 µs of 3 ms) and the separate throughput metric (750× BASE vs 1,000× HUSH on the heaviest recordings). Explain why HUSH helps the average window but not the busiest one. [`results/realtime/realtime.md`]
+- [ ] Explain why the fair baseline is the 22-epoch ungated net (98.21 %), and what the control fine-tune showed about early decisions. [`results/net_latency.md`, `results/realtime/early_decision.json`]
+- [ ] Explain why HUSH draws 3–8 % more power but 44–66 % less energy per inference, and why Spiker+ spends 140 mW in BRAM. [`results/power_l1/README.md`]
+- [ ] Explain what Theorem 1 does and does not guarantee end to end ("from the same state"). [`paper/hush_paperA.tex` § III]
+- [ ] Explain why energy at sensor speed is ≈ 30 mJ per recording for both designs (static power) and where HUSH's energy gain appears instead. [`paper/hush_paperA.tex` § VII]

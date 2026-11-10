@@ -37,6 +37,15 @@ Spiker+), A8.1 outline (`paper/outline.md`). Running: A9.4 sweep + sensor-timing
 
 ---
 
+## Status, 11 Nov 2026 01:30
+
+DONE: S0, A5, A6 (+ fair-baseline control, 3 seeds: 98.21 %), A4.1–A4.6 (Spiker+ same chip: 818 µs, 254.5 µJ;
+meets 100 MHz with high effort), A9.1–A9.7 (whole network on chip, stream mode, real-time tables, energy at
+sensor rate, early-decision curve), laptop runs L1 and L2, A10, A8.1 (outline), A8.2 (draft, 4 pages, IEEEtran),
+A8.3 (internal review applied), A8.4 (comparison report v3: "Update v3" section in the Claude Doc).
+OPEN: two reference entries (Early authors, SPARSH co-authors); venue and author-name spelling (questions for the
+user at the end); A7 board measurement (blocked: board + power meter); Paper B (GPU).
+
 ## Stage 0 — housekeeping (3 Nov, ~30 min, Claude)
 
 | ID | Step | Done when |
