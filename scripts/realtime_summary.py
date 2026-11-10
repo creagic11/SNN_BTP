@@ -41,7 +41,13 @@ def main():
                        f"{max(r['decision_delay'] for r in rs) / 100:.2f} | {max(r['in_peak'] for r in rs)} | {max(r['ring_peak'] for r in rs)} |")
         out.append(f"\nWindow length 3,000 µs → worst window uses {max(r['win_delay_max'] for r in sens) / 100 / WIN_US * 100:.2f} % of it.\n")
     sw = load(RT / "stream_sweep.jsonl")
-    if sw:
+    if sw:                                   # keep the recordings that every (design, speed) run covers
+        grp = defaultdict(set)
+        for r in sw:
+            grp[(r["design"], r["speed"])].add(r["sample"])
+        full = [v for v in grp.values() if len(v) == max(len(x) for x in grp.values())]
+        common = set.intersection(*full)
+        sw = [r for r in sw if r["sample"] in common and len(grp[(r["design"], r["speed"])]) >= len(common)]
         n = len({r["sample"] for r in sw})
         out += [f"## (b) Replay faster than real time — the {n} test recordings with the most input events\n",
                 "Same buffer for every design: ring of 1,024 events (one RAMB18) + 64-entry input FIFO. A run passes if",

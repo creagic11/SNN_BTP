@@ -30,6 +30,11 @@ every check in its "Done when" column passes; the evidence (file, log line, numb
   the per-window costs above). No 3 ms decision delay.
 - New A9.7: accuracy vs elapsed sensor time (decision after 50/100/…/300 ms), golden model only.
 
+**Status at end of 10 Nov:** A9.2 DONE (whole network on chip, 4 × 50 samples bit- and cycle-exact; latency table
+`results/net_latency.md`), A9.3 DONE (stream mode, bit-exact at sensor timing and 1,000–2,000× replay), L1 package
+delivered and md5-verified (whole-network power ×4 replaces the planned A6.3 single-layer runs; 2 stream builds;
+Spiker+), A8.1 outline (`paper/outline.md`). Running: A9.4 sweep + sensor-timing runs, A9.7 curve.
+
 ---
 
 ## Stage 0 — housekeeping (3 Nov, ~30 min, Claude)
