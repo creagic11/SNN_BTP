@@ -55,7 +55,7 @@ def main():
             Wo = pad_out(W2, nout)
             exe = compile_stream(d, M1=W1.shape[0], N1=W1.shape[1], N2=32, NOUT=nout, T=T, K=int(z["k"]),
                                  THETA=int(z["theta"]), THETA_H=int(z["theta"]), GATE=gate, MF=mf, NEV1=1024,
-                                 NEV2=4096, FIFO_D=32, IN_D=64, SIDE=ds.side, POOL=ds.pool,
+                                 NEV2=4096, FIFO_D=32, IN_D=128, EVQ=64, SIDE=ds.side, POOL=ds.pool,
                                  TIMEOUT_CYC=int(3 * T * t_max / T * 100 / min(speeds)) + 1_000_000)
             for sp in speeds:
                 for i in pick:

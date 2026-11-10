@@ -21,11 +21,13 @@
 //   L1 (STREAM = 1, EVRING = 1) starts its envelope pass and its timestep w only when window w is closed.
 //   An event is dropped (counted in drops) if the FIFO is full or the ring holds NEV1 events not yet consumed;
 //   drops = 0 is required for a valid run. The host load port still loads weights and tables while idle.
+//   Events may fill only EVQ of the IN_D FIFO entries; the rest is reserved for end-of-window markers, so overload
+//   drops events but never a marker (a lost marker would stall the inference; found in the A9.4 sweep, 10 Nov).
 `default_nettype none
 module hush_net #(
     parameter int M1 = 578, N1 = 256, N2 = 32, NOUT = 10, T = 100, K = 4, THETA = 64, THETA_H = 64,
     parameter int GATE = 1, MF = 1, NEV1 = 4096, NEV2 = 4096, NSMP = 1, FIFO_D = 32,
-    parameter int STREAM = 0, SIDE = 17, POOL = 2, IN_D = 64,
+    parameter int STREAM = 0, SIDE = 17, POOL = 2, IN_D = 128, EVQ = 64,
     parameter W0_FILE = "w0.hex", W1_FILE = "w1.hex", W2_FILE = "w2.hex", W3_FILE = "w3.hex",
     parameter P_FILE = "p.hex", Q_FILE = "q.hex", EV_FILE = "ev.hex", TS2_FILE = "ts2.hex",
     parameter O0_FILE = "o0.hex", O1_FILE = "o1.hex", O2_FILE = "o2.hex", O3_FILE = "o3.hex"
@@ -116,7 +118,7 @@ module hush_net #(
                     else drops <= drops + 1'b1;
                     seen <= '0;
                 end else if (ev_valid && !seen[pidx[IW1-1:0]]) begin
-                    if (!iq_full && occ < RW'(NEV1)) begin
+                    if (iq_n < (IFW+1)'(EVQ) && occ < RW'(NEV1)) begin
                         inq[iq_w[IFW-1:0]] <= {1'b0, pidx};
                         iq_w <= iq_w + 1'b1;
                         acc_ptr <= acc_ptr + 1'b1;

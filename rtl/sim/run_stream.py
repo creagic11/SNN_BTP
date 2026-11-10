@@ -114,7 +114,7 @@ def main():
     with tempfile.TemporaryDirectory() as td:
         d = Path(td)
         exe = compile_stream(d, M1=W1.shape[0], N1=W1.shape[1], N2=32, NOUT=nout, T=T, K=k, THETA=theta,
-                             THETA_H=theta, GATE=a.gate, MF=a.mf, NEV1=a.nev1, NEV2=4096, FIFO_D=32, IN_D=a.in_d,
+                             THETA_H=theta, GATE=a.gate, MF=a.mf, NEV1=a.nev1, NEV2=4096, FIFO_D=32, IN_D=128, EVQ=a.in_d,
                              SIDE=ds.side, POOL=ds.pool)
         for i in idx:
             ev, y = ds.ds[i]

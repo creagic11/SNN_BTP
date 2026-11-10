@@ -8,7 +8,7 @@
 `timescale 1ns/1ps
 module tb_hush_stream;
     parameter int M1 = 578, N1 = 256, N2 = 32, NOUT = 10, T = 100, K = 4, THETA = 64, THETA_H = 64, GATE = 1, MF = 1;
-    parameter int NEV1 = 1024, NEV2 = 4096, FIFO_D = 32, IN_D = 64, SIDE = 17, POOL = 2;
+    parameter int NEV1 = 1024, NEV2 = 4096, FIFO_D = 32, IN_D = 128, EVQ = 64, SIDE = 17, POOL = 2;
     parameter string STIM_FILE = "stim.txt";
     parameter string OUT_FILE = "stream_out.txt";
     logic clk = 0, rst = 1, start = 0;
@@ -22,7 +22,7 @@ module tb_hush_stream;
     logic ev_valid = 0, ev_p = 0, eow = 0;
     logic [5:0] ev_x = 0, ev_y = 0;
     hush_net #(.M1(M1), .N1(N1), .N2(N2), .NOUT(NOUT), .T(T), .K(K), .THETA(THETA), .THETA_H(THETA_H), .GATE(GATE),
-               .MF(MF), .NEV1(NEV1), .NEV2(NEV2), .FIFO_D(FIFO_D), .STREAM(1), .SIDE(SIDE), .POOL(POOL), .IN_D(IN_D),
+               .MF(MF), .NEV1(NEV1), .NEV2(NEV2), .FIFO_D(FIFO_D), .STREAM(1), .SIDE(SIDE), .POOL(POOL), .IN_D(IN_D), .EVQ(EVQ),
                .EV_FILE("none.hex"), .TS2_FILE("none.hex")) dut (
         .clk, .rst, .start, .smp(16'd0), .ld_we(1'b0), .ld_sel(3'd0), .ld_addr(16'd0), .ld_data(256'd0),
         .done, .cls, .l1_valid, .l1_t, .l1_blk, .l1_spk, .l1_v, .l2_valid, .l2_t, .l2_spk, .l2_v,
