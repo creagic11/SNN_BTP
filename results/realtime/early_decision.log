@@ -1,3 +1,4 @@
 BASE {'30 ms': np.float64(49.63), '60 ms': np.float64(76.04), '99 ms': np.float64(86.06), '150 ms': np.float64(91.78), '201 ms': np.float64(95.37), '300 ms': np.float64(97.58)}
 HUSH gentler 12ep {'30 ms': np.float64(62.27), '60 ms': np.float64(87.68), '99 ms': np.float64(92.6), '150 ms': np.float64(94.2), '201 ms': np.float64(95.39), '300 ms': np.float64(96.61)}
 HUSH gentle 12ep {'30 ms': np.float64(61.0), '60 ms': np.float64(84.88), '99 ms': np.float64(90.89), '150 ms': np.float64(93.14), '201 ms': np.float64(94.28), '300 ms': np.float64(95.73)}
+HUSH aggressive {'30 ms': np.float64(53.92), '60 ms': np.float64(79.74), '99 ms': np.float64(86.89), '150 ms': np.float64(89.75), '201 ms': np.float64(91.85), '300 ms': np.float64(92.72)}
