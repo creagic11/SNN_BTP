@@ -9,6 +9,27 @@ Decisions behind this plan (3 Nov, with the user):
 Status of every item is tracked in `progress.md` (table "Paper A track" + dated log). A task is DONE only when
 every check in its "Done when" column passes; the evidence (file, log line, number) is written into the log.
 
+## Update, 10 Nov 2026 (status + decision on real time)
+
+**Done since 3 Nov:** S0, A5 (3 seeds), A10.1–A10.3, A4.1–A4.4 (Spiker+ bit-exact in GHDL, 814 µs), A6.1–A6.2 and the
+3-seed runs of the two new points (gentle 12 ep: 95.74 ± 0.06 %, 2.38×, reads 0.118; gentler 12 ep: 96.55 ± 0.07 %,
+1.75×, reads 0.204 → A6 target met), A9.1 (+ A9.1b: speedup vs bin activity, multi-stream memory bound).
+**Not done on time:** laptop run L1 (planned 6–7 Nov), so A4.5/A4.6/A6.3/A9.5/A9.6 wait; draft date 12 Nov moved.
+
+**Real-time decision (10 Nov):**
+- The paper's real-time guarantee is stated in **sensor time**: every 3 ms window is processed, and the decision
+  updated, before the next window closes. Measured worst window ≈ 8.4 µs (0.3 % of 3 ms) for both BASE and HUSH.
+  Input = one window double-buffered (≤ 2 × 284 events × 16 b, under one RAMB36).
+- Throughput is a **separate** metric: the fastest replay (time-compressed N-MNIST) at which a one-RAMB36 input
+  buffer never overflows, with its p99 decision delay; BASE and HUSH at the same buffer (HUSH ≈ 1.9×, to measure).
+- Dropped: many-streams-per-chip (state memory binds first: ≈ 730 BASE vs ≈ 600 HUSH streams, so BASE would win).
+  Heavier sensor stream → Paper B (GPU); the speedup-vs-activity table (2.2× sparse → 1.6× busy) goes into the
+  limitations.
+- Correction to A9.3 below: HUSH does **not** need one window of look-ahead. The envelope for window t uses only
+  window t's events, so it runs when window t closes (the ETU overlap is lost: +n+4 cycles per window, already in
+  the per-window costs above). No 3 ms decision delay.
+- New A9.7: accuracy vs elapsed sensor time (decision after 50/100/…/300 ms), golden model only.
+
 ---
 
 ## Stage 0 — housekeeping (3 Nov, ~30 min, Claude)
@@ -81,8 +102,9 @@ Two facts to state honestly in the paper (they shape the claim):
 |---|---|---|---|
 | A9.1 | Stream statistics: events per bin (mean, p99, max), events/s, required input bandwidth; interface choice (AER-style event port; UART needs ≥ 1 Mbaud at the peak rate, 115,200 baud is too slow) | Claude | `results/realtime/stream_stats.md` |
 | A9.2 | **Full network on chip**: output layer as a second `hush_layer` (gate off, 256 → 32 padded) fed by hidden spikes, plus the integer class decision (most output spikes, tie → larger summed U, then lower index — `golden.hush.predict`) | Claude | regression 80/80 still passes; 50 N-MNIST samples: predicted class = golden for all, both layers' write-backs bit-exact |
-| A9.3 | **Stream mode** in the RTL: events written by an input port into a ring buffer; a bin is "closed" by an end-of-bin marker; the sequencer stalls before launching the envelope unit for bin t+1 until that bin is closed (HUSH needs one bin of look-ahead → 3 ms decision delay) | Claude | stream-mode simulation bit-exact to batch mode on 20 samples; cycle model extended with stalls |
-| A9.4 | Streaming testbench: events released at their true times (3 ms bins); measure per-bin busy time, worst-case slack, input-buffer peak occupancy, decision latency after the last event — BASE and HUSH | Claude | table: worst per-bin time ≪ 3 ms for both; buffer size justified; decision latency in µs |
+| A9.3 | **Stream mode** in the RTL (revised 10 Nov): events written by an input port into a double-buffered window store; a window is closed by an end-of-window marker; the ETU for window t starts when t closes (no look-ahead) | Claude | stream-mode simulation bit-exact to batch mode on 20 samples; cycle model extended with the stream-mode costs |
+| A9.4 | Streaming testbench, two modes: (a) events at true sensor times → worst per-window busy time, slack, decision delay after window close; (b) replay speed swept → fastest speed with no buffer overflow for a one-RAMB36 buffer, p99 decision delay; BASE and HUSH. Plus `scripts/stream_queue.py` (queue model) predicting (b) over all 10,000 samples | Claude | (a) worst window ≪ 3 ms for both; (b) RTL = queue model on the simulated samples; table in `results/realtime/` |
+| A9.7 | Accuracy vs elapsed sensor time (class decided after 50, 100, …, 300 ms), golden model, BASE and HUSH points | Claude | `results/realtime/early_decision.md` |
 | A9.5 | Vivado: full-network stream-mode build for BASE and HUSH-MF (timing + area) | **User** (part of laptop run L1) | WNS ≥ 0 at 100 MHz |
 | A9.6 | Energy in real-time operation = static × window + dynamic energy (from A3 SAIF), and stream capacity per chip; report section "Real-time operation" | Claude | numbers in report v3 and paper |
 
@@ -102,7 +124,8 @@ MNIST or SHD (context only).
 
 ## Laptop run L1 (one command for the user, ~3–4 h unattended, target 6–7 Nov)
 
-Contents: A4.5 (Spiker+ build + netlist simulation + SAIF) and A9.5 (two full-network stream-mode builds).
+Contents: A4.5 (Spiker+ build + netlist simulation + SAIF), A6.3 (SAIF power for the gentle-12ep and gentler-12ep
+weights, same flow as run_v5) and A9.5 (two full-network stream-mode builds).
 Delivered as one `.bat` with md5-checked files, the same command form as before:
 
     cd C:/Users/Anubhav/hush_fpga/fpga
@@ -139,7 +162,17 @@ If nothing beats the current front, report the sweep as the Pareto front and sto
 
 ---
 
-## Calendar (target)
+## Calendar (re-dated 10 Nov)
+
+| Date | Claude | User |
+|---|---|---|
+| 10 Nov | plan update; A9.2 | — |
+| 11 Nov | A9.3; A9.7 | confirm venue with the professor |
+| 12 Nov | A9.4 + queue model; prepare and deliver L1 | run L1 (~4 h) |
+| 13 Nov | check L1; A4.6, A6.3, A9.6; A8.1 | — |
+| 14–16 Nov | A8.2–A8.4; report v3 + draft to the professor | review |
+
+## Calendar (original, 3 Nov — superseded)
 
 | Date | Claude | User |
 |---|---|---|
