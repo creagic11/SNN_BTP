@@ -28,3 +28,8 @@ ERROR: /home/claude/snn_btp/rtl/hush_layer.sv:107: $readmemh: Unable to open non
 TIMEOUT
 /home/claude/snn_btp/rtl/tb_hush_stream.sv:63: $finish called at 2000000000000 (1ps)
 
+picked samples, active events: 4104 - 4458 (test-set mean 2653.0323 )
+BASE 250.0 done
+BASE 500.0 done
+BASE 750.0 done
+BASE 1000.0 done

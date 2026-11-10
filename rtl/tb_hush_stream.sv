@@ -60,5 +60,6 @@ module tb_hush_stream;
         $fdisplay(fd, "B %0d %08h %0128h", l2_t, l2_spk, l2_v);
         $fdisplay(fd, "L %0d %0d", l2_t, now);
     end
-    initial begin #2000000000; $display("TIMEOUT"); $finish; end
+    parameter longint TIMEOUT_CYC = 200000000;
+    initial begin #(TIMEOUT_CYC * 10); $display("TIMEOUT"); $finish; end
 endmodule
