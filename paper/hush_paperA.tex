@@ -1,0 +1,198 @@
+% Paper A draft (A8.2), started 10 Nov 2026. IEEE two-column conference format (fits TCAS-II brief after cuts, or FCCM).
+% Every number is traced to a file in results/ (see paper/outline.md). \pend{...} marks numbers that wait for laptop run L1.
+\documentclass[conference]{IEEEtran}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{cite}
+\usepackage{siunitx}
+\newcommand{\pend}[1]{\textcolor{red}{[#1]}}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+
+\begin{document}
+
+\title{HUSH: Provably Safe Sub-Block Hibernation for\\Real-Time Event-Driven SNN Inference on FPGAs}
+\author{\IEEEauthorblockN{Anubhav Jha and Rajat Subhra Chakraborty \pend{spelling to confirm}}
+\IEEEauthorblockA{Department of Electrical Engineering / Computer Science and Engineering, IIT Kharagpur, India \pend{affiliations to confirm}}}
+\maketitle
+
+\begin{abstract}
+In a fully connected spiking layer, most of the time and energy goes into fetching the weights of every neuron for
+every input spike, although few neurons fire. We present HUSH, an output-side skipping scheme that puts a sub-block
+of eight neurons to sleep for a timestep only when a cheap integer envelope proves that none of them can reach the
+threshold, so it never suppresses a spike. The envelope combines the exact maximum membrane potential of the
+sub-block with a per-input proxy table; it is computed while the previous timestep is processed, and the proof is
+checked formally on the RTL arithmetic. Trained with the gate in the loop, a 578-256-10 integer network on N-MNIST
+runs on a Xilinx Artix-7 XC7A100T at 100\,MHz entirely on chip, from raw sensor events to the class: at 95.74\,\%
+accuracy it is 2.44$\times$ faster than the same hardware with the gate off (115\,\textmu s vs.\ 280\,\textmu s per
+inference), and at 96.55\,\% 1.75$\times$ faster, with \pend{x}\,\% less energy per inference. On the same chip and
+weights, the open Spiker+ generator needs 814\,\textmu s. On a live event stream every 3\,ms window is processed
+within 4.5\,\textmu s of its end, and the design sustains up to 1.33--2$\times$ the event rate of the ungated design
+with the same 1,024-event input buffer.
+\end{abstract}
+
+\section{Introduction}
+Event-driven spiking neural networks (SNNs) are attractive for always-on sensing because their input is sparse
+and their arithmetic is additive. On FPGAs, accelerators usually exploit \emph{input} sparsity: work is done only
+for input spikes that occur. For a fully connected layer with $N$ neurons, each input spike still costs $N$ weight
+reads from block RAM, although in a given timestep only a few percent of the neurons fire. Skipping the
+\emph{output} side, i.e.\ neurons that will not fire, is the remaining large saving, but it is hard: whether a
+neuron fires depends on the very weights one wants to skip. Published output-side schemes are heuristics (they
+predict that a neuron stays silent and can be wrong) and therefore change the network's behaviour in ways that are
+hard to bound.
+
+We make output-side skipping \emph{provably safe}. Our contributions:
+\begin{enumerate}
+\item \textbf{HUSH gate:} an integer envelope per sub-block of eight neurons that upper-bounds every member's next
+membrane potential from the sub-block's exact current maximum and a per-input proxy table; a sub-block sleeps only
+if the bound is below threshold (Theorem~1), so no spike is ever suppressed. The safety arithmetic is proved
+formally (unbounded PDR) on the RTL modules.
+\item \textbf{Architecture:} an envelope unit overlapped with the processing of the previous timestep, per-sub-block
+weight-column RAM enables, a whole network on chip (hidden layer, output layer overlapped one timestep behind, and an
+integer class decision), and a stream front-end that accepts raw DVS events.
+\item \textbf{Evaluation on one chip:} bit- and cycle-exact RTL against a golden model; gate-level activity-based
+power; the same RTL with the gate off as baseline (BASE); Spiker+~\cite{spikerplus} on the same device and weights;
+three training seeds per point; and real-time operation on a live N-MNIST stream.
+\end{enumerate}
+
+\section{Background and related work}
+\textbf{Integer LIF.} Each neuron keeps a 16-bit saturating potential $V$. Per timestep $t$,
+$U = \mathrm{sat}(L(V) + \sum_{j\in A_t} w_{j})$ with leak $L(V)=V-(V\gg k)$, $k=4$, INT8 weights and $A_t$ the
+active inputs; it spikes if $U\ge\theta$ ($\theta=64$) and keeps $V' = U-\theta s$ (soft reset).
+
+\textbf{FPGA SNN accelerators on N-MNIST.} Table~\ref{tab:sota} lists the designs we found that report N-MNIST
+results on an FPGA. They differ in network (convolutional, recurrent, fully connected), device and power method;
+two report no latency. \pend{related-work paragraph on output-side skipping (SITRA-style, early termination) and
+input-side event-driven designs; cite from docs/literature/novelty\_check.md}
+
+\section{The HUSH gate}
+Neurons are grouped into sub-blocks $c$ of $b=8$. Two tables are derived offline from the weights: the proxy
+$P_{jc}=\max_{i\in c} W_{ji}$ and the mean $Q_{jc}=\lfloor \mathrm{mean}_{i\in c} W_{ji}\rfloor$. The hardware keeps
+$R_c=\max_{i\in c} V_i$ exactly after every timestep. Before the weights of timestep $t$ are fetched, the envelope
+unit accumulates $D_c=\sum_{j\in A_t} P_{jc}$ and evaluates
+\begin{equation}
+E_c=\mathrm{sat}\big(L(R_c)+\max(0,D_c)\big),\qquad g_c=[E_c\ge\theta].
+\end{equation}
+\begin{theorem}[Safety]
+If $g_c=0$, every neuron $i$ in sub-block $c$ has $U_i<\theta$ in the ungated update from the same state.
+\end{theorem}
+\begin{proof}
+$L$ is monotone, so $L(V_i)\le L(R_c)$; $W_{ji}\le P_{jc}$ gives $\sum_{j\in A_t}W_{ji}\le D_c\le\max(0,D_c)$; and
+$\mathrm{sat}$ is monotone. Hence $U_i\le E_c<\theta$.
+\end{proof}
+A sleeping sub-block skips its weight reads. Its neurons are updated with a shared mean-field drive,
+$U_i=\mathrm{sat}(L(V_i)+\sum_{j\in A_t}Q_{jc})\le E_c<\theta$, so they cannot spike either, and $R_c$ stays exact.
+The gated layer therefore emits exactly the spikes of the ungated layer \emph{from the same state}; the asleep state
+evolves approximately, so end-to-end accuracy is the measure of the approximation. We train with the gate in the loop
+(straight-through), adding losses that penalise envelope exceedance (weight $\lambda_e$) and the mean-field drive
+error ($\lambda_d$); larger weights put more sub-blocks to sleep at some cost in accuracy.
+
+\section{Architecture}
+\textbf{Hidden layer.} 256 neurons form 8 blocks of 32 lanes (4 sub-blocks of 8). The weight memory is four 64-bit
+column RAMs, one per sub-block; a column is read only if its sub-block is awake. Per timestep the sequencer combines
+the envelope bank (gates), then visits each block: an awake block streams the timestep's events through a
+4-stage pipeline (event read, index register, weight read, accumulate) and finalises its lanes in two stages; an
+asleep block takes 3 cycles (state read, mean-field finalise, write-back). The envelope unit for timestep $t+1$
+runs during the block loop of $t$ (double-buffered banks). The cycle cost of a timestep with $n$ events is
+$1 + \sum_b c_b + 2$ with $c_b = 4 + (n+4)$ for an awake block and 3 for an asleep one.
+
+\textbf{Whole network.} Hidden-layer spikes enter a 32-entry FIFO; a drain converts each set bit into an event of the
+output layer (32 lanes, 10 used, dense), which runs one timestep behind the hidden layer and overlapped with it.
+The class is the integer argmax of spike counts, ties broken by the summed pre-reset potential, then by index.
+
+\textbf{Stream front-end.} Raw DVS events $(x,y,p)$ are pooled $2\times2$ into the 578 inputs, de-duplicated per
+window (the model's input is a 0/1 raster), and written into a ring of 1,024 events (one RAMB18); an end-of-window
+marker closes the window, writes its range and lets the hidden layer start its envelope pass for that window.
+Markers have reserved FIFO space, so overload can only drop events.
+
+\section{Verification}
+A golden integer model (Python) defines the behaviour. The RTL matches it bit for bit on 80 randomised layer
+configurations (gate, mean-field, sizes, leak, threshold, load port) and, for the whole network, on 50 N-MNIST test
+samples for each of four weight sets: every hidden and output block result and every class, with cycle counts equal
+to an exact cycle model. The stream mode is bit-exact at true sensor timing and at 1,000--2,000$\times$ replay. The
+safety arithmetic (envelope, lanes, exact $R$ recursion) is proved for all reachable states by ABC PDR in SymbiYosys
+for both sleep semantics; a mutant with an unsafe proxy fails immediately. Gate-level simulation of the routed
+netlists reproduces the model's cycle count for every inference (+3 cycles of restart).
+
+\section{Results}
+\textbf{Setup.} XC7A100T-1CSG324C, Vivado 2024.1, 100\,MHz. Power from gate-level switching activity (SAIF) of
+20 test inferences per design on the routed netlist; energy per inference $=$ power $\times$ latency.
+Accuracy on the full 10,000-sample N-MNIST test set ($T=100$ windows of 3\,ms); three training seeds per point.
+
+\begin{table}[t]\centering\caption{Accuracy and latency, whole network on chip (mean $\pm$ std, 3 seeds; latency over 500 test samples).}\label{tab:front}
+\setlength{\tabcolsep}{3pt}\small
+\begin{tabular}{lcccc}\toprule
+Design & Acc.\ (\%) & Col.\ reads & Latency (\textmu s) & Speedup\\\midrule
+BASE (gate off) & 97.66$\pm$0.06 & 1.000 & 279.5 & 1.00$\times$\\
+HUSH gentler & 96.55$\pm$0.07 & 0.204 & 159.8$\pm$8.1 & 1.75$\times$\\
+HUSH gentle & 95.74$\pm$0.06 & 0.118 & 114.9$\pm$7.0 & 2.44$\times$\\
+HUSH aggressive & 92.32$\pm$0.68 & 0.070 & 82.9$\pm$7.8 & 3.39$\times$\\\bottomrule
+\end{tabular}\end{table}
+
+\begin{table}[t]\centering\caption{Hardware on XC7A100T, 100\,MHz (whole network, 20 on-chip samples).}\label{tab:hw}
+\setlength{\tabcolsep}{2.5pt}\small
+\begin{tabular}{lcccccc}\toprule
+Design & LUT & BRAM & WNS (ns) & Power (mW) & Energy (\textmu J)\\\midrule
+BASE & 7,745 & 80 & +0.956 & \pend{L1} & \pend{L1}\\
+HUSH (all points) & 13,885 & 95 & +0.450 & \pend{L1} & \pend{L1}\\
+Spiker+~\cite{spikerplus} & 13,564 & 70.5 & $-$0.241$^a$ & \pend{L1} & \pend{L1}\\\bottomrule
+\multicolumn{6}{l}{\footnotesize $^a$ Fmax 97.6\,MHz; latency 834\,\textmu s at that clock (814\,\textmu s at 100\,MHz).}
+\end{tabular}\end{table}
+
+\textbf{Accuracy--savings front.} Table~\ref{tab:front}: the gate costs 1.1--5.3 points against the ungated network
+and reads 7--20\,\% of the weight columns. Training longer with the gate (12 instead of 6 epochs) improved every
+axis of the gentle point (95.37\,\%, 1.98$\times$ $\rightarrow$ 95.74\,\%, 2.44$\times$). A wider hidden layer (384)
+raised the ungated accuracy to 98.0\,\% but not the gated one (95.9\,\%), so the remaining gap is caused by gating.
+
+\textbf{Same chip.} Table~\ref{tab:hw}. HUSH adds 6.1k LUTs and 15 BRAMs (envelope unit, proxy and mean tables,
+sub-block control). Spiker+, given the same INT8 weights (97.53\,\% on its neuron semantics), scans all 578 inputs
+serially each timestep and needs 81.4k cycles per inference. \pend{energy comparison from L1}
+
+\textbf{Heuristic gates.} At equal weight-read reduction on 200 N-MNIST samples, a state-free heuristic
+(SITRA-style) reaches 66.0\,\% and suppresses 15,121 spikes, an early-termination heuristic 93.5\,\% with 36 suppressed
+spikes, and HUSH 95.5\,\% with none.
+
+\section{Real-time operation}
+N-MNIST recordings deliver on average 41.9 raw events per 3\,ms window (26.5 distinct pooled inputs; maximum 96).
+\textbf{At true sensor timing} (4 recordings per design, RTL, bit-exact, no drops) a window is processed in
+1.47\,\textmu s on average with HUSH (3.04\,\textmu s BASE), at most 4.50\,\textmu s (6.64\,\textmu s), i.e.\
+$\le 0.22$\,\% of the window; the class is ready 0.89\,\textmu s (2.03\,\textmu s) after the last window; the input
+ring never holds more than 127 events.
+\textbf{Faster than real time.} Replaying the 20 test recordings with the most events (1.7$\times$ the mean rate)
+with the same 1,024-event buffer, BASE drops events above 750$\times$ real time, HUSH gentle above 1,000$\times$ on
+all 20 recordings (23.7\,M events/s, 1.33$\times$) and above 1,500$\times$ for the median recording (2.0$\times$).
+\textbf{Early decisions.} Because the class can be read after any window, Fig.~\ref{fig:early} reports accuracy vs.
+elapsed sensor time: up to about 150\,ms every gated network is more accurate than BASE (e.g.\ 92.6\,\% vs.\ 86.1\,\%
+at 99\,ms for the gentler point) \pend{explanation after the fine-tune control run}.
+\begin{figure}[t]\centering\fbox{\parbox{0.9\columnwidth}{\centering\pend{Fig.: accuracy vs.\ elapsed time,
+results/realtime/early\_decision.json}}}\caption{Accuracy when the class is read after $w$ windows.}\label{fig:early}\end{figure}
+
+\section{Comparison with the state of the art}
+\begin{table}[t]\centering\caption{FPGA SNN accelerators on N-MNIST.}\label{tab:sota}
+\setlength{\tabcolsep}{2pt}\footnotesize
+\begin{tabular}{lccccc}\toprule
+Design & FPGA & Acc.\ (\%) & LUT & Power & Latency\\\midrule
+Cheng et al.~\cite{cheng2025} & ZCU104 & 98.11 & 81.3k & 0.81\,W$^d$ & n/r\\
+FeNN-DMA~\cite{fenndma} & KV260 & 98.46 & 55.0k & 0.53\,W$^d$ & n/r\\
+Surrogates~\cite{surr2026} & xcvu9p & 96.4 & n/r & 0.31\,W & 5.9\,ms\\
+Wu et al.~\cite{wu2023} & ZCU102 & 95.76 & 39.7--165k & 0.33\,W & 50\,ms\\
+\textbf{HUSH gentler} & XC7A100T & 96.55 & 13.9k & \pend{L1} & 0.16\,ms\\
+\textbf{HUSH gentle} & XC7A100T & 95.74 & 13.9k & \pend{L1} & 0.11\,ms\\\bottomrule
+\multicolumn{6}{l}{$^d$ dynamic only; n/r: not reported.}
+\end{tabular}\end{table}
+HUSH runs 37--435$\times$ faster per inference than the designs that report latency, on a smaller device with
+3--12$\times$ fewer LUTs; its gentler point is more accurate than those two designs and 1.6--1.9 points below the two
+newest, larger designs. Comparability is limited: devices, networks and power methods differ, and our power is a
+Vivado estimate from gate-level activity, not a board measurement.
+
+\section{Limitations and conclusion}
+The speedup depends on stream sparsity: per window it falls from 2.2$\times$ with fewer than 10 active inputs to
+1.6$\times$ with more than 60, as more sub-blocks wake up. The gate costs accuracy, and power is estimated, not
+measured. HUSH shows that output-side skipping in SNN hardware can be both effective and provably safe; extending
+the envelope to convolutional layers and denser event streams (DVS-Gesture) is future work.
+
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+\end{document}
