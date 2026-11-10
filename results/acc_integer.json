@@ -1,0 +1,26 @@
+{
+ "nmnist_T100": {
+  "acc_integer": 0.9758,
+  "acc_train_eval": 0.9759
+ },
+ "nmnist_T100_s1": {
+  "acc_integer": 0.9771,
+  "acc_train_eval": 0.9771
+ },
+ "nmnist_T100_s2": {
+  "acc_integer": 0.9769,
+  "acc_train_eval": 0.9769
+ },
+ "nmnist_T100_mf_e05_d025": {
+  "acc_integer": 0.9532,
+  "acc_train_eval": 0.9532
+ },
+ "nmnist_T100_mf_e05_d025_s1": {
+  "acc_integer": 0.954,
+  "acc_train_eval": 0.954
+ },
+ "nmnist_T100_mf_e05_d025_s2": {
+  "acc_integer": 0.9538,
+  "acc_train_eval": 0.9538
+ }
+}
