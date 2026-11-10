@@ -61,8 +61,11 @@ def run_sample(exe, d, W1, Wo, ev, S, k, theta, gate, mf, nout, T, t_max_us, spe
     items = stimulus(ev, T, t_max_us, speed)
     (d / "stim.txt").write_text("".join(f"{c} {t} {x} {y} {p}\n" for c, t, x, y, p in items))
     r = subprocess.run(["vvp", "-n", str(exe)], cwd=d, capture_output=True, text=True)
-    if "TIMEOUT" in r.stdout or r.returncode:
+    if r.returncode:
         raise RuntimeError(r.stdout[-1500:] + r.stderr[-1500:])
+    if "TIMEOUT" in r.stdout:      # overload lost an end-of-window marker, so the inference never completes
+        return dict(ok=False, timeout=True, drops=-1, in_peak=-1, ring_peak=-1, win_delay_max=-1, win_delay_mean=-1,
+                    decision_delay=-1, mis1=-1, mis2=-1)
     lines = (d / "stream_out.txt").read_text().splitlines()
     h, o, cls = golden(W1, Wo, S, k, theta, gate, mf, nout)
     G1 = W1.shape[1] // 32

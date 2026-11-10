@@ -59,8 +59,12 @@ def main():
         best = {}
         for (d, s), rs in sorted(g.items()):
             ok = sum(r["ok"] for r in rs)
-            out.append(f"| {d} | {s:g} | {ok}/{len(rs)} | {max(r['win_delay_max'] for r in rs) / 100:.2f} | "
-                       f"{np.mean([r['win_delay_mean'] for r in rs]) / 100:.2f} | {max(r['ring_peak'] for r in rs)} |")
+            fin = [r for r in rs if not r.get("timeout")]
+            to = len(rs) - len(fin)
+            out.append(f"| {d} | {s:g} | {ok}/{len(rs)}{f' ({to} never finished)' if to else ''} | "
+                       f"{max(r['win_delay_max'] for r in fin) / 100 if fin else float('nan'):.2f} | "
+                       f"{np.mean([r['win_delay_mean'] for r in fin]) / 100 if fin else float('nan'):.2f} | "
+                       f"{max((r['ring_peak'] for r in fin), default=-1)} |")
             if ok == len(rs):
                 best[d] = max(best.get(d, 0), s)
         out += ["", "| Design | Fastest speed with no drops on all of them | Sustained raw-event rate at that speed (test-set mean 13.97 k ev/s × speed) |",

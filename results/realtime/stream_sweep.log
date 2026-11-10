@@ -11,3 +11,20 @@ HUSH gentle 12ep 500.0 done
 HUSH gentle 12ep 750.0 done
 HUSH gentle 12ep 1000.0 done
 HUSH gentle 12ep 1500.0 done
+Traceback (most recent call last):
+  File "/home/claude/snn_btp/scripts/stream_sweep.py", line 74, in <module>
+    main()
+    ~~~~^^
+  File "/home/claude/snn_btp/scripts/stream_sweep.py", line 65, in main
+    r = run_sample(exe, d, W1, Wo, ev, S.astype(np.int64), int(z["k"]), int(z["theta"]), gate, mf,
+                   nout, T, t_max, sp)
+  File "/home/claude/snn_btp/rtl/sim/run_stream.py", line 65, in run_sample
+    raise RuntimeError(r.stdout[-1500:] + r.stderr[-1500:])
+RuntimeError: ERROR: /home/claude/snn_btp/rtl/hush_layer.sv:106: $readmemh: Unable to open none.hex for reading.
+ERROR: /home/claude/snn_btp/rtl/hush_layer.sv:107: $readmemh: Unable to open none.hex for reading.
+ERROR: /home/claude/snn_btp/rtl/hush_layer.sv:104: $readmemh: Unable to open none.hex for reading.
+ERROR: /home/claude/snn_btp/rtl/hush_layer.sv:106: $readmemh: Unable to open none.hex for reading.
+ERROR: /home/claude/snn_btp/rtl/hush_layer.sv:107: $readmemh: Unable to open none.hex for reading.
+TIMEOUT
+/home/claude/snn_btp/rtl/tb_hush_stream.sv:63: $finish called at 2000000000000 (1ps)
+
