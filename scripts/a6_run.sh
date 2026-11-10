@@ -13,6 +13,7 @@ case $1 in
   h384)        g nmnist_T100_h384 10 --sizes 578 384 10 --rate_target 0.05 --rate_lam 5 ;;
   h384_gentle) g nmnist_T100_h384_mf_e05_d025 6 --sizes 578 384 10 --init results/nmnist_T100_h384/weights.npz $gate --exc_lam 0.5 --env_lam 0.25 ;;
   gentler12)   g nmnist_T100_mf_e025_d01_ep12 12 --sizes 578 256 10 --init results/nmnist_T100/weights.npz $gate --exc_lam 0.25 --env_lam 0.1 ;;
+  ctrl12)      g nmnist_T100_ft12_ctrl 12 --sizes 578 256 10 --init results/nmnist_T100/weights.npz --lr 0.02 --rate_target 0.05 --rate_lam 5 ;;  # control: same fine-tune, no gate (10 Nov)
   first)  "$0" gentler && "$0" longer ;;
   second) "$0" h384 && "$0" h384_gentle ;;
 esac
