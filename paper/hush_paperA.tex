@@ -27,8 +27,9 @@ sub-block with a per-input proxy table; it is computed while the previous timest
 checked formally on the RTL arithmetic. Trained with the gate in the loop, a 578-256-10 integer network on N-MNIST
 runs on a Xilinx Artix-7 XC7A100T at 100\,MHz entirely on chip, from raw sensor events to the class: at 95.74\,\%
 accuracy it is 2.44$\times$ faster than the same hardware with the gate off (115\,\textmu s vs.\ 280\,\textmu s per
-inference; 98.21\,\% accuracy), and at 96.54\,\% 1.75$\times$ faster, with \pend{x}\,\% less energy per inference. On the same chip and
-weights, the open Spiker+ generator needs 814\,\textmu s. On a live event stream every 3\,ms window is processed
+inference; 98.21\,\% accuracy) with 57\,\% less energy (18.4 vs.\ 42.5\,\textmu J), and at 96.54\,\% 1.75$\times$
+faster with 44\,\% less energy. On the same chip and
+weights, the open Spiker+ generator needs 818\,\textmu s and 255\,\textmu J (13.8$\times$ more). On a live event stream every 3\,ms window is processed
 within 4.5\,\textmu s of its end, and the design sustains up to 1.33--2$\times$ the event rate of the ungated design
 with the same 1,024-event input buffer.
 \end{abstract}
@@ -122,24 +123,28 @@ netlists reproduces the model's cycle count for every inference (+3 cycles of re
 Accuracy on the full 10,000-sample N-MNIST test set ($T=100$ windows of 3\,ms); three training seeds per point.
 
 \begin{table}[t]\centering\caption{Accuracy and latency, whole network on chip (mean $\pm$ std, 3 seeds; latency over 500 test samples).}\label{tab:front}
-\setlength{\tabcolsep}{3pt}\small
+\setlength{\tabcolsep}{2.5pt}\small
 \begin{tabular}{lcccc}\toprule
 Design & Acc.\ (\%) & Col.\ reads & Latency (\textmu s) & Speedup\\\midrule
 BASE (gate off)$^b$ & 98.21$\pm$0.13 & 1.000 & 279.5 & 1.00$\times$\\
 HUSH gentler & 96.54$\pm$0.07 & 0.204 & 159.8$\pm$8.1 & 1.75$\times$\\
 HUSH gentle & 95.74$\pm$0.07 & 0.118 & 114.9$\pm$7.0 & 2.44$\times$\\
 HUSH aggressive & 92.32$\pm$0.68 & 0.070 & 82.9$\pm$7.8 & 3.39$\times$\\\bottomrule
-\multicolumn{5}{l}{\footnotesize $^b$ trained as long as the gated nets (10 + 12 epochs); 10 epochs only: 97.66$\pm$0.07.}
+\multicolumn{5}{p{0.95\columnwidth}}{\footnotesize $^b$ trained as long as the gated nets (10 + 12 epochs); 10 epochs only: 97.66$\pm$0.07.}
 \end{tabular}\end{table}
 
 \begin{table}[t]\centering\caption{Hardware on XC7A100T, 100\,MHz (whole network, 20 on-chip samples).}\label{tab:hw}
 \setlength{\tabcolsep}{2.5pt}\small
-\begin{tabular}{lcccccc}\toprule
-Design & LUT & BRAM & WNS (ns) & Power (mW) & Energy (\textmu J)\\\midrule
-BASE & 7,745 & 80 & +0.956 & \pend{L1} & \pend{L1}\\
-HUSH (all points) & 13,885 & 95 & +0.450 & \pend{L1} & \pend{L1}\\
-Spiker+~\cite{spikerplus} & 13,564 & 70.5 & $-$0.241$^a$ & \pend{L1} & \pend{L1}\\\bottomrule
-\multicolumn{6}{l}{\footnotesize $^a$ Fmax 97.6\,MHz; latency 834\,\textmu s at that clock (814\,\textmu s at 100\,MHz).}
+\begin{tabular}{lccccccc}\toprule
+Design & LUT & BRAM & WNS & Lat. & Power & Energy \\
+ & & & (ns) & (\textmu s) & (mW) & (\textmu J)\\\midrule
+BASE & 7,745 & 80 & +0.956 & 279.5 & 152 & 42.5\\
+HUSH gentler & 13,885 & 95 & +0.450 & 151.2 & 157 & 23.7\\
+HUSH gentle & 13,885 & 95 & +0.450 & 115.3 & 160 & 18.4\\
+HUSH aggr. & 13,885 & 95 & +0.450 & 87.7 & 164 & 14.4\\
+Spiker+~\cite{spikerplus} & 13,564 & 70.5 & $-$0.241$^a$ & 818.4 & 311 & 254.5\\\bottomrule
+\multicolumn{7}{p{0.95\columnwidth}}{\footnotesize Latency and power over the 20 simulated inferences; static power 101--102\,mW.}\\
+\multicolumn{7}{p{0.95\columnwidth}}{\footnotesize $^a$ Fmax 97.6\,MHz: 839\,\textmu s, $\approx$256\,\textmu J at that clock.}
 \end{tabular}\end{table}
 
 \textbf{Accuracy--savings front.} Table~\ref{tab:front}. The gated networks are fine-tuned for 12 epochs from the
@@ -151,7 +156,10 @@ raised the ungated accuracy to 98.0\,\% but not the gated one (95.9\,\%), so the
 
 \textbf{Same chip.} Table~\ref{tab:hw}. HUSH adds 6.1k LUTs and 15 BRAMs (envelope unit, proxy and mean tables,
 sub-block control). Spiker+, given the same INT8 weights (97.53\,\% on its neuron semantics), scans all 578 inputs
-serially each timestep and needs 81.4k cycles per inference. \pend{energy comparison from L1}
+serially each timestep and needs 81.4k cycles per inference. With the gate, HUSH spends 44--66\,\% less energy
+per inference than BASE although its power is 3--8\,\% higher: the extra envelope logic costs less than the time it
+saves. Spiker+ draws 311\,mW, 140\,mW of it in block RAM, which it reads every cycle (ours: 12\,mW, read only for
+awake sub-blocks), and needs 13.8$\times$ the energy of HUSH gentle.
 
 \textbf{Heuristic gates.} At equal weight-read reduction on 200 N-MNIST samples, a state-free heuristic
 (SITRA-style) reaches 66.0\,\% and suppresses 15,121 spikes, an early-termination heuristic 93.5\,\% with 36 suppressed
@@ -184,11 +192,12 @@ Cheng et al.~\cite{cheng2025} & ZCU104 & 98.11 & 81.3k & 0.81\,W$^d$ & n/r\\
 FeNN-DMA~\cite{fenndma} & KV260 & 98.46 & 55.0k & 0.53\,W$^d$ & n/r\\
 Surrogates~\cite{surr2026} & xcvu9p & 96.4 & n/r & 0.31\,W & 5.9\,ms\\
 Wu et al.~\cite{wu2023} & ZCU102 & 95.76 & 39.7--165k & 0.33\,W & 50\,ms\\
-\textbf{HUSH gentler} & XC7A100T & 96.54 & 13.9k & \pend{L1} & 0.16\,ms\\
-\textbf{HUSH gentle} & XC7A100T & 95.74 & 13.9k & \pend{L1} & 0.11\,ms\\\bottomrule
+\textbf{HUSH gentler} & XC7A100T & 96.54 & 13.9k & 0.16\,W & 0.16\,ms\\
+\textbf{HUSH gentle} & XC7A100T & 95.74 & 13.9k & 0.16\,W & 0.11\,ms\\\bottomrule
 \multicolumn{6}{l}{$^d$ dynamic only; n/r: not reported.}
 \end{tabular}\end{table}
-HUSH runs 37--435$\times$ faster per inference than the designs that report latency, on a smaller device with
+HUSH runs 37--435$\times$ faster per inference than the designs that report latency and needs 77--950$\times$ less
+energy per inference (18.4--23.7\,\textmu J vs.\ $\approx$1.83 and $\approx$17.5\,mJ computed as power $\times$ latency), on a smaller device with
 3--12$\times$ fewer LUTs; its gentler point is more accurate than those two designs and 1.6--1.9 points below the two
 newest, larger designs. Comparability is limited: devices, networks and power methods differ, and our power is a
 Vivado estimate from gate-level activity, not a board measurement.
