@@ -1,0 +1,22 @@
+{
+  "BASE": {
+    "acc": 0.934,
+    "cycles": 27949.974,
+    "cycles_max": 38615,
+    "latency_us": 279.49974,
+    "l1_cycles": 27924.064,
+    "seq_sum_cycles": 29524.338,
+    "fifo_peak": 1
+  },
+  "HUSH": {
+    "acc": 0.938,
+    "cycles": 11147.89,
+    "cycles_max": 18617,
+    "latency_us": 111.4789,
+    "l1_cycles": 11123.42,
+    "seq_sum_cycles": 12453.874,
+    "fifo_peak": 4
+  },
+  "speedup": 2.5071985819738085,
+  "n": 500
+}

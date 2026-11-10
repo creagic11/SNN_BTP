@@ -64,6 +64,11 @@ module hush_net #(
     output logic [15:0]        ring_peak      // peak ring occupancy (events accepted, not yet consumed)
 );
     localparam int G1 = N1 / 32;
+    // The layers leave DONE on a start pulse and need start again in IDLE (hush_layer protocol), so each net
+    // start is a two-cycle pulse to the layers; in any other state the layers ignore it.
+    logic start_q;
+    always_ff @(posedge clk) start_q <= rst ? 1'b0 : start;
+    wire lstart = start || start_q;
     localparam int FW = $clog2(FIFO_D);
     localparam string NO = "none.hex";
 
@@ -143,7 +148,7 @@ module hush_net #(
                  .NEV(NEV1), .NSMP(NSMP), .STREAM(STREAM), .EVRING(STREAM),
                  .W0_FILE(W0_FILE), .W1_FILE(W1_FILE), .W2_FILE(W2_FILE), .W3_FILE(W3_FILE),
                  .P_FILE(P_FILE), .Q_FILE(Q_FILE), .EV_FILE(EV_FILE), .TS2_FILE(TS2_FILE)) u_l1 (
-        .clk, .rst, .start, .smp, .ld_we(l1_we), .ld_sel(l1_sel), .ld_addr(l1_addr), .ld_data(l1_data), .done(l1_done),
+        .clk, .rst, .start(lstart), .smp, .ld_we(l1_we), .ld_sel(l1_sel), .ld_addr(l1_addr), .ld_data(l1_data), .done(l1_done),
         .avail(avail1), .out_ready(l1_ready), .ld_free(l1_free), .rd_ptr(l1_rd),
         .out_valid(l1_valid), .out_t(l1_t), .out_blk(l1_blk), .out_spk(l1_spk), .v_valid(), .v_data(l1_v),
         .cnt_cycles(l1_cycles), .cnt_col_reads(l1_col_reads), .cnt_word_reads(l1_wr), .cnt_awake_sub(l1_aw));
@@ -216,7 +221,7 @@ module hush_net #(
                  .NEV(NEV2), .NSMP(1), .STREAM(1),
                  .W0_FILE(O0_FILE), .W1_FILE(O1_FILE), .W2_FILE(O2_FILE), .W3_FILE(O3_FILE),
                  .P_FILE(NO), .Q_FILE(NO), .EV_FILE(NO), .TS2_FILE(NO)) u_l2 (
-        .clk, .rst, .start, .smp(16'd0),
+        .clk, .rst, .start(lstart), .smp(16'd0),
         .ld_we(l2_we), .ld_sel(l2_sel), .ld_addr(l2_addr), .ld_data(l2_data), .done(l2_done),
         .avail(avail), .out_ready(1'b1),
         .out_valid(l2_valid), .out_t(l2_t), .out_blk(l2_blk), .out_spk(l2_spk), .v_valid(l2_ov), .v_data(l2_v),
@@ -228,21 +233,23 @@ module hush_net #(
     logic signed [CW-1:0] usum  [NOUT];
     logic [7:0]           ci, best;
     logic                 cls_run, busy;
+    logic [15:0]          n2;                    // output-layer timesteps finished in this inference
     always_ff @(posedge clk) begin
         if (rst) begin
             done <= 0; cls_run <= 0; busy <= 0; cnt_cycles <= '0; cls <= '0;
         end else begin
             if (busy) cnt_cycles <= cnt_cycles + 1'b1;
             if (start) begin
-                done <= 0; busy <= 1; cls_run <= 0; cnt_cycles <= '0;
+                done <= 0; busy <= 1; cls_run <= 0; cnt_cycles <= '0; n2 <= '0;
                 for (int i = 0; i < NOUT; i++) begin cnt_s[i] <= '0; usum[i] <= '0; end
             end else begin
+                if (l2_valid) n2 <= n2 + 1'b1;
                 if (l2_valid)
                     for (int i = 0; i < NOUT; i++) begin
                         cnt_s[i] <= cnt_s[i] + 16'(l2_spk[i]);
                         usum[i]  <= usum[i] + CW'($signed(l2_v[16*i +: 16])) + (l2_spk[i] ? CW'(THETA) : CW'(0));
                     end
-                if (busy && !cls_run && l2_done && !l2_valid) begin cls_run <= 1; ci <= 8'd1; best <= 8'd0; end
+                if (busy && !cls_run && n2 == 16'(T) && l2_done) begin cls_run <= 1; ci <= 8'd1; best <= 8'd0; end
                 if (cls_run && !done) begin
                     if (ci == 8'(NOUT)) begin cls <= best; done <= 1; busy <= 0; end
                     else begin
