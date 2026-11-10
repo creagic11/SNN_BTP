@@ -52,6 +52,28 @@ lists 4 weight columns; read_saif matches 100% of nets; netlist cycles = `expect
 | 27 Oct, 3 | balanced two-stage max tree for R | +0.45 ns |
 | 28 Oct, v5 | writable RAMs, column enables, event-index register | +0.496 ns (power builds +0.491) |
 
+## Laptop run L1 (10 Nov 2026): whole network, stream mode, Spiker+
+
+In the **Vivado 2024.1 Tcl Shell** (same form as run_v5):
+
+    cd C:/Users/Anubhav/hush_fpga/fpga
+    exec -ignorestderr cmd /c run_l1.bat
+
+Unattended, estimated 5–7 hours. Progress: `..\out_l1\summary.txt`; results: `..\out_l1\energy_l1.csv`.
+
+| Step | What | Folder |
+|---|---|---|
+| `prep_l1.tcl` | 4 whole-network power builds (`top_net`, STREAM = 0, 20 samples on chip): base, mf_gentle12, mf_gentler12, mf_aggr → routed netlist + xsim snapshot | `out_l1/netpwr/<case>` |
+| | 2 stream-mode builds (`top_net`, STREAM = 1, ring of 1,024 events, pseudo-random sensor harness): base, mf_gentle12 → timing and area only | `out_l1/netstream/<case>` |
+| | Spiker+ 578-256-10 (`spikerplus/fpga`, generated VHDL in `gen/`) → build, netlist, snapshot | `out_l1/spiker` |
+| `:sim` (outside Vivado) | gate-level SAIF over 20 inferences, 4 network cases + Spiker+ | |
+| `annotate_l1.tcl` | SAIF name fix, read_saif, report_power, energy = power × latency | `energy_l1.csv` |
+
+Memory images: `scripts/make_net_hex.py --nsmp 20` → `fpga/netpwr/<case>`, `fpga/netstream/<case>` (with
+`expected.csv`: class and model cycles per sample; back-to-back inferences take +1 cycle for the restart).
+Checks before any number is used: WNS ≥ 0 for all 7 builds; nets matched ≈ 100 %; 20 inferences per case;
+netlist cycles = expected + small constant; BASE util_hier shows 32 lanes and 4 weight columns in both layers.
+
 ## Next
 
 - **A7:** board power (BASE vs HUSH bitstreams) once a Nexys A7-100T and a power meter are available.
