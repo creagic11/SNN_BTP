@@ -1,2 +1,4 @@
 HUSH {'acc': np.float64(0.948), 'read_frac': 0.10473665665495585, 'traffic_frac': 0.35473665665495585, 'suppressed_spikes': 0, 'thr': None}
 SITRA {'acc': np.float64(0.874), 'read_frac': 0.2785950463222951, 'traffic_frac': 0.4035950463222951, 'suppressed_spikes': 74095, 'thr': 7.000732421875}
+EARLY {'acc': np.float64(0.936), 'read_frac': 0.11585730918589919, 'traffic_frac': 0.35885345555390735, 'suppressed_spikes': 409, 'thr': 9.8876953125}
+saved results/heuristic_gates_traffic.json

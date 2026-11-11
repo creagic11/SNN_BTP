@@ -1,0 +1,28 @@
+{
+  "n": 1000,
+  "asleep_drive": "mean",
+  "match": "reads",
+  "results": {
+    "HUSH": {
+      "acc": 0.948,
+      "read_frac": 0.10473665665495585,
+      "traffic_frac": 0.35473665665495585,
+      "suppressed_spikes": 0,
+      "thr": null
+    },
+    "SITRA": {
+      "acc": 0.681,
+      "read_frac": 0.1020118255056059,
+      "traffic_frac": 0.2270118255056059,
+      "suppressed_spikes": 117450,
+      "thr": 3.997802734375
+    },
+    "EARLY": {
+      "acc": 0.924,
+      "read_frac": 0.10279337942353131,
+      "traffic_frac": 0.3495710097965164,
+      "suppressed_spikes": 485,
+      "thr": 11.1083984375
+    }
+  }
+}
