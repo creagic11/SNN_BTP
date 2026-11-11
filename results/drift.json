@@ -1,0 +1,35 @@
+{
+ "gentler 12ep": {
+  "n": 1000,
+  "suppressed_vs_same_state": 0,
+  "hidden_spikes_gated": 390.118,
+  "hidden_spikes_ungated_same_weights": 658.46,
+  "spike_bits_differing_pct": 1.94196875,
+  "first_divergence_window_median": 4.0,
+  "same_class_pct": 96.1,
+  "acc_gated": 0.953,
+  "acc_ungated_same_weights": 0.959
+ },
+ "gentle 12ep": {
+  "n": 1000,
+  "suppressed_vs_same_state": 0,
+  "hidden_spikes_gated": 303.921,
+  "hidden_spikes_ungated_same_weights": 553.17,
+  "spike_bits_differing_pct": 1.67590234375,
+  "first_divergence_window_median": 4.0,
+  "same_class_pct": 94.6,
+  "acc_gated": 0.948,
+  "acc_ungated_same_weights": 0.935
+ },
+ "aggressive": {
+  "n": 1000,
+  "suppressed_vs_same_state": 0,
+  "hidden_spikes_gated": 200.704,
+  "hidden_spikes_ungated_same_weights": 387.59,
+  "spike_bits_differing_pct": 1.2134921875,
+  "first_divergence_window_median": 4.0,
+  "same_class_pct": 89.9,
+  "acc_gated": 0.912,
+  "acc_ungated_same_weights": 0.881
+ }
+}
