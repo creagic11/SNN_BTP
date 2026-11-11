@@ -1,29 +1,48 @@
-# SNN_BTP — HUSH: provably safe block hibernation for SNN accelerators
+# SNN_BTP — HUSH: provably safe sub-block hibernation for SNN accelerators
 
-B.Tech thesis project (IIT Kharagpur, EE; supervisor Prof. Rajat Shubhra Chakraborty).
+B.Tech thesis project, IIT Kharagpur (Anubhav Jha; supervisor Prof. Rajat Subhra Chakraborty).
 
-HUSH puts a group of 8 neurons to sleep for a timestep only when an integer bound **proves** that none of them can fire. It then skips their weight reads on a Xilinx Artix-7 (XC7A100T).
+HUSH puts a group of 8 neurons to sleep for a timestep only when an integer bound **proves** that none of them can fire, and then skips their weight reads. Target: Xilinx Artix-7 XC7A100T, 100 MHz.
 
-**Status (11 Nov 2026):**
+**Start here:** `docs/primer.md` (the whole project explained from scratch, with every current number), then `study.md` (self-test checklist), then the paper `paper/hush_paperA.pdf`.
 
-- Safety is formally proven on the RTL arithmetic (SymbiYosys PDR) and property-tested on the golden models.
-- The whole 578-256-10 network runs on chip (hidden layer → output layer → integer class, `rtl/hush_net.sv`), also in a live-stream mode that takes raw DVS events; RTL is bit- and cycle-exact against the golden model; all builds meet 100 MHz on the XC7A100T.
-- On N-MNIST, against the same hardware with the gate off trained equally long (98.21 %): HUSH gentle 95.74 %, 2.44× faster, 57 % less energy per inference; gentler 96.54 %, 1.75×, 44 % (gate-level activity-based power, `results/power_l1/`, `results/power_l2/`). Spiker+ on the same chip and weights: 818 µs, 254.5 µJ.
-- Real time: every 3 ms sensor window processed within 4.5 µs (HUSH) in RTL simulation (`results/realtime/realtime.md`).
-- Safety arithmetic proved formally at the implementation's widths (`formal/fv_width.sv`); per-timestep guarantee vs whole-recording drift measured (`results/drift.json`).
-- Paper A draft: `paper/hush_paperA.tex` (IEEEtran, 5 pages, revised after an external review). See `progress.md` and `docs/plan_nov2026.md`.
+## Status (11 Nov 2026)
+
+Whole 578-256-10 network on chip, N-MNIST, three training seeds:
+
+| Design | Accuracy | Latency | Speedup | Active energy / inference | LUT / BRAM |
+| --- | --- | --- | --- | --- | --- |
+| BASE (same RTL, gate off, trained equally long) | 98.21 ± 0.13 % | 279.5 µs | 1.00× | 42.5 µJ | 7,745 / 80 |
+| HUSH gentler | 96.54 ± 0.07 % | 159.8 µs | 1.75× | 23.7 µJ (−44 %) | 13,885 / 95 |
+| HUSH gentle | 95.74 ± 0.07 % | 114.9 µs | 2.44× | 18.4 µJ (−57 %) | 13,885 / 95 |
+| HUSH aggressive (6 epochs) | 92.32 ± 0.68 % | 82.9 µs | 3.39× | 14.4 µJ (−66 %) | 13,885 / 95 |
+| Spiker+ (same chip, BASE's 10-epoch weights) | 97.53 % | 818.4 µs | 0.34× | 254.5 µJ | 13,548 / 70.5 |
+
+- **Safety:** at every timestep the gated layer emits exactly the spikes of the ungated update from its own state (Theorem 1). The envelope and lane arithmetic is proved formally at the implementation's bit widths (`formal/fv_width.sv`). Trajectories over a whole recording do differ from an ungated run; this is measured (`results/drift.json`) and is why the gate is trained into the network.
+- **Verification:** RTL bit- and cycle-exact against the integer golden model (random regressions, N-MNIST, stream mode).
+- **Power:** Vivado estimate from gate-level switching activity of the routed netlist (`results/power_l1/`, `results/power_l2/`); not a board measurement. Energy is active energy (power × latency).
+- **Real time:** in RTL replay at recorded sensor timing every 3 ms window is processed within 4.5 µs (HUSH) / 6.6 µs (BASE); with the same 1,024-event buffer BASE keeps up to 750× real time, HUSH gentle to 1,000× (`results/realtime/realtime.md`).
+- **Cost:** 1.7–5.9 points of accuracy, +79 % LUTs, +19 % block RAM.
+- **Paper A:** `paper/hush_paperA.tex` / `.pdf` (IEEEtran, 7 pages with references, 8 figures, 7 tables), revised after three review rounds. Venue not yet chosen.
+- **Open:** board power measurement (needs the board and a power meter); Paper B on convolutional layers and DVS-Gesture (needs a GPU).
+
+## Layout
 
 | Path | Contents |
 | --- | --- |
-| `progress.md` | Resume point: current state, decisions log, Paper A / B task tables, full subtask log |
-| `study.md` | Defense / conference study checklist |
-| `docs/` | Proposal, tier-1 plan (+ 27 Oct update), Theorem 1′, headroom model, design notes, literature notes |
-| `golden/` | Integer golden models: FF LIF (`hush.py`), recurrent adLIF (`hush_rec.py`), axonal delays (`hush_delay.py`) |
+| `docs/primer.md` | The project from scratch: idea, proof, training, hardware, verification, results, history, hard questions, paper → repo map |
+| `study.md` | Defense / conference study checklist (Phases 0–6) |
+| `progress.md` | Dated log of every step and decision; task tables |
+| `docs/` | Plan (`plan_nov2026.md`), proposal, Theorem 1′, headroom model, design notes, literature tables |
+| `paper/` | Paper A source, bibliography, figures, outline with the source of every figure and table |
+| `golden/` | Integer golden models: feed-forward LIF (`hush.py`), recurrent adLIF (`hush_rec.py`), axonal delays (`hush_delay.py`) |
 | `tests/` | Hypothesis property tests of the safety invariants (`pytest -q tests/`) |
-| `train/` | Integer-faithful trainers (FF, recurrent adLIF, delays; gate in the loop) |
-| `rtl/` | SystemVerilog (`hush_arith.sv`, `hush_layer.sv`, `hush_net.sv` whole network + stream front-end), testbenches, exact cycle models, regression |
-| `formal/` | SymbiYosys proofs of the safety arithmetic |
-| `fpga/` | Vivado non-project flow, board top, constraints, build scripts |
-| `scripts/`, `results/` | Experiment scripts and measured results (current hardware results: `results/power_l1/`, `results/power_l2/`, `results/net_latency.md`; hidden-layer-only `results/power_saif_v5/`; `results/vivado_2024_1/` and `results/power_saif/` are superseded) |
+| `train/` | Integer-faithful trainers with the gate in the loop |
+| `rtl/` | SystemVerilog: `hush_arith.sv`, `hush_layer.sv`, `hush_net.sv` (whole network + stream front-end), testbenches, exact cycle models, regression |
+| `formal/` | SymbiYosys proofs: full-width inductive step (`fv_width`), reduced-width sequential (`fv_hush`), mutants |
+| `fpga/` | Vivado non-project flow, board top, constraints, laptop run scripts (`run_l1.bat`, `run_l2.bat`) |
+| `spikerplus/` | Spiker+ baseline: generated VHDL, wrapper, build scripts |
+| `scripts/` | Experiment, analysis and figure scripts (`fig_paper.py`, `fig_early.py`, `drift.py`, `heuristic_gates.py`, …) |
+| `results/` | Measured results. Current: `net_latency.md`, `power_l1/`, `power_l2/`, `resources.md`, `realtime/`, `drift.json`, `heuristic_gates.md`, `acc_integer.json`. Superseded: `power_saif_v5/` (hidden layer only), `vivado_2024_1/`, `power_saif/` |
 
-Comparison report v3, 11 Nov (vs state-of-the-art FPGA SNN accelerators): https://claude.ai/artifact/PHRvGNYWhkn9HiMooEmfsR
+Comparison report (vs state-of-the-art FPGA SNN accelerators): https://claude.ai/artifact/PHRvGNYWhkn9HiMooEmfsR

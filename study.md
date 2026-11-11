@@ -1,5 +1,7 @@
 # HUSH v2 — Study Checklist for Defense and Conference
 
+> **State: 11 Nov 2026.** Current numbers are in `docs/primer.md` §0 and §7 (whole network on chip). Items below that still quote the 28 Oct "v5" hidden-layer numbers are marked *superseded*; learn the history (primer §8) but quote only the current numbers. Suggested order for a first full pass: primer §0 → Phases 0–2 here → Phase 4 → Phase 5 → Phase 6 → Presentation drills.
+
 > Learn the project from `docs/primer.md` first; use this checklist after each primer section to test yourself and to go deeper (each item names the repo file with the detail).
 
 Work through this in order. Each item says what you must be able to do at the board without notes. Items are added as the project reaches each phase; the repo file that holds the material is given in brackets.
@@ -84,7 +86,7 @@ Work through this in order. Each item says what you must be able to do at the bo
 ## Phase 3 — Power methodology (added at T3.x)
 - [ ] Timing closure story: three critical paths found and fixed (lane + serial max in one cycle → pipelined R refresh → two-stage finalize → balanced two-stage max tree); why each change is bit-exact and why R's late write is safe (read ≥ 3 cycles later at COMBINE).
 - [ ] Vectorless vs SAIF vs board power: why vectorless charges HUSH's extra logic and cannot credit skipped reads; why static power (~100 mW) makes energy track latency on the XC7A100T.
-- [ ] Our numbers by heart (v5, 28 Oct): BASE 3.8k LUT / 303 µs / 44 µJ; HUSH-MF 9.8k LUT / 153 µs / 23 µJ (gentle), 97 µs / 15 µJ (aggressive); 100 MHz met. (v1's 1.3k LUT / 294 µs / 33 µJ BASE was a pruned build — never quote it.)
+- [ ] Our numbers by heart (**current, 11 Nov, whole network**): BASE 98.21 % / 7,745 LUT / 80 BRAM / 279.5 µs / 152 mW / 42.5 µJ; HUSH 13,885 LUT / 95 BRAM; gentler 96.54 % / 159.8 µs (1.75×) / 23.7 µJ (−44 %); gentle 95.74 % / 114.9 µs (2.44×) / 18.4 µJ (−57 %); aggressive (6 ep) 92.32 % / 82.9 µs (3.39×) / 14.4 µJ (−66 %); Spiker+ 818.4 µs / 311 mW / 254.5 µJ; 100 MHz met. (*Superseded, never quote:* v5 hidden-layer numbers 3.8k LUT / 303 µs / 44 µJ and 9.8k / 153 µs / 23 µJ; v1's pruned 1.3k-LUT BASE.) [`docs/primer.md` §7, §8]
 - [ ] SAIF-based power estimation: what it captures, what it misses.
 - [ ] Differential board measurement: why static power cancels; error bars.
 
@@ -108,12 +110,12 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] SHD reference numbers: SE-adLIF 1 layer 37.5k params 94.6%, 2 layers 95.8%, LIF 90.3% (float, no hardware).
 
 ## Comparison against the state of the art (added 27 Oct — Paper A)
-- [ ] The four levels of comparison and what each proves: internal ablation (BASE vs HUSH), competing ideas in the same setting (SITRA-/Early-style), same-device external baseline (Spiker+, to do), published SOTA table.
+- [ ] The four levels of comparison and what each proves: internal ablation (BASE vs HUSH), competing ideas in the same setting (SITRA-inspired / Early-style predictors, exploratory), same-device external baseline (Spiker+, done: 818 µs, 254.5 µJ), published SOTA table.
 - [ ] Normalised metrics and why raw LUT/power numbers across papers mislead: energy per inference, energy per (dense-equivalent) SOP, throughput per kLUT, latency.
-- [ ] Our hardware table by heart (v5, Vivado 2024.1, XC7A100T, 100 MHz met): BASE 3,821 LUT / 2,643 FF / 43 RAMB36 / 0 DSP / 145 mW (45 dynamic) / 302.9 µs / 43.9 µJ; HUSH-MF 9,800 LUT / 6,284 FF / 57 RAMB36 + 2 RAMB18 / 0 DSP; gentle 95.32% / 151 mW / 153.0 µs / 23.1 µJ (1.98×, −47%); aggressive 92.72% / 157 mW / 97.2 µs / 15.3 µJ (3.12×, −65%). Whole network, 500 samples; power = gate-level SAIF on the hidden-layer build.
-- [ ] The N-MNIST SOTA row: Wu, Song & So (FPT 2023), ZCU102, 95.76%, 50 ms, 0.33–0.37 W (≈ 17.5 mJ). Our gentle point (v5): ≈ 330× lower latency, ≈ 760× lower energy, 4–17× fewer LUTs — and why those ratios reflect different designs and devices, not HUSH alone.
+- [ ] *Superseded by the Phase 3 item above and primer §7.2 (kept for history).* Hardware table (v5, Vivado 2024.1, XC7A100T, 100 MHz met): BASE 3,821 LUT / 2,643 FF / 43 RAMB36 / 0 DSP / 145 mW (45 dynamic) / 302.9 µs / 43.9 µJ; HUSH-MF 9,800 LUT / 6,284 FF / 57 RAMB36 + 2 RAMB18 / 0 DSP; gentle 95.32% / 151 mW / 153.0 µs / 23.1 µJ (1.98×, −47%); aggressive 92.72% / 157 mW / 97.2 µs / 15.3 µJ (3.12×, −65%). Whole network, 500 samples; power = gate-level SAIF on the hidden-layer build.
+- [ ] The N-MNIST SOTA rows (paper Table VII): Cheng et al. (ZCU104, 98.11 %, 81.3k LUT), FeNN-DMA (KV260, 98.46 %, 55.0k), Surrogates (xcvu9p, 96.4 %, 5.9 ms, 0.31 W ≈ 1.83 mJ), Wu, Song & So (ZCU102, 95.76 %, 50 ms, 0.33–0.37 W ≈ 17.5 mJ). Ours: 37–435× lower latency, 77–950× lower active energy, 3.8–5.6× fewer LUTs than Cheng / FeNN-DMA (2.7–11.3× vs Wu) — and why those ratios reflect different networks, devices and methods, not HUSH alone.
 - [ ] MNIST-class rows for scale: Ansari & Wielgosz 2026 (Artix-7 200T, 96.7%, 82 µs, ≈ 27.6 µJ), Spiker-LL 2026 (39 µJ), Spiker+ 2024 (780 µs, ≈ 140 µJ). SHD rows: Chen et al. 2025 93.4% (delays, 9.6 ms), Spiker+ 72.99%.
-- [ ] Our honest weak points and the answer to each: accuracy (−2.3 to −4.9 pt on N-MNIST; SHD trails delay designs) → GPU; area (2.6× BASE LUTs, v5) → still 15.5% of a 100T; power is a gate-level activity-based estimate → board when available.
+- [ ] Our honest weak points and the answer to each: accuracy (−1.7 to −5.9 pt vs the equally trained BASE); area (+79 % LUT, +19 % BRAM; LUT × latency gains only 3 / 26 / 44 %); power is a gate-level activity-based estimate → board when available; one dataset, one small network, one sub-block size; real time by RTL replay of 4 recordings.
 - [ ] Why the GPU and the Nexys A7-100T are needed, in one sentence each (accuracy gap / measured power).
 
 ## Presentation drills
@@ -124,14 +126,14 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] Answer: "Your gated network is not the network you trained — so what is your accuracy claim?"
 - [ ] Answer: "Why should energy fall if the envelope unit runs every timestep?"
 - [ ] Answer: "Did you try clustering neurons into better groups?" (yes: no gain after co-training, and why)
-- [ ] Answer: "Your HUSH design is 2.6× the LUTs of BASE — where is the win?" (latency 2–3× and energy −47 to −65% at 15.5% of the device; area is fixed, savings scale with inference count)
+- [ ] Answer: "Your HUSH design has 79 % more LUTs than BASE — where is the win?" (latency 1.75–3.39×, active energy −44 to −66 %; LUT × latency still improves 26 % for gentle and 44 % for aggressive, but only 3 % for gentler — say so; the design uses 22 % of the device)
 - [ ] Answer: "Your energy numbers are estimates." (yes: gate-level activity-based, 100% nets matched, but Vivado's model without glitch power; the board measurement A7 replaces it — say exactly what each adds)
 
-## A3 power results (28 Oct) — defend these
+## A3 power results (28 Oct) — method still valid, numbers superseded by Phase 4
 - Why the earlier numbers were thrown away: (1) the LED fold only observed lanes 0-5/26-31, so synthesis deleted most of BASE; (2) ROM tables let synthesis trim INT8 weights to 6 bits; (3) the sub-block column gating existed only in a counter; (4) a test-harness ROM added 10k LUTs to HUSH only. A reviewer finding any one of these would reject the comparison.
 - How power is measured: post-route functional netlist simulated in xsim over 20 N-MNIST samples → SAIF of every net → read_saif (100% nets matched, confidence High) → report_power. Zero-delay activity, so glitch power is not included; it is an estimate, not a board measurement.
 - Why BRAM dynamic power is only 11-14 mW: each read enables one BRAM (ram_decomp = "power" splits deep RAMs by address) and HUSH reads only the weight columns of awake sub-blocks.
-- Headline: at +4-8% power, HUSH-MF cuts latency 1.9-3.2× and energy per inference 1.8-3.0× (dynamic 1.75-2.6×) against the same-chip dense baseline. Costs: 2.6× LUTs, +35% BRAM (P/Q tables, envelope units).
+- Headline (current): at +3–8 % power, HUSH cuts latency 1.75–3.39× and active energy per inference by 44–66 % (dynamic energy alone 41–62 %) against the same-chip baseline. Costs: +79 % LUTs, +19 % BRAM (P/Q tables, envelope unit, sub-block control).
 - Static power (~101 mW) is the XC7A100T's and dominates total power; the energy gain comes from finishing sooner as well as from switching less.
 
 ## Phase 4 — Whole network, real time, paper (added 11 Nov 2026)
@@ -146,9 +148,25 @@ Work through this in order. Each item says what you must be able to do at the bo
 
 ## Phase 5 — Answers to the external review (added 11 Nov 2026)
 
-- [ ] State the two properties exactly: (A) per-timestep spike equality with the ungated update from HUSH's own state (proved); (B) trajectory equivalence with BASE (not guaranteed). Quote the measured numbers (0 violations of A; divergence from window 4; 90–96 % same class). [`results/drift.json`, paper § III]
+- [ ] State the two properties exactly: (A) per-timestep spike equality with the ungated update from HUSH's own state (proved); (B) trajectory equivalence with an ungated run (not guaranteed). Quote the measured numbers (0 violations of A; divergence from window 4; 90–96 % same class; ungated run of the same weights emits 553 vs 304 hidden spikes for gentle; gentle 94.8 % gated vs 93.5 % ungated). [`results/drift.json`, paper § III]
 - [ ] Explain the two formal checks: full-width inductive step (VB 16, AB 18) and reduced-width sequential PDR; why "no wrap-around" needs the 8-bit-wider reference. Derive the 18-bit accumulator bound 2¹⁵ + 128·578. [`formal/README.md`]
 - [ ] Explain why the power and stream builds differ in BRAM (20 stored recordings vs a 1,024-event ring) and what HUSH adds in both. [`results/resources.md`]
 - [ ] Explain why HUSH's weight-memory traffic is 0.32–0.45 of BASE while its column reads are 0.07–0.20 (2 B of P/Q per sub-block and input). [paper Table II note]
 - [ ] Explain "active energy per inference" vs always-on energy at sensor speed (< 0.03 % saving). [paper § VII]
 - [ ] Describe Early, SITRA and PS4 each by its own mechanism and accuracy cost. [paper § II]
+
+## Phase 6 — Second review and final strict pass (added 11 Nov 2026, night)
+
+- [ ] Say which point was trained for 6 epochs (aggressive) and which for 12 (gentler, gentle), and why BASE is the 22-epoch net. [`docs/primer.md` §4.1–4.2]
+- [ ] Explain why the gated network is "a network in its own right", not an approximation of an ungated one, using the drift table (spike counts, and gentle / aggressive accuracy *falling* when the gate is removed). [`results/drift.json`, primer §3.4]
+- [ ] State exactly what the full-width formal check assumes (V_i ≤ R_c; drive ≤ D_c; q_c ≤ D_c; bounded drives), how the drive assumption is discharged (construction of P and Q + bit-exact simulation), and what is outside the proof (R max tree, second finalise stage, memories, sequencing). Explain why F5 is only a sanity check and why the m256 task matters only for no-wrap. [`formal/README.md`]
+- [ ] Derive the real-time energy at a common speed: 750× → 0.40 ms per recording → BASE 101 mW × 0.40 ms + 14.3 µJ = 54.7 µJ; HUSH 102 mW × 0.40 ms + 6.7 µJ = 47.5 µJ (−13 %); HUSH at 1,000×: 37.3 µJ. Explain why comparing the designs at different speeds was wrong. [primer §7.6]
+- [ ] Explain the energy split: two thirds of BASE's 42.5 µJ is static power × latency; dynamic energy falls 41–62 %; so most of the saving is "finish sooner". [paper Fig. 5, primer §7.2]
+- [ ] Compute LUT × latency for each point and explain why gentler gains only 3 %. [primer §7.2]
+- [ ] Read each new figure aloud in one sentence: Fig. 3 schedule, Fig. 4 accuracy vs latency, Fig. 5 energy split, Fig. 6 cycles per window vs activity, Fig. 7 replay sweep. [`scripts/fig_paper.py`]
+- [ ] Explain the speedup-vs-activity table (2.22× at 1–9 active inputs → 1.59× at ≥ 60) and what it predicts for a denser sensor. [`results/realtime/stream_stats.md`]
+- [ ] Explain how SnaPEA's exact mode differs from HUSH (per neuron vs per sub-block; reads weights until the stop vs decides before any read; no state vs carried maximum; CNN vs SNN). [paper §II]
+- [ ] Give the three caveats of the heuristic-predictor table (trained for HUSH; one seed; Early-style charge is a lower bound and the SITRA-inspired one is not SITRA's predictor and not matched exactly). [`results/heuristic_gates.md`]
+- [ ] Explain "column reads" (0.07–0.20) vs "weight-memory traffic" (0.32–0.45) and which one to quote when. [primer §7.1]
+- [ ] List the superseded numbers and why each was dropped. [primer §8]
+- [ ] Use the paper → repo map to find, for any number in the paper, the script and result file behind it. [primer §12]

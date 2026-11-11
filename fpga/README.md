@@ -1,5 +1,23 @@
 # FPGA flow — XC7A100T-1CSG324C (Nexys A7-100T), Vivado 2024.1
 
+**Current status (11 Nov 2026): whole network (`hush_net`).** The paper's hardware numbers come from two laptop runs:
+
+- **L1** (10 Nov, ≈ 12.7 h): `prep_l1.tcl` builds four whole-network power builds (`netpwr/{base, mf_gentle12,
+  mf_gentler12, mf_aggr}`, 20 recordings on chip), two stream builds (`netstream/*`) and Spiker+; xsim runs the
+  routed netlists outside Vivado; `annotate_l1.tcl` reads the SAIF files and writes power and energy.
+  Results: `results/power_l1/README.md`.
+- **L2** (10–11 Nov, ≈ 2 h): 22-epoch BASE power (`netpwr/base_ctrl`), stream builds after the end-of-window marker
+  fix, Spiker+ with high-effort directives. Results: `results/power_l2/README.md`.
+
+Commands that worked on the laptop (Vivado 2024.1 Tcl Shell):
+
+    cd C:/Users/Anubhav/hush_fpga/fpga
+    exec -ignorestderr cmd /c run_l1.bat
+    exec -ignorestderr cmd /c run_l2.bat
+
+Resource reconciliation of the four builds: `results/resources.md`. The text below describes the earlier
+hidden-layer-only flow (v5, 28 Oct); its method is the same, its numbers are superseded.
+
 Status (28 Oct 2026): **hush_layer v5**. All six builds (three timing/area builds, three 20-sample power builds)
 meet timing at 100 MHz, and gate-level SAIF power is done. Results: `results/power_saif_v5/`. Everything earlier
 (`results/vivado_2024_1/`, `results/power_saif/`) is superseded: see "Corrections" below.

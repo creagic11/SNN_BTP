@@ -1,47 +1,57 @@
-# Paper A — outline and figure/table list (A8.1, 10 Nov 2026)
+# Paper A — outline and figure/table list (state: 11 Nov 2026, after three review rounds)
 
-Working title: **HUSH: Provably Safe Sub-Block Hibernation for Real-Time Event-Driven SNN Inference on FPGAs**
+Title: **HUSH: Provably Safe Sub-Block Hibernation for Real-Time Event-Driven SNN Inference on FPGAs**
+Authors: Anubhav Jha and Rajat Subhra Chakraborty, Indian Institute of Technology Kharagpur (departments to add).
+Format: IEEEtran conference, 7 pages with references (≈ 6.5 without). Limit set by the user: 8 pages without
+references. Venue not chosen (a TCAS-II brief would need cuts).
 
-Venue (A8.0, to confirm with the professor): IEEE TCAS-II brief (5 pages) or FCCM 2027 (≈ 10 Jan 2027, 8 pages
-+ refs). The outline below fits the long form; the brief drops §5.4, §6.5 and merges §2 into §1.
+Rule for every number: it comes from a file in `results/` (column "Source").
 
-Rule for every number: it comes from a file in `results/` (column "Source"); A8.2 adds a script that checks each
-number in the LaTeX against these files.
+## Claims, in order of strength
 
-## Claims (what the paper must support, in order of strength)
+1. **Safety (scoped).** At every timestep the gated layer emits exactly the spikes of the ungated update from its
+   own state (Theorem 1). The envelope and lane arithmetic is proved at the real bit widths under the assumption
+   drive ≤ D_c, which holds by construction of the proxy table. Trajectory equivalence with an ungated run is
+   *not* claimed; the difference is measured.
+2. **Same-chip efficiency.** Against the same RTL with the gate off, trained equally long (98.21 %): gentler
+   96.54 %, 1.75×, −44 % active energy; gentle 95.74 %, 2.44×, −57 %; aggressive (6 epochs) 92.32 %, 3.39×, −66 %.
+   Cost: +79 % LUT, +19 % BRAM. Spiker+ on the same chip with BASE's 10-epoch weights: 818 µs, 254.5 µJ.
+3. **Real time.** RTL replay of four recordings at recorded timing: every 3 ms window within 4.5 µs. Same
+   1,024-event buffer: BASE to 750×, HUSH gentle to 1,000× real time. Energy at a common 750×: 54.7 vs 47.5 µJ.
+4. **Published designs.** 37–435× lower latency, 77–950× lower active energy, 3.8–5.6× fewer LUTs; not like for
+   like, and the paper says so.
+5. **Limits.** Accuracy and area cost; speedup falls with activity (2.2× → 1.59×); estimated power; one dataset,
+   one small network, one sub-block size; replay, not a live sensor.
 
-1. **Safety:** HUSH skips weight reads only where a proven upper bound on every membrane in the sub-block is below
-   threshold → zero suppressed spikes (Theorem 1; formal proof on the RTL; bit-exact RTL = golden model).
-2. **Same-chip efficiency:** on one Artix-7 XC7A100T, same network, same RTL with the gate off (BASE):
-   2.44× lower latency and ≈ half the energy per inference at −1.9 pt accuracy (gentle 12 ep); 1.75× at −1.1 pt
-   (gentler 12 ep); 3.39× at −5.3 pt (aggressive). Spiker+ (an open SNN generator) on the same chip and the same
-   weights: 814 µs, i.e. HUSH is 7× faster.
-3. **Versus published N-MNIST FPGA designs:** 51–435× lower latency (gentle 12 ep, 115 µs, vs 5.9–50 ms), two to
-   three orders of magnitude lower energy per inference where computable, 4–17× fewer LUTs; accuracy: gentler
-   12 ep (96.55 %) is above the two designs at 96.4 % and 95.76 %, and 1.6–1.9 pt below the two newest, larger
-   designs (98.11 %, 98.46 %).
-4. **Real time:** the whole network runs on chip on a live event stream: each 3 ms window is processed within
-   3.3 µs of its close (both designs), the class is available 0.9 µs after the last window, and the stream can be
-   replayed ≈ N× faster than real time with a 1-RAMB18 input buffer (HUSH ≈ 1.9× the throughput of BASE).
-5. **Honest limits:** speedup shrinks with stream activity (2.2× sparse → 1.6× busy windows); the gate costs
-   accuracy; power is activity-based Vivado estimation (gate-level SAIF), not a board measurement.
-
-## Sections
+## Sections, figures and tables
 
 | § | Content | Figures / tables | Source |
 |---|---|---|---|
-| 1 Introduction | weight fetches dominate SNN layer cost; prior skipping is heuristic (can drop spikes) or input-side only; contributions list = claims 1–4 | — | — |
-| 2 Background & related work | integer LIF; input-side event-driven designs; output-side skipping (SITRA-style, early-termination); N-MNIST FPGA designs | Tab. I (related work, short) | `docs/literature/nmnist_dvs_fpga.md` |
-| 3 HUSH | sub-blocks of 8; proxy tables P (max) and Q (mean); envelope E = sat(L(R) + max(0, D)); Theorem 1 (safety) + proof sketch; mean-field (MF) drive for asleep sub-blocks; training with the gate in the loop (exceedance and drive losses) | Fig. 1 gate concept; Alg. 1 | `docs/theorem1_prime.md`, `golden/hush.py` |
-| 4 Architecture | hidden layer: ETU (envelope unit) overlapped with the block loop, 32-lane PE, per-sub-block weight-column RAM enables; output layer + spike FIFO + on-chip class; stream front-end (pooling, de-dup, ring, end-of-window) | Fig. 2 block diagram; Tab. II cycle model | `rtl/hush_layer.sv`, `rtl/hush_net.sv`, `rtl/sim/cycle_model.py`, `rtl/sim/net_cycle_model.py` |
-| 5 Verification | bit-exact golden model; randomized regression (80/80); 4 × 50 N-MNIST samples bit-exact and cycle-exact; formal proof (SymbiYosys) of the gate; gate-level simulation equals model ± restart cycle | Tab. III verification summary | `results/net/`, `formal/`, `rtl/sim/regress.py` |
-| 6 Results | 6.1 setup (XC7A100T, Vivado 2024.1, 100 MHz, gate-level SAIF); 6.2 accuracy–savings front (3 seeds); 6.3 hardware: area, timing, power, energy (whole network); 6.4 same chip: BASE, Spiker+; 6.5 vs safety-agnostic gates (heuristics) | Fig. 3 accuracy vs reads front with error bars; Tab. IV hardware; Tab. V heuristics | `results/seeds_nmnist.md`, `results/net_latency.md`, `out_l1/energy_l1.csv` (L1), `results/spikerplus/`, `results/heuristic_gates.md` |
-| 7 Real-time operation | stream statistics; sensor-timing results; replay sweep; average-load bound; accuracy vs elapsed time; energy per 300 ms window = static + dynamic | Tab. VI real time; Fig. 4 accuracy vs elapsed time | `results/realtime/stream_stats.md`, `results/realtime/realtime.md` |
-| 8 Comparison with the state of the art | N-MNIST FPGA designs with comparability caveats (device, network, power method) | Tab. VII SOTA | `docs/literature/nmnist_dvs_fpga.md` |
-| 9 Limitations & conclusion | speedup vs activity; accuracy cost; estimation vs board; DVS-Gesture / conv layers as future work (Paper B) | — | `results/realtime/stream_stats.md` (A9.1b) |
+| I Introduction | weight fetches dominate; output-side skipping is hard; three contributions | — | — |
+| II Background and related work | integer LIF; clock-driven FPGA designs (Spiker, Spiker+, FireFly); Early, SITRA, PS4; SPARSH, C-STEP, Cheng; SnaPEA exact mode | — | `docs/literature/` |
+| III The HUSH gate | sub-blocks, P and Q, envelope, Theorem 1, mean-field drive q_c, (A) vs (B) with drift numbers, training penalties | Fig. 1 scope of the guarantee | `golden/hush.py`, `results/drift.json` |
+| IV Architecture | hidden layer and cycle cost, whole network, stream front-end | Fig. 2 datapath (two-column), Fig. 3 schedule of one timestep | `rtl/hush_layer.sv`, `rtl/hush_net.sv`, `rtl/sim/net_cycle_model.py` |
+| V Verification | bit-exact RTL, two formal checks and their scope, gate-level cycle check | Table I widths and ranges | `formal/README.md`, `results/net/` |
+| VI Results | setup; accuracy–savings front; same chip (resources, energy split, area × time, Spiker+); heuristic predictors (exploratory) | Table II training, Table III accuracy/latency, Fig. 4 accuracy vs latency, Table IV hardware, Table V resources, Fig. 5 energy split, Table VI predictors | `results/acc_integer.json`, `results/net_latency.md`, `results/power_l1/`, `results/power_l2/`, `results/resources.md`, `results/heuristic_gates.md` |
+| VII Real-time operation | stream statistics; sensor timing; energy at sensor speed and at a common replay speed; replay sweep; early decisions | Fig. 6 cycles per window vs activity, Fig. 7 replay sweep, Fig. 8 accuracy vs elapsed time | `results/realtime/stream_stats.md`, `results/realtime/realtime.md`, `results/realtime/early_decision.json` |
+| VIII Comparison with the state of the art | four published N-MNIST FPGA designs with comparability caveats | Table VII | `docs/literature/nmnist_dvs_fpga.md` |
+| IX Limitations and conclusion | limits listed above; code availability | — | — |
 
-## Open inputs before the draft is final
+Figures 4–7: `python scripts/fig_paper.py`. Fig. 8: `python scripts/fig_early.py`. Figs. 1–3 are TikZ in the source.
 
-- L1 results (laptop): whole-network power for the four points, stream-build area/timing, Spiker+ power.
-- A9.4 sweep + sensor-timing tables (running), A9.7 curve (running).
-- Venue → template and page budget (A8.0).
+## Review history (details in `progress.md`)
+
+1. 10 Nov — internal fresh-eyes review, 20 items (number audit, objections).
+2. 11 Nov — external review: scope of the safety claim, full-width proof, resource reconciliation, traffic
+   including P/Q reads, heuristic comparison with charged reads, energy and real-time wording, reproducibility.
+3. 11 Nov — second fresh-eyes review: aggressive point is 6 epochs, drift reported in full, proof scope narrowed,
+   real-time energy at a common speed, 6-epoch-derived figures replaced, references completed.
+4. 11 Nov — final strict pass: area cost up front, energy attribution, area × time, SnaPEA, limitations, five new
+   figures, TrueType fonts in figures.
+
+## Open before submission
+
+- Venue, template and page limit; departments in the author block.
+- Check the SnaPEA entry in `paper/refs.bib` (authors, pages, DOI) against the published record.
+- Optional: aggressive point at 12 epochs (training here, power on the laptop).
+- Not in Paper A: board power (A7), convolutional layers and DVS-Gesture (Paper B).

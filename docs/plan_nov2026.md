@@ -56,6 +56,16 @@ discharged by table construction), aggressive point labelled 6 epochs, heuristic
 OPEN: venue (6 pages fits FCCM; TCAS-II brief needs cuts) and author-name spelling/affiliation (to ask at the end);
 A7 board measurement (blocked); Paper B (GPU).
 
+## Status, 11 Nov 2026 night (final review pass)
+
+Author line set (Rajat Subhra Chakraborty; IIT Kharagpur, departments still to add). Venue left open by the user;
+limit 8 pages without references, paper is ≈ 6.5. Final strict pass applied: area cost (+79 % LUT, +19 % BRAM) in
+the abstract, energy attribution (two thirds of BASE's active energy is static), LUT × latency (3 / 26 / 44 %),
+SnaPEA in related work, limitations extended, five new figures (schedule, accuracy vs latency, energy split,
+cycles vs activity, replay sweep). `docs/primer.md` rewritten for the current state, `study.md` Phase 6 added,
+README and `paper/outline.md` rewritten.
+OPEN: venue; departments; optional 12-epoch aggressive point; A7 (board); Paper B (GPU).
+
 ## Stage 0 — housekeeping (3 Nov, ~30 min, Claude)
 
 | ID | Step | Done when |

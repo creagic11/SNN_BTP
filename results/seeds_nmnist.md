@@ -1,3 +1,5 @@
+> **Superseded for latency and energy (11 Nov 2026).** This table uses the earlier sequential cycle model (hidden layer, then output layer) and the 28 Oct hidden-layer power. Current whole-network numbers: `results/net_latency.md` (latency, speedup) and `results/power_l1/README.md` (power, energy). Accuracies and column reads here are still valid.
+
 # A5 + A6 — N-MNIST, three seeds (0, 1, 2): mean ± sample std
 
 Accuracy on the full 10,000-sample test set with the hardware's integer decision rule (results/acc_integer.json); latency and weight-column reads for the whole 578-256-10 network over

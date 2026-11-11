@@ -2,7 +2,7 @@
 
 # HUSH v2 — Revised BTP Research Proposal
 
-Oct 15, 2026 · Anubhav Jha (23EE10091), IIT Kharagpur · Supervisor: Prof. Rajat Shubhra Chakraborty
+Oct 15, 2026 · Anubhav Jha (23EE10091), IIT Kharagpur · Supervisor: Prof. Rajat Subhra Chakraborty
 
 Repository copy of the Claude Doc of the same name. Diagrams live in the Claude Doc.
 
