@@ -10,6 +10,15 @@ All gates act on 8-neuron sub-blocks with the same dropping / mean-field semanti
            awake if any neuron is (importance-ordered partial sum, like Early's early exit).
 
 The heuristic thresholds are calibrated by bisection so their column-read fraction matches HUSH's.
+
+11 Nov 2026 (review: "charge the predictors' own reads"): every gate is also charged its predictor's memory
+traffic, in bytes per (sub-block, active input), next to the 8-byte weight column read when awake:
+  HUSH  : P and Q bytes (2 B)                                   -> 2 + 8*awake
+  SITRA : the 8 sign bits of the sub-block (1 B)                -> 1 + 8*awake
+  EARLY : the top-K weight columns per sub-block, read before the decision (8 B each, a lower bound: the 8
+          neurons' top-K sets may differ); when awake only the remaining columns are read
+                                                                -> 8*min(K, n) + 8*awake*max(0, n - K) per step
+With --match traffic the heuristics are calibrated to HUSH's total traffic instead of its column reads.
 Reported: accuracy, read fraction, and suppressed spikes = neurons in gated sub-blocks whose
 ungated update from the same state would have reached theta (false negatives).
 
@@ -41,6 +50,7 @@ def run_layer(W, S, p, kind, thr, asleep_drive, K=8):
     V = np.zeros(N, np.int64)
     spikes = np.zeros((T, N), np.uint8)
     reads = fn = 0
+    traffic = 0
     for t in range(T):
         s = S[t].astype(np.int64)
         LV = leak(V, p.k)
@@ -68,22 +78,31 @@ def run_layer(W, S, p, kind, thr, asleep_drive, K=8):
         fn += int(((~gn) & (U_full >= p.theta)).sum())
         V = U - p.theta * sp
         spikes[t] = sp
-        reads += int(g.sum()) * int(s.sum())
-    return spikes, reads, fn
+        n = int(s.sum())
+        reads += int(g.sum()) * n
+        if kind == "hush":
+            traffic += C * 2 * n + 8 * int(g.sum()) * n
+        elif kind == "sitra":
+            traffic += C * 1 * n + 8 * int(g.sum()) * n
+        else:
+            traffic += C * 8 * min(K, n) + 8 * int(g.sum()) * max(0, n - K)
+    return spikes, reads, fn, traffic
 
 
-def evaluate(Ws, rasters, Y, p, po, kind, thr, asleep_drive, n_real):
-    acc = reads = fn = base = 0
+def evaluate(Ws, rasters, Y, p, po, kind, thr, asleep_drive, n_real, match="reads"):
+    acc = reads = fn = base = traffic = 0
     for S, y in zip(rasters, Y):
         x = S
         for li in range(len(Ws) - 1):
-            x2, r, f = run_layer(Ws[li], x, p, kind, thr, asleep_drive)
+            x2, r, f, tr = run_layer(Ws[li], x, p, kind, thr, asleep_drive)
             reads += r
             fn += f
+            traffic += tr
             base += (Ws[li].shape[1] // p.b_env) * int(x.sum())
             x = x2
         acc += predict(run_ref(Ws[-1], x, po)) == y
-    return acc / len(Y), reads / max(1, base), fn
+    rf, tf = reads / max(1, base), traffic / max(1, 8 * base)   # traffic relative to BASE's 8 B per column
+    return acc / len(Y), (rf if match == "reads" else tf), fn, rf, tf
 
 
 def main():
@@ -93,6 +112,8 @@ def main():
     ap.add_argument("--asleep_drive", default="none")
     ap.add_argument("--target", type=float, default=0.0, help="read fraction to calibrate heuristics to (default: HUSH's)")
     ap.add_argument("--out", default="")
+    ap.add_argument("--match", default="reads", choices=["reads", "traffic"])
+    ap.add_argument("--ncal", type=int, default=40)
     a = ap.parse_args()
     z = np.load(a.weights)
     Ws = [z[f"W{i}"].astype(np.int64) for i in range(10) if f"W{i}" in z]
@@ -105,25 +126,26 @@ def main():
     p = LIFParams(k=k, theta=theta, b_env=8, b_blk=32)
     po = LIFParams(k=k, theta=theta, b_env=Ws[-1].shape[1], b_blk=Ws[-1].shape[1])
     res = {}
-    acc, rf, fn = evaluate(Ws, rasters, Y, p, po, "hush", None, a.asleep_drive, n_real)
-    res["HUSH"] = {"acc": acc, "read_frac": rf, "suppressed_spikes": fn, "thr": None}
+    acc, m, fn, rf, tf = evaluate(Ws, rasters, Y, p, po, "hush", None, a.asleep_drive, n_real, a.match)
+    res["HUSH"] = {"acc": acc, "read_frac": rf, "traffic_frac": tf, "suppressed_spikes": fn, "thr": None}
+    rf = m
     print("HUSH", res["HUSH"], flush=True)
     target = a.target or rf
     for kind, lo, hi in (("sitra", 0, 200), ("early", -2000, 2000)):
         # read fraction falls as the threshold moves: sitra -> smaller tau, early -> larger V_sth
         for _ in range(14):
             mid = (lo + hi) / 2
-            _, r, _ = evaluate(Ws, rasters[:40], Y[:40], p, po, kind, mid, a.asleep_drive, n_real)
+            _, r, _, _, _ = evaluate(Ws, rasters[:a.ncal], Y[:a.ncal], p, po, kind, mid, a.asleep_drive, n_real, a.match)
             if kind == "sitra":
                 lo, hi = (lo, mid) if r > target else (mid, hi)
             else:
                 lo, hi = (mid, hi) if r > target else (lo, mid)
         thr = (lo + hi) / 2
-        acc, rf2, fn2 = evaluate(Ws, rasters, Y, p, po, kind, thr, a.asleep_drive, n_real)
-        res[kind.upper()] = {"acc": acc, "read_frac": rf2, "suppressed_spikes": fn2, "thr": thr}
+        acc, _, fn2, rf2, tf2 = evaluate(Ws, rasters, Y, p, po, kind, thr, a.asleep_drive, n_real, a.match)
+        res[kind.upper()] = {"acc": acc, "read_frac": rf2, "traffic_frac": tf2, "suppressed_spikes": fn2, "thr": thr}
         print(kind.upper(), res[kind.upper()], flush=True)
     out = Path(a.out) if a.out else Path(a.weights).with_name("heuristic_gates.json")
-    json.dump({"n": len(Y), "asleep_drive": a.asleep_drive, "results": res}, open(out, "w"), indent=2)
+    json.dump({"n": len(Y), "asleep_drive": a.asleep_drive, "match": a.match, "results": res}, open(out, "w"), indent=2)
     print("saved", out)
 
 
