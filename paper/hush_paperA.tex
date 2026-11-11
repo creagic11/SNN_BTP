@@ -21,8 +21,8 @@
 \begin{document}
 
 \title{HUSH: Provably Safe Sub-Block Hibernation for\\Real-Time Event-Driven SNN Inference on FPGAs}
-\author{\IEEEauthorblockN{Anubhav Jha and Rajat Subhra Chakraborty \pend{spelling to confirm}}
-\IEEEauthorblockA{Department of Electrical Engineering / Computer Science and Engineering, IIT Kharagpur, India \pend{affiliations to confirm}}}
+\author{\IEEEauthorblockN{Anubhav Jha and Rajat Subhra Chakraborty}
+\IEEEauthorblockA{Indian Institute of Technology Kharagpur, India}}
 \maketitle
 
 \begin{abstract}
@@ -36,7 +36,8 @@ is processed; its envelope and lane arithmetic is verified formally at the imple
 runs on a Xilinx Artix-7 XC7A100T at 100\,MHz entirely on chip, from raw sensor events to the class: at 95.74\,\%
 accuracy it is 2.44$\times$ faster than the same hardware with the gate off (115\,\textmu s vs.\ 280\,\textmu s per
 inference; 98.21\,\% accuracy) with 57\,\% less active energy per inference (18.4 vs.\ 42.5\,\textmu J,
-estimated from gate-level switching activity), and at 96.54\,\% 1.75$\times$ faster with 44\,\% less. On the same chip, with BASE's
+estimated from gate-level switching activity), and at 96.54\,\% 1.75$\times$ faster with 44\,\% less; the gate
+costs 79\,\% more LUTs and 19\,\% more block RAM. On the same chip, with BASE's
 10-epoch weights, the open Spiker+ generator needs 818\,\textmu s and 255\,\textmu J (6.0$\times$ BASE). In cycle-accurate RTL replay of
 four N-MNIST recordings at their recorded timing, every 3\,ms window is processed within 4.5\,\textmu s of its end,
 and the design sustains up to 1.33--2$\times$ the event rate of the ungated design with the same 1,024-event input
@@ -49,9 +50,9 @@ and their arithmetic is additive. On FPGAs, accelerators usually exploit \emph{i
 for input spikes that occur. For a fully connected layer with $N$ neurons, each input spike still costs $N$ weight
 reads from block RAM, although in a given timestep only a few percent of the neurons fire. Skipping the
 \emph{output} side, i.e.\ neurons that will not fire, is the remaining large saving, but it is hard: whether a
-neuron fires depends on the very weights one wants to skip. Published output-side schemes are heuristics (they
-predict that a neuron stays silent and can be wrong) and therefore change the network's behaviour in ways that are
-hard to bound.
+neuron fires depends on the very weights one wants to skip. The output-side schemes published for SNNs are, to our
+knowledge, heuristics (they predict that a neuron stays silent and can be wrong) and therefore change the network's
+behaviour in ways that are hard to bound.
 
 We make output-side skipping \emph{provably safe}. Our contributions:
 \begin{enumerate}
@@ -89,12 +90,16 @@ fails. Early and SITRA accept mispredictions: Early reports a 0.54\,\% mean accu
 SITRA 1--2\,\%; PS4 trades mispredictions for recomputation time instead. All three use tuned thresholds or
 speculation and are evaluated with architecture simulators and ASIC synthesis (28 or 65\,nm), not on an FPGA. SPARSH~\cite{sparsh}
 skips zero weights, zero spikes and refractory neurons; C-STEP~\cite{cstep} and the early-stop of~\cite{cheng2025}
-end inference early in time. HUSH differs in that its prediction is a proven bound: a sleeping sub-block cannot
+end inference early in time. For ReLU CNNs, SnaPEA~\cite{snapea} has an exact mode: with non-negative inputs and
+weights sorted by sign, a convolution stops once its partial sum turns negative. It still reads weights up to that
+point, per neuron, and has no state across time. HUSH differs in that its prediction is a proven bound that is
+evaluated before any weight of the sub-block is read: a sleeping sub-block cannot
 contain a neuron that would fire at that timestep, the bound carries membrane state across timesteps, and its
 granularity matches a block-RAM column, so a skip removes whole memory reads on an FPGA.
 
 \section{The HUSH gate}
-Neurons are grouped into sub-blocks $c$ of $b=8$. Two tables are derived offline from the weights: the proxy
+Neurons are grouped into sub-blocks $c$ of $b=8$ (eight INT8 weights fill one 64-bit block-RAM word; other sizes
+were not explored). Two tables are derived offline from the weights: the proxy
 $P_{jc}=\max_{i\in c} W_{ji}$ and the mean $Q_{jc}=\lfloor \mathrm{mean}_{i\in c} W_{ji}\rfloor$. The hardware keeps
 $R_c=\max_{i\in c} V_i$ exactly after every timestep. Before the weights of timestep $t$ are fetched, the envelope
 unit accumulates $D_c=\sum_{j\in A_t} P_{jc}$ and evaluates
@@ -198,10 +203,45 @@ column RAMs, one per sub-block; a column is read only if its sub-block is awake.
 the envelope bank (gates), then visits each block: an awake block streams the timestep's events through a
 4-stage pipeline (event read, index register, weight read, accumulate) and finalises its lanes in two stages; an
 asleep block takes 3 cycles (state read, mean-field finalise, write-back). The envelope unit for timestep $t+1$
-runs during the block loop of $t$ (double-buffered banks). The cycle cost of a timestep with $n>0$ events is
+runs during the block loop of $t$ (double-buffered banks; Fig.~\ref{fig:sched}). The cycle cost of a timestep with $n>0$ events is
 $1 + \sum_{\beta} c_{\beta} + 2$ over the 8 blocks $\beta$, with $c_{\beta} = 4 + (n+4)$ for an awake block and 3 for an asleep one, plus any wait for the
 envelope bank. Time is therefore saved per 32-neuron block (all four sub-blocks asleep), while energy is also saved per
 8-neuron sub-block, whose weight column is not read.
+
+\begin{figure}[t]\centering
+\begin{tikzpicture}[font=\scriptsize, x=0.93mm, y=1mm,
+  bk/.style={draw,minimum height=4.2mm,inner sep=0pt,anchor=west,font=\tiny},
+  aw/.style={bk,fill=blue!10}, sl/.style={bk,fill=black!12}, ev/.style={bk,fill=orange!18,draw=orange!70!black}]
+\node[anchor=east] at (-1,12) {Envelope unit};
+\node[anchor=east] at (-1,6) {Hidden layer};
+\node[anchor=east] at (-1,0) {Output layer};
+\node[ev,minimum width=19mm] at (3,12) {gates of $t{+}1$};
+\node[ev,minimum width=15mm] at (38,12) {gates of $t{+}2$};
+\node[bk,minimum width=2mm] at (0,6) {};
+\node[aw,minimum width=10mm] at (2,6) {awake};
+\node[sl,minimum width=2.2mm] at (12,6) {};
+\node[sl,minimum width=2.2mm] at (14.2,6) {};
+\node[aw,minimum width=10mm] at (16.4,6) {awake};
+\node[sl,minimum width=2.2mm] at (26.4,6) {};
+\node[sl,minimum width=2.2mm] at (28.6,6) {};
+\node[sl,minimum width=2.2mm] at (30.8,6) {};
+\node[bk,minimum width=2mm] at (33,6) {};
+\node[bk,minimum width=2mm] at (35,6) {};
+\node[sl,minimum width=2.2mm] at (37,6) {};
+\node[aw,minimum width=10mm] at (39.2,6) {awake};
+\node[sl,minimum width=2.2mm] at (49.2,6) {};
+\node[sl,minimum width=2.2mm] at (51.4,6) {};
+\node[bk,draw=none,minimum width=4mm] at (53.6,6) {\dots};
+\node[bk,minimum width=14mm] at (2,0) {spikes of $t{-}1$};
+\node[bk,minimum width=12mm] at (37,0) {spikes of $t$};
+\draw[densely dashed] (0,-3.5) -- (0,15.5); \draw[densely dashed] (35,-3.5) -- (35,15.5);
+\node at (17.5,16.5) {timestep $t$}; \node at (46,16.5) {timestep $t{+}1$};
+\draw[-{Latex[length=1.4mm]},orange!70!black] (22,9.9) -- (22,8.6) -- (36,8.6);
+\node[anchor=west] at (-14,-6) {\tiny blue: awake block, $8+n$ cycles ($n$ events)\quad grey: asleep block, 3 cycles\quad white: control};
+\end{tikzpicture}
+\caption{Schedule of one timestep (not to scale). The eight 32-neuron blocks are visited in turn; the envelope
+unit prepares the gates of the next timestep meanwhile, and the output layer consumes the previous timestep's
+spikes.}\label{fig:sched}\end{figure}
 
 \textbf{Whole network.} Hidden-layer spikes enter a 32-entry FIFO; a drain converts each set bit into an event of the
 output layer (32 lanes, 10 used, dense), which runs one timestep behind the hidden layer and overlapped with it.
@@ -300,18 +340,24 @@ Spiker+~\cite{spikerplus} & 13,548$^a$ & 70.5 & +0.005$^a$ & 818.4 & 311 & 254.5
 \multicolumn{7}{p{0.95\columnwidth}}{\footnotesize $^a$ high-effort implementation; power measured on the default-effort netlist (WNS $-$0.241\,ns).}
 \end{tabular}\end{table}
 
-\textbf{Accuracy--savings front.} Table~\ref{tab:front}. The gentler and gentle networks are fine-tuned for 12
+\textbf{Accuracy--savings front.} Table~\ref{tab:front} and Fig.~\ref{fig:front}; speedups are relative to the
+ungated network of the same seed. The gentler and gentle networks are fine-tuned for 12
 epochs from the 10-epoch ungated network, the aggressive one for 6 (not re-run at 12); the same fine-tuning without the gate raises the ungated network from 97.66\,\% to
 98.21\,\%, so we use that network as BASE. Against it the gate costs 1.7--5.9 points and reads 7--20\,\% of the
 weight columns (32--45\,\% of BASE's weight-memory bytes once its own $P$ and $Q$ reads are counted). Training longer with the gate (12 instead of 6 epochs) improved every
 axis of the gentle point (95.37\,\%, 1.98$\times$ $\rightarrow$ 95.74\,\%, 2.44$\times$). In a single-seed test, a wider hidden layer (384) raised the ungated accuracy to 98.0\,\% but not the gated one
 (95.9\,\%, 6 epochs).
 
+\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{fig_front.pdf}\caption{Accuracy against latency,
+whole network on chip. Faint markers: the three seeds; solid: their mean $\pm$ std. Labels give accuracy and
+speedup over BASE.}\label{fig:front}\end{figure}
+
 \textbf{Same chip.} Table~\ref{tab:hw} gives the power builds; Table~\ref{tab:res} reconciles them with the stream
 builds. A power build stores 20 test recordings on chip (53k events, $\approx$32.5 BRAM tiles) so that power can be
 simulated over 20 inferences without a host; a stream build instead has the sensor front-end and a 1,024-event
 ring. HUSH adds the same $\approx$6k LUTs and 14--15 BRAM tiles in both (envelope unit, $P$ and $Q$ tables,
-sub-block control).
+sub-block control): 79\,\% more LUTs and 19\,\% more BRAM than BASE in the power builds. The LUT$\times$latency
+product therefore improves less than latency: by 3\,\% (gentler), 26\,\% (gentle) and 44\,\% (aggressive).
 
 \begin{table}[t]\centering\caption{Resources of the four builds (BRAM in 36\,Kb tiles).}\label{tab:res}
 \setlength{\tabcolsep}{2.2pt}\footnotesize
@@ -332,10 +378,16 @@ harness (81.4k for the bare generated network). With default implementation sett
 default-effort netlist; the high-effort one is estimated 4\,\% higher, so the reported Spiker+ energy is a lower
 bound. With the gate, HUSH spends 44--66\,\% less energy
 per inference than BASE although its power is 3--8\,\% higher: the extra envelope logic costs less than the time it
-saves; this is active energy per inference. Spiker+ draws 311\,mW, 140\,mW of it in block RAM, which it reads every cycle (ours: 12\,mW, read only for
+saves; this is active energy per inference (Fig.~\ref{fig:energy}). Two thirds of BASE's active energy is static
+power integrated over its latency, so most of the saving comes from finishing sooner; dynamic energy alone falls
+by 41--62\,\%. Spiker+ draws 311\,mW, 140\,mW of it in block RAM, which it reads every cycle (ours: 12\,mW, read only for
 awake sub-blocks), and needs 6.0$\times$ the energy of BASE and 13.8$\times$ that of HUSH gentle. Energies in
 Table~\ref{tab:hw} use the latency of the same 20 inferences (e.g.\ gentler 151.2\,\textmu s vs.\ 159.8\,\textmu s over
 500 samples); the speedups of Table~\ref{tab:front} use the 500-sample means.
+
+\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{fig_energy.pdf}\caption{Active energy per
+inference (Table~\ref{tab:hw}), split into static power $\times$ latency (light) and dynamic energy (dark).
+Spiker+ (254.5\,\textmu J, 171.9 dynamic) is off this scale.}\label{fig:energy}\end{figure}
 
 \textbf{Heuristic gates (exploratory).} To show what the proof buys, we keep the HUSH-trained gentle network and swap only
 the predictor, charging each its own memory reads: HUSH 2\,B ($P$, $Q$) per sub-block and active input; a
@@ -368,8 +420,11 @@ not by a sensor connected to the board. \textbf{At true sensor timing} (4 record
 1.47\,\textmu s on average with HUSH (3.04\,\textmu s BASE), at most 4.50\,\textmu s (6.64\,\textmu s), i.e.\
 $\le 0.22$\,\% of the window; the class is ready 0.89\,\textmu s (2.03\,\textmu s) after the last window; the input
 ring never holds more than 127 events. HUSH halves the average window (1.47 vs.\ 3.04\,\textmu s, $-$52\,\%) but
-shortens the busiest one less, because most blocks wake up in it: over the test set, windows with 1--9 active
-inputs run 2.2$\times$ faster, windows with 60 or more 1.59$\times$.
+shortens the busiest one less, because most blocks wake up in it (Fig.~\ref{fig:act}): over 500 test recordings,
+windows with 1--9 active inputs run 2.2$\times$ faster, windows with 60 or more 1.59$\times$.
+\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{fig_activity.pdf}\caption{Cycles per 3\,ms window
+against the number of active inputs in it (cycle model, 500 test recordings, gentle network), with the speedup
+of HUSH above each pair.}\label{fig:act}\end{figure}
 \textbf{Energy in real-time operation.} The 44--66\,\% saving of Section~\ref{sec:res} is active energy per inference. At sensor
 speed the chip idles more than 99.9\,\% of the time, so a 300\,ms recording costs $\approx$30.3\,mJ of static energy
 (101\,mW) for either design, and HUSH saves only its dynamic share (6.7 vs.\ 14.3\,\textmu J per inference), i.e.\
@@ -380,7 +435,11 @@ gives 101\,mW$\times$0.40\,ms $+$ 14.3\,\textmu J $=$ 54.7\,\textmu J for BASE a
 6.7\,\textmu J $=$ 47.5\,\textmu J for HUSH gentle ($-$13\,\%); HUSH can also run at 1,000$\times$ (37.3\,\textmu J).
 \textbf{Faster than real time.} Replaying the 20 test recordings with the most events (1.7$\times$ the mean rate)
 with the same 1,024-event buffer, at speeds in steps of 250$\times$, BASE drops events above 750$\times$ real time, HUSH gentle above 1,000$\times$ on
-all 20 recordings (23.7\,M events/s, 1.33$\times$) and above 1,500$\times$ for the median recording (2.0$\times$).
+all 20 recordings (23.7\,M events/s, 1.33$\times$) and above 1,500$\times$ for the median recording (2.0$\times$);
+HUSH gentler also holds 750$\times$ on all 20 and 1,000$\times$ on 18 (Fig.~\ref{fig:replay}).
+\begin{figure}[t]\centering\includegraphics[width=\columnwidth]{fig_replay.pdf}\caption{Replay faster than real
+time: how many of the 20 heaviest test recordings are processed bit-exactly with no dropped event (RTL, same
+1,024-event buffer).}\label{fig:replay}\end{figure}
 \textbf{Early decisions.} Because the class can be read after any window, Fig.~\ref{fig:early} reports accuracy vs.
 elapsed sensor time. Between 21\,ms and 156\,ms the gentler network is more accurate than BASE trained equally long
 (e.g.\ 87.7\,\% vs.\ 79.5\,\% at 60\,ms and 92.6\,\% vs.\ 88.9\,\% at 99\,ms); BASE leads from 159\,ms on.
@@ -418,9 +477,11 @@ system removed; the Surrogates and Wu et al.\ figures are as reported, and their
 (Tables~\ref{tab:front}--\ref{tab:res}) isolates HUSH's own effect.
 
 \section{Limitations and conclusion}
-The speedup depends on stream sparsity: per window it falls from 2.2$\times$ with 1--9 active inputs to
+The evaluation covers one dataset and one small fully connected network with a single gated layer and one
+sub-block size. The speedup depends on stream sparsity: per window it falls from 2.2$\times$ with 1--9 active inputs to
 1.6$\times$ with 60 or more, as more sub-blocks wake up, and it tends to 1$\times$ on dense streams. Serving many
-streams on one chip is limited by state memory, where BASE would fit more streams than HUSH. The gate costs accuracy;
+streams on one chip is limited by state memory, where BASE would fit more streams than HUSH. The gate costs
+accuracy (1.7--5.9 points) and area (79\,\% more LUTs);
 its guarantee is per timestep, not for the whole trajectory; power is estimated from simulated activity, not measured
 on a board; and real time is shown by RTL replay at sensor timing, not with a live sensor. HUSH shows that output-side skipping in SNN hardware can be both effective and provably safe; extending
 the envelope to convolutional layers and denser event streams (DVS-Gesture) is future work.

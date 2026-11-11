@@ -7,7 +7,7 @@ e = json.load(open("results/realtime/early_decision.json"))
 S = [("BASE + 12 ep fine-tune, no gate (control)", "BASE (gate off)", "#2a78d6", "-"),
      ("HUSH gentler 12ep", "HUSH gentler", "#eb6834", "--"),
      ("HUSH gentle 12ep", "HUSH gentle", "#1baf7a", ":")]
-plt.rcParams.update({"font.size": 8, "font.family": "serif", "axes.edgecolor": "#52514e", "axes.linewidth": 0.6})
+plt.rcParams.update({"pdf.fonttype": 42, "font.size": 8, "font.family": "serif", "axes.edgecolor": "#52514e", "axes.linewidth": 0.6})
 fig, ax = plt.subplots(figsize=(3.4, 2.1))
 for k, lab, c, ls in S:
     ms = e[k]["window_ms"]; a = [100 * x for x in e[k]["acc"]]
