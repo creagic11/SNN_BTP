@@ -42,6 +42,14 @@ Engine ABC PDR, 72 s for both tasks. Mutant `fv_width_mut.sv` (drops the assumpt
 weights) FAILs immediately, so the check is not vacuous. With V = R = 0 at reset, F5 + F2 make V_l ≤ R an invariant
 of all reachable states and F1 holds at every timestep, at full width.
 
+**Scope (second review, 11 Nov 2026).** What this check covers and what it does not:
+- It proves the envelope and lane arithmetic (`hush_envelope`, `hush_lane`) at the real widths, *given* the assumption
+  that each neuron's drive is at most D_c (and q_c ≤ D_c). That assumption holds by construction of the P and Q tables,
+  which are generated offline from the weights; the bit-exact simulations check the tables and the memories.
+- F5 is a sanity check only: it states that a maximum bounds its inputs. The RTL max tree that computes R_c and the
+  second finalise stage are not in this harness; they are covered by the bit-exact RTL-vs-golden simulations.
+- The m256 task matters only for F4 (no wrap-around at the output layer's widths); the output layer is not gated.
+
 ### Width and value bounds of the implementation (`rtl/hush_layer.sv`, `rtl/hush_net.sv`)
 
 | Quantity | Width | Range of values that can occur | Headroom |
