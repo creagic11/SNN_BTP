@@ -1,0 +1,40 @@
+SBY 15:20:14 [fv_width_m578] Removing directory '/home/claude/snn_btp/formal/fv_width_m578'.
+SBY 15:20:14 [fv_width_m578] Copy '/home/claude/snn_btp/rtl/hush_arith.sv' to '/home/claude/snn_btp/formal/fv_width_m578/src/hush_arith.sv'.
+SBY 15:20:14 [fv_width_m578] Copy '/home/claude/snn_btp/formal/fv_width.sv' to '/home/claude/snn_btp/formal/fv_width_m578/src/fv_width.sv'.
+SBY 15:20:14 [fv_width_m578] engine_0: abc pdr
+SBY 15:20:14 [fv_width_m578] base: starting process "cd fv_width_m578/src; yosys -ql ../model/design.log ../model/design.ys"
+SBY 15:20:14 [fv_width_m578] base: Warning: Replacing memory \vn with list of registers. See fv_width.sv:66
+SBY 15:20:14 [fv_width_m578] base: finished (returncode=0)
+SBY 15:20:14 [fv_width_m578] prep: starting process "cd fv_width_m578/model; yosys -ql design_prep.log design_prep.ys"
+SBY 15:20:14 [fv_width_m578] prep: finished (returncode=0)
+SBY 15:20:14 [fv_width_m578] aig: starting process "cd fv_width_m578/model; yosys -ql design_aiger.log design_aiger.ys"
+SBY 15:20:25 [fv_width_m578] aig: finished (returncode=0)
+SBY 15:20:25 [fv_width_m578] engine_0: starting process "cd fv_width_m578; yosys-abc -c 'read_aiger model/design_aiger.aig; fold; strash; pdr -v -I engine_0/invariants.pla; write_cex -a engine_0/trace.aiw'"
+SBY 15:21:26 [fv_width_m578] engine_0: ABC command line: "read_aiger model/design_aiger.aig; fold; strash; pdr -v -I engine_0/invariants.pla; write_cex -a engine_0/trace.aiw".
+SBY 15:21:26 [fv_width_m578] engine_0: Warning: The last 19 outputs are interpreted as constraints.
+SBY 15:21:26 [fv_width_m578] engine_0: VarMax = 300. FrameMax = 10000. QueMax = 0. TimeMax = 0. MonoCNF = no. SkipGen = no. SolveAll = no.
+SBY 15:21:26 [fv_width_m578] engine_0: Frame Clauses                                                     Max Queue Flops Cex      Time
+SBY 15:21:26 [fv_width_m578] engine_0: 1 : 0 0                                                                 0     0     60.86 sec
+SBY 15:21:26 [fv_width_m578] engine_0: 2 : 0 0 0                                                               0     0     60.87 sec
+SBY 15:21:26 [fv_width_m578] engine_0: Invariant F[1] : 0 clauses with 0 flops (out of 2) (cex = 0, ave = -nan)
+SBY 15:21:26 [fv_width_m578] engine_0: Verification of invariant with 0 clauses was successful.  Time =     0.00 sec
+SBY 15:21:26 [fv_width_m578] engine_0: Block =    0  Oblig =     0  Clause =     0  Call =   114 (sat=0.0%)  Cex =   0  Start =   0
+SBY 15:21:26 [fv_width_m578] engine_0: SAT solving =    60.82 sec ( 99.90 %)
+SBY 15:21:26 [fv_width_m578] engine_0: unsat     =    60.82 sec ( 99.90 %)
+SBY 15:21:26 [fv_width_m578] engine_0: sat       =     0.00 sec (  0.00 %)
+SBY 15:21:26 [fv_width_m578] engine_0: Generalize  =     0.00 sec (  0.00 %)
+SBY 15:21:26 [fv_width_m578] engine_0: Push clause =     0.00 sec (  0.00 %)
+SBY 15:21:26 [fv_width_m578] engine_0: Ternary sim =     0.00 sec (  0.00 %)
+SBY 15:21:26 [fv_width_m578] engine_0: Containment =     0.00 sec (  0.00 %)
+SBY 15:21:26 [fv_width_m578] engine_0: CNF compute =     0.00 sec (  0.00 %)
+SBY 15:21:26 [fv_width_m578] engine_0: Refinement  =     0.00 sec (  0.00 %)
+SBY 15:21:26 [fv_width_m578] engine_0: TOTAL       =    60.88 sec (100.00 %)
+SBY 15:21:26 [fv_width_m578] engine_0: Property proved.  Time =    60.89 sec
+SBY 15:21:26 [fv_width_m578] engine_0: Counter-example is not available.
+SBY 15:21:26 [fv_width_m578] engine_0: finished (returncode=0)
+SBY 15:21:26 [fv_width_m578] engine_0: Status returned by engine: PASS
+SBY 15:21:26 [fv_width_m578] summary: Elapsed clock time [H:MM:SS (secs)]: 0:01:12 (72)
+SBY 15:21:26 [fv_width_m578] summary: Elapsed process time [H:MM:SS (secs)]: 0:02:19 (139)
+SBY 15:21:26 [fv_width_m578] summary: engine_0 (abc pdr) returned PASS
+SBY 15:21:26 [fv_width_m578] summary: engine_0 did not produce any traces
+SBY 15:21:26 [fv_width_m578] DONE (PASS, rc=0)

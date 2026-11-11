@@ -1,0 +1,154 @@
+
+ /----------------------------------------------------------------------------\
+ |                                                                            |
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |                                                                            |
+ |  Copyright (C) 2012 - 2020  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |                                                                            |
+ |  Permission to use, copy, modify, and/or distribute this software for any  |
+ |  purpose with or without fee is hereby granted, provided that the above    |
+ |  copyright notice and this permission notice appear in all copies.         |
+ |                                                                            |
+ |  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES  |
+ |  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF          |
+ |  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR   |
+ |  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES    |
+ |  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN     |
+ |  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF   |
+ |  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.            |
+ |                                                                            |
+ \----------------------------------------------------------------------------/
+
+ Yosys 0.33 (git sha1 2584903a060)
+
+
+-- Executing script file `design_smt2.ys' --
+
+1. Executing RTLIL frontend.
+Input filename: design_prep.il
+
+2. Executing HIERARCHY pass (managing design hierarchy).
+
+2.1. Analyzing design hierarchy..
+Top module:  \fv_width
+Used module:     $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope
+Used module:     $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane
+
+2.2. Analyzing design hierarchy..
+Top module:  \fv_width
+Used module:     $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope
+Used module:     $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane
+Removed 0 unused modules.
+Module fv_width directly or indirectly contains formal properties -> setting "keep" attribute.
+
+3. Executing FORMALFF pass.
+
+4. Executing DFFUNMAP pass (unmap clock enable and synchronous reset from FFs).
+
+5. Printing statistics.
+
+=== fv_width ===
+
+   Number of wires:                384
+   Number of wire bits:           2910
+   Number of public wires:         149
+   Number of public wire bits:    1774
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                410
+     $add                           33
+     $anyseq                        62
+     $assert                        57
+     $assume                        19
+     $eq                            25
+     $ff                             1
+     $ge                            10
+     $gt                            17
+     $le                            35
+     $logic_and                     20
+     $logic_not                      2
+     $lt                            17
+     $mux                           93
+     $not                            1
+     $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane      8
+     $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope      1
+     $sub                            9
+
+=== $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope ===
+
+   Number of wires:                 11
+   Number of wire bits:            126
+   Number of public wires:           6
+   Number of public wire bits:      87
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                  9
+     $add                            1
+     $ge                             1
+     $gt                             2
+     $lt                             1
+     $mux                            3
+     $sub                            1
+
+=== $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane ===
+
+   Number of wires:                 17
+   Number of wire bits:            181
+   Number of public wires:          10
+   Number of public wire bits:     123
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 12
+     $add                            1
+     $ge                             1
+     $gt                             1
+     $logic_and                      2
+     $lt                             1
+     $mux                            4
+     $sub                            2
+
+=== design hierarchy ===
+
+   fv_width                          1
+     $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane      8
+     $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope      1
+
+   Number of wires:                531
+   Number of wire bits:           4484
+   Number of public wires:         235
+   Number of public wire bits:    2845
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                506
+     $add                           42
+     $anyseq                        62
+     $assert                        57
+     $assume                        19
+     $eq                            25
+     $ff                             1
+     $ge                            19
+     $gt                            27
+     $le                            35
+     $logic_and                     36
+     $logic_not                      2
+     $lt                            26
+     $mux                          128
+     $not                            1
+     $sub                           26
+
+6. Executing SMT2 backend.
+
+6.1. Executing BMUXMAP pass.
+
+6.2. Executing DEMUXMAP pass.
+Creating SMT-LIBv2 representation of module $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.
+Creating SMT-LIBv2 representation of module $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.
+Creating SMT-LIBv2 representation of module fv_width.
+
+End of script. Logfile hash: af3e78a0fe, CPU: user 0.04s system 0.00s, MEM: 14.86 MB peak
+Yosys 0.33 (git sha1 2584903a060)
+Time spent: 62% 2x write_smt2 (0 sec), 30% 2x read_ilang (0 sec), ...

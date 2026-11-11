@@ -1,0 +1,961 @@
+
+ /----------------------------------------------------------------------------\
+ |                                                                            |
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |                                                                            |
+ |  Copyright (C) 2012 - 2020  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |                                                                            |
+ |  Permission to use, copy, modify, and/or distribute this software for any  |
+ |  purpose with or without fee is hereby granted, provided that the above    |
+ |  copyright notice and this permission notice appear in all copies.         |
+ |                                                                            |
+ |  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES  |
+ |  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF          |
+ |  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR   |
+ |  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES    |
+ |  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN     |
+ |  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF   |
+ |  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.            |
+ |                                                                            |
+ \----------------------------------------------------------------------------/
+
+ Yosys 0.33 (git sha1 2584903a060)
+
+
+-- Executing script file `../model/design.ys' --
+
+1. Executing Verilog-2005 frontend: hush_arith.sv
+Parsing formal SystemVerilog input from `hush_arith.sv' to AST representation.
+Storing AST representation for module `$abstract\hush_envelope'.
+Storing AST representation for module `$abstract\hush_lane'.
+Successfully finished Verilog frontend.
+
+2. Executing Verilog-2005 frontend: fv_width_mut.sv
+Parsing formal SystemVerilog input from `fv_width_mut.sv' to AST representation.
+Storing AST representation for module `$abstract\fv_width'.
+Successfully finished Verilog frontend.
+Parameter \M = 578
+
+3. Executing AST frontend in derive mode using pre-parsed AST for module `\fv_width'.
+Parameter \M = 578
+Generating RTLIL representation for module `$paramod\fv_width\M=32'00000000000000000000001001000010'.
+Warning: Replacing memory \vn with list of registers. See fv_width_mut.sv:66
+
+4. Executing PREP pass.
+
+4.1. Executing HIERARCHY pass (managing design hierarchy).
+
+4.2. Executing AST frontend in derive mode using pre-parsed AST for module `\fv_width'.
+Generating RTLIL representation for module `\fv_width'.
+Warning: Replacing memory \vn with list of registers. See fv_width_mut.sv:66
+
+4.2.1. Analyzing design hierarchy..
+Top module:  \fv_width
+Parameter \VB = 16
+Parameter \AB = 18
+Parameter \K = 4
+Parameter \THETA = 64
+
+4.2.2. Executing AST frontend in derive mode using pre-parsed AST for module `\hush_lane'.
+Parameter \VB = 16
+Parameter \AB = 18
+Parameter \K = 4
+Parameter \THETA = 64
+Generating RTLIL representation for module `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane'.
+Parameter \VB = 16
+Parameter \AB = 18
+Parameter \K = 4
+Parameter \THETA = 64
+Found cached RTLIL representation for module `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane'.
+Parameter \VB = 16
+Parameter \AB = 18
+Parameter \K = 4
+Parameter \THETA = 64
+Found cached RTLIL representation for module `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane'.
+Parameter \VB = 16
+Parameter \AB = 18
+Parameter \K = 4
+Parameter \THETA = 64
+Found cached RTLIL representation for module `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane'.
+Parameter \VB = 16
+Parameter \AB = 18
+Parameter \K = 4
+Parameter \THETA = 64
+Found cached RTLIL representation for module `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane'.
+Parameter \VB = 16
+Parameter \AB = 18
+Parameter \K = 4
+Parameter \THETA = 64
+Found cached RTLIL representation for module `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane'.
+Parameter \VB = 16
+Parameter \AB = 18
+Parameter \K = 4
+Parameter \THETA = 64
+Found cached RTLIL representation for module `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane'.
+Parameter \VB = 16
+Parameter \AB = 18
+Parameter \K = 4
+Parameter \THETA = 64
+Found cached RTLIL representation for module `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane'.
+Parameter \VB = 16
+Parameter \AB = 18
+Parameter \K = 4
+Parameter \THETA_H = 64
+
+4.2.3. Executing AST frontend in derive mode using pre-parsed AST for module `\hush_envelope'.
+Parameter \VB = 16
+Parameter \AB = 18
+Parameter \K = 4
+Parameter \THETA_H = 64
+Generating RTLIL representation for module `$paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope'.
+
+4.2.4. Analyzing design hierarchy..
+Top module:  \fv_width
+Used module:     $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane
+Used module:     $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope
+
+4.2.5. Analyzing design hierarchy..
+Top module:  \fv_width
+Used module:     $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane
+Used module:     $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope
+Removing unused module `$abstract\fv_width'.
+Removing unused module `$abstract\hush_lane'.
+Removing unused module `$abstract\hush_envelope'.
+Removed 3 unused modules.
+Module fv_width directly or indirectly contains formal properties -> setting "keep" attribute.
+
+4.3. Executing PROC pass (convert processes to netlists).
+
+4.3.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+4.3.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Marked 7 switch rules as full_case in process $proc$fv_width_mut.sv:0$707 in module fv_width.
+Removed a total of 0 dead cases.
+
+4.3.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 0 redundant assignments.
+Promoted 58 assignments to connections.
+
+4.3.4. Executing PROC_INIT pass (extract init attributes).
+Found init rule in `\fv_width.$proc$fv_width_mut.sv:30$1193'.
+  Set init value: \init = 1'1
+
+4.3.5. Executing PROC_ARST pass (detect async resets in processes).
+
+4.3.6. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 0 switches.
+<suppressed ~64 debug messages>
+
+4.3.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+Creating decoders for process `$paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.$proc$hush_arith.sv:0$1208'.
+Creating decoders for process `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.$proc$hush_arith.sv:0$1194'.
+Creating decoders for process `\fv_width.$proc$fv_width_mut.sv:30$1193'.
+Creating decoders for process `\fv_width.$proc$fv_width_mut.sv:0$1117'.
+Creating decoders for process `\fv_width.$proc$fv_width_mut.sv:0$1079'.
+     1/12: $0$formal$fv_width_mut.sv:70$669_EN[0:0]$1085
+     2/12: $0$formal$fv_width_mut.sv:70$669_CHECK[0:0]$1084
+     3/12: $0$formal$fv_width_mut.sv:71$670_EN[0:0]$1087
+     4/12: $0$formal$fv_width_mut.sv:71$670_CHECK[0:0]$1086
+     5/12: $0$formal$fv_width_mut.sv:72$671_EN[0:0]$1089
+     6/12: $0$formal$fv_width_mut.sv:72$671_CHECK[0:0]$1088
+     7/12: $0$formal$fv_width_mut.sv:73$672_EN[0:0]$1091
+     8/12: $0$formal$fv_width_mut.sv:73$672_CHECK[0:0]$1090
+     9/12: $0$formal$fv_width_mut.sv:74$673_EN[0:0]$1093
+    10/12: $0$formal$fv_width_mut.sv:74$673_CHECK[0:0]$1092
+    11/12: $0$formal$fv_width_mut.sv:75$674_EN[0:0]$1095
+    12/12: $0$formal$fv_width_mut.sv:75$674_CHECK[0:0]$1094
+Creating decoders for process `\fv_width.$proc$fv_width_mut.sv:0$1033'.
+     1/12: $0$formal$fv_width_mut.sv:70$661_EN[0:0]$1039
+     2/12: $0$formal$fv_width_mut.sv:70$661_CHECK[0:0]$1038
+     3/12: $0$formal$fv_width_mut.sv:71$662_EN[0:0]$1041
+     4/12: $0$formal$fv_width_mut.sv:71$662_CHECK[0:0]$1040
+     5/12: $0$formal$fv_width_mut.sv:72$663_EN[0:0]$1043
+     6/12: $0$formal$fv_width_mut.sv:72$663_CHECK[0:0]$1042
+     7/12: $0$formal$fv_width_mut.sv:73$664_EN[0:0]$1045
+     8/12: $0$formal$fv_width_mut.sv:73$664_CHECK[0:0]$1044
+     9/12: $0$formal$fv_width_mut.sv:74$665_EN[0:0]$1047
+    10/12: $0$formal$fv_width_mut.sv:74$665_CHECK[0:0]$1046
+    11/12: $0$formal$fv_width_mut.sv:75$666_EN[0:0]$1049
+    12/12: $0$formal$fv_width_mut.sv:75$666_CHECK[0:0]$1048
+Creating decoders for process `\fv_width.$proc$fv_width_mut.sv:0$987'.
+     1/12: $0$formal$fv_width_mut.sv:70$653_EN[0:0]$993
+     2/12: $0$formal$fv_width_mut.sv:70$653_CHECK[0:0]$992
+     3/12: $0$formal$fv_width_mut.sv:71$654_EN[0:0]$995
+     4/12: $0$formal$fv_width_mut.sv:71$654_CHECK[0:0]$994
+     5/12: $0$formal$fv_width_mut.sv:72$655_EN[0:0]$997
+     6/12: $0$formal$fv_width_mut.sv:72$655_CHECK[0:0]$996
+     7/12: $0$formal$fv_width_mut.sv:73$656_EN[0:0]$999
+     8/12: $0$formal$fv_width_mut.sv:73$656_CHECK[0:0]$998
+     9/12: $0$formal$fv_width_mut.sv:74$657_EN[0:0]$1001
+    10/12: $0$formal$fv_width_mut.sv:74$657_CHECK[0:0]$1000
+    11/12: $0$formal$fv_width_mut.sv:75$658_EN[0:0]$1003
+    12/12: $0$formal$fv_width_mut.sv:75$658_CHECK[0:0]$1002
+Creating decoders for process `\fv_width.$proc$fv_width_mut.sv:0$941'.
+     1/12: $0$formal$fv_width_mut.sv:70$645_EN[0:0]$947
+     2/12: $0$formal$fv_width_mut.sv:70$645_CHECK[0:0]$946
+     3/12: $0$formal$fv_width_mut.sv:71$646_EN[0:0]$949
+     4/12: $0$formal$fv_width_mut.sv:71$646_CHECK[0:0]$948
+     5/12: $0$formal$fv_width_mut.sv:72$647_EN[0:0]$951
+     6/12: $0$formal$fv_width_mut.sv:72$647_CHECK[0:0]$950
+     7/12: $0$formal$fv_width_mut.sv:73$648_EN[0:0]$953
+     8/12: $0$formal$fv_width_mut.sv:73$648_CHECK[0:0]$952
+     9/12: $0$formal$fv_width_mut.sv:74$649_EN[0:0]$955
+    10/12: $0$formal$fv_width_mut.sv:74$649_CHECK[0:0]$954
+    11/12: $0$formal$fv_width_mut.sv:75$650_EN[0:0]$957
+    12/12: $0$formal$fv_width_mut.sv:75$650_CHECK[0:0]$956
+Creating decoders for process `\fv_width.$proc$fv_width_mut.sv:0$895'.
+     1/12: $0$formal$fv_width_mut.sv:70$637_EN[0:0]$901
+     2/12: $0$formal$fv_width_mut.sv:70$637_CHECK[0:0]$900
+     3/12: $0$formal$fv_width_mut.sv:71$638_EN[0:0]$903
+     4/12: $0$formal$fv_width_mut.sv:71$638_CHECK[0:0]$902
+     5/12: $0$formal$fv_width_mut.sv:72$639_EN[0:0]$905
+     6/12: $0$formal$fv_width_mut.sv:72$639_CHECK[0:0]$904
+     7/12: $0$formal$fv_width_mut.sv:73$640_EN[0:0]$907
+     8/12: $0$formal$fv_width_mut.sv:73$640_CHECK[0:0]$906
+     9/12: $0$formal$fv_width_mut.sv:74$641_EN[0:0]$909
+    10/12: $0$formal$fv_width_mut.sv:74$641_CHECK[0:0]$908
+    11/12: $0$formal$fv_width_mut.sv:75$642_EN[0:0]$911
+    12/12: $0$formal$fv_width_mut.sv:75$642_CHECK[0:0]$910
+Creating decoders for process `\fv_width.$proc$fv_width_mut.sv:0$849'.
+     1/12: $0$formal$fv_width_mut.sv:70$629_EN[0:0]$855
+     2/12: $0$formal$fv_width_mut.sv:70$629_CHECK[0:0]$854
+     3/12: $0$formal$fv_width_mut.sv:71$630_EN[0:0]$857
+     4/12: $0$formal$fv_width_mut.sv:71$630_CHECK[0:0]$856
+     5/12: $0$formal$fv_width_mut.sv:72$631_EN[0:0]$859
+     6/12: $0$formal$fv_width_mut.sv:72$631_CHECK[0:0]$858
+     7/12: $0$formal$fv_width_mut.sv:73$632_EN[0:0]$861
+     8/12: $0$formal$fv_width_mut.sv:73$632_CHECK[0:0]$860
+     9/12: $0$formal$fv_width_mut.sv:74$633_EN[0:0]$863
+    10/12: $0$formal$fv_width_mut.sv:74$633_CHECK[0:0]$862
+    11/12: $0$formal$fv_width_mut.sv:75$634_EN[0:0]$865
+    12/12: $0$formal$fv_width_mut.sv:75$634_CHECK[0:0]$864
+Creating decoders for process `\fv_width.$proc$fv_width_mut.sv:0$803'.
+     1/12: $0$formal$fv_width_mut.sv:70$621_EN[0:0]$809
+     2/12: $0$formal$fv_width_mut.sv:70$621_CHECK[0:0]$808
+     3/12: $0$formal$fv_width_mut.sv:71$622_EN[0:0]$811
+     4/12: $0$formal$fv_width_mut.sv:71$622_CHECK[0:0]$810
+     5/12: $0$formal$fv_width_mut.sv:72$623_EN[0:0]$813
+     6/12: $0$formal$fv_width_mut.sv:72$623_CHECK[0:0]$812
+     7/12: $0$formal$fv_width_mut.sv:73$624_EN[0:0]$815
+     8/12: $0$formal$fv_width_mut.sv:73$624_CHECK[0:0]$814
+     9/12: $0$formal$fv_width_mut.sv:74$625_EN[0:0]$817
+    10/12: $0$formal$fv_width_mut.sv:74$625_CHECK[0:0]$816
+    11/12: $0$formal$fv_width_mut.sv:75$626_EN[0:0]$819
+    12/12: $0$formal$fv_width_mut.sv:75$626_CHECK[0:0]$818
+Creating decoders for process `\fv_width.$proc$fv_width_mut.sv:0$757'.
+     1/12: $0$formal$fv_width_mut.sv:70$613_EN[0:0]$763
+     2/12: $0$formal$fv_width_mut.sv:70$613_CHECK[0:0]$762
+     3/12: $0$formal$fv_width_mut.sv:71$614_EN[0:0]$765
+     4/12: $0$formal$fv_width_mut.sv:71$614_CHECK[0:0]$764
+     5/12: $0$formal$fv_width_mut.sv:72$615_EN[0:0]$767
+     6/12: $0$formal$fv_width_mut.sv:72$615_CHECK[0:0]$766
+     7/12: $0$formal$fv_width_mut.sv:73$616_EN[0:0]$769
+     8/12: $0$formal$fv_width_mut.sv:73$616_CHECK[0:0]$768
+     9/12: $0$formal$fv_width_mut.sv:74$617_EN[0:0]$771
+    10/12: $0$formal$fv_width_mut.sv:74$617_CHECK[0:0]$770
+    11/12: $0$formal$fv_width_mut.sv:75$618_EN[0:0]$773
+    12/12: $0$formal$fv_width_mut.sv:75$618_CHECK[0:0]$772
+Creating decoders for process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+     1/23: $7\vmx[15:0]
+     2/23: $6\vmx[15:0]
+     3/23: $5\vmx[15:0]
+     4/23: $4\vmx[15:0]
+     5/23: $3\vmx[15:0]
+     6/23: $2\vmx[15:0]
+     7/23: $1\vmx[15:0]
+     8/23: $0$formal$fv_width_mut.sv:83$603_EN[0:0]$711
+     9/23: $0$formal$fv_width_mut.sv:83$603_CHECK[0:0]$710
+    10/23: $0$formal$fv_width_mut.sv:83$604_EN[0:0]$713
+    11/23: $0$formal$fv_width_mut.sv:83$604_CHECK[0:0]$712
+    12/23: $0$formal$fv_width_mut.sv:83$605_EN[0:0]$715
+    13/23: $0$formal$fv_width_mut.sv:83$605_CHECK[0:0]$714
+    14/23: $0$formal$fv_width_mut.sv:83$606_EN[0:0]$717
+    15/23: $0$formal$fv_width_mut.sv:83$606_CHECK[0:0]$716
+    16/23: $0$formal$fv_width_mut.sv:83$607_EN[0:0]$719
+    17/23: $0$formal$fv_width_mut.sv:83$607_CHECK[0:0]$718
+    18/23: $0$formal$fv_width_mut.sv:83$608_EN[0:0]$721
+    19/23: $0$formal$fv_width_mut.sv:83$608_CHECK[0:0]$720
+    20/23: $0$formal$fv_width_mut.sv:83$609_EN[0:0]$723
+    21/23: $0$formal$fv_width_mut.sv:83$609_CHECK[0:0]$722
+    22/23: $0$formal$fv_width_mut.sv:83$610_EN[0:0]$725
+    23/23: $0$formal$fv_width_mut.sv:83$610_CHECK[0:0]$724
+Creating decoders for process `\fv_width.$proc$fv_width_mut.sv:0$686'.
+     1/2: $0$formal$fv_width_mut.sv:50$602_EN[0:0]$692
+     2/2: $0$formal$fv_width_mut.sv:50$602_CHECK[0:0]$691
+Creating decoders for process `\fv_width.$proc$fv_width_mut.sv:31$675'.
+
+4.3.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+No latch inferred for signal `$paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.\E' from process `$paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.$proc$hush_arith.sv:0$1208'.
+No latch inferred for signal `$paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.\gate' from process `$paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.$proc$hush_arith.sv:0$1208'.
+No latch inferred for signal `$paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.\lr' from process `$paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.$proc$hush_arith.sv:0$1208'.
+No latch inferred for signal `$paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.\sum' from process `$paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.$proc$hush_arith.sv:0$1208'.
+No latch inferred for signal `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.\lv' from process `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.$proc$hush_arith.sv:0$1194'.
+No latch inferred for signal `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.\u' from process `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.$proc$hush_arith.sv:0$1194'.
+No latch inferred for signal `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.\spk' from process `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.$proc$hush_arith.sv:0$1194'.
+No latch inferred for signal `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.\vnew' from process `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.$proc$hush_arith.sv:0$1194'.
+No latch inferred for signal `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.\pre' from process `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.$proc$hush_arith.sv:0$1194'.
+No latch inferred for signal `\fv_width.\vn[0]' from process `\fv_width.$proc$fv_width_mut.sv:0$1117'.
+No latch inferred for signal `\fv_width.\vn[1]' from process `\fv_width.$proc$fv_width_mut.sv:0$1117'.
+No latch inferred for signal `\fv_width.\vn[2]' from process `\fv_width.$proc$fv_width_mut.sv:0$1117'.
+No latch inferred for signal `\fv_width.\vn[3]' from process `\fv_width.$proc$fv_width_mut.sv:0$1117'.
+No latch inferred for signal `\fv_width.\vn[4]' from process `\fv_width.$proc$fv_width_mut.sv:0$1117'.
+No latch inferred for signal `\fv_width.\vn[5]' from process `\fv_width.$proc$fv_width_mut.sv:0$1117'.
+No latch inferred for signal `\fv_width.\vn[6]' from process `\fv_width.$proc$fv_width_mut.sv:0$1117'.
+No latch inferred for signal `\fv_width.\vn[7]' from process `\fv_width.$proc$fv_width_mut.sv:0$1117'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:67$667_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$1079'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:67$667_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$1079'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:68$668_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$1079'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:68$668_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$1079'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:70$669_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$1079'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:70$669_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$1079'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:71$670_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$1079'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:71$670_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$1079'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:72$671_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$1079'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:72$671_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$1079'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:73$672_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$1079'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:73$672_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$1079'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:74$673_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$1079'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:74$673_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$1079'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:75$674_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$1079'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:75$674_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$1079'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:67$659_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$1033'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:67$659_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$1033'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:68$660_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$1033'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:68$660_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$1033'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:70$661_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$1033'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:70$661_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$1033'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:71$662_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$1033'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:71$662_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$1033'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:72$663_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$1033'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:72$663_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$1033'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:73$664_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$1033'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:73$664_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$1033'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:74$665_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$1033'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:74$665_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$1033'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:75$666_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$1033'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:75$666_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$1033'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:67$651_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$987'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:67$651_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$987'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:68$652_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$987'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:68$652_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$987'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:70$653_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$987'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:70$653_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$987'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:71$654_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$987'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:71$654_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$987'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:72$655_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$987'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:72$655_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$987'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:73$656_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$987'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:73$656_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$987'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:74$657_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$987'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:74$657_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$987'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:75$658_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$987'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:75$658_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$987'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:67$643_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$941'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:67$643_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$941'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:68$644_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$941'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:68$644_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$941'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:70$645_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$941'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:70$645_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$941'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:71$646_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$941'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:71$646_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$941'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:72$647_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$941'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:72$647_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$941'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:73$648_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$941'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:73$648_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$941'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:74$649_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$941'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:74$649_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$941'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:75$650_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$941'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:75$650_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$941'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:67$635_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$895'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:67$635_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$895'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:68$636_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$895'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:68$636_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$895'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:70$637_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$895'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:70$637_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$895'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:71$638_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$895'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:71$638_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$895'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:72$639_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$895'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:72$639_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$895'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:73$640_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$895'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:73$640_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$895'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:74$641_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$895'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:74$641_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$895'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:75$642_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$895'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:75$642_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$895'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:67$627_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$849'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:67$627_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$849'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:68$628_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$849'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:68$628_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$849'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:70$629_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$849'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:70$629_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$849'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:71$630_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$849'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:71$630_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$849'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:72$631_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$849'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:72$631_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$849'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:73$632_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$849'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:73$632_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$849'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:74$633_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$849'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:74$633_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$849'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:75$634_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$849'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:75$634_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$849'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:67$619_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$803'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:67$619_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$803'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:68$620_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$803'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:68$620_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$803'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:70$621_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$803'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:70$621_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$803'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:71$622_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$803'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:71$622_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$803'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:72$623_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$803'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:72$623_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$803'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:73$624_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$803'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:73$624_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$803'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:74$625_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$803'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:74$625_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$803'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:75$626_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$803'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:75$626_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$803'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:67$611_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$757'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:67$611_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$757'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:68$612_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$757'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:68$612_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$757'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:70$613_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$757'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:70$613_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$757'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:71$614_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$757'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:71$614_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$757'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:72$615_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$757'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:72$615_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$757'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:73$616_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$757'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:73$616_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$757'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:74$617_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$757'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:74$617_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$757'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:75$618_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$757'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:75$618_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$757'.
+No latch inferred for signal `\fv_width.\vmx' from process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+No latch inferred for signal `\fv_width.$fordecl_block$2.l' from process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+No latch inferred for signal `\fv_width.$fordecl_block$4.l' from process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:83$603_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:83$603_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:83$604_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:83$604_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:83$605_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:83$605_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:83$606_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:83$606_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:83$607_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:83$607_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:83$608_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:83$608_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:83$609_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:83$609_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:83$610_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:83$610_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$707'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:46$600_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$686'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:46$600_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$686'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:47$601_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$686'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:47$601_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$686'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:50$602_CHECK' from process `\fv_width.$proc$fv_width_mut.sv:0$686'.
+No latch inferred for signal `\fv_width.$formal$fv_width_mut.sv:50$602_EN' from process `\fv_width.$proc$fv_width_mut.sv:0$686'.
+
+4.3.9. Executing PROC_DFF pass (convert process syncs to FFs).
+Creating register for signal `\fv_width.\init' using process `\fv_width.$proc$fv_width_mut.sv:31$675'.
+  created $dff cell `$procdff$1468' with positive edge clock.
+
+4.3.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+4.3.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Removing empty process `$paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.$proc$hush_arith.sv:0$1208'.
+Removing empty process `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.$proc$hush_arith.sv:0$1194'.
+Removing empty process `fv_width.$proc$fv_width_mut.sv:30$1193'.
+Removing empty process `fv_width.$proc$fv_width_mut.sv:0$1117'.
+Found and cleaned up 6 empty switches in `\fv_width.$proc$fv_width_mut.sv:0$1079'.
+Removing empty process `fv_width.$proc$fv_width_mut.sv:0$1079'.
+Found and cleaned up 6 empty switches in `\fv_width.$proc$fv_width_mut.sv:0$1033'.
+Removing empty process `fv_width.$proc$fv_width_mut.sv:0$1033'.
+Found and cleaned up 6 empty switches in `\fv_width.$proc$fv_width_mut.sv:0$987'.
+Removing empty process `fv_width.$proc$fv_width_mut.sv:0$987'.
+Found and cleaned up 6 empty switches in `\fv_width.$proc$fv_width_mut.sv:0$941'.
+Removing empty process `fv_width.$proc$fv_width_mut.sv:0$941'.
+Found and cleaned up 6 empty switches in `\fv_width.$proc$fv_width_mut.sv:0$895'.
+Removing empty process `fv_width.$proc$fv_width_mut.sv:0$895'.
+Found and cleaned up 6 empty switches in `\fv_width.$proc$fv_width_mut.sv:0$849'.
+Removing empty process `fv_width.$proc$fv_width_mut.sv:0$849'.
+Found and cleaned up 6 empty switches in `\fv_width.$proc$fv_width_mut.sv:0$803'.
+Removing empty process `fv_width.$proc$fv_width_mut.sv:0$803'.
+Found and cleaned up 6 empty switches in `\fv_width.$proc$fv_width_mut.sv:0$757'.
+Removing empty process `fv_width.$proc$fv_width_mut.sv:0$757'.
+Found and cleaned up 15 empty switches in `\fv_width.$proc$fv_width_mut.sv:0$707'.
+Removing empty process `fv_width.$proc$fv_width_mut.sv:0$707'.
+Found and cleaned up 1 empty switch in `\fv_width.$proc$fv_width_mut.sv:0$686'.
+Removing empty process `fv_width.$proc$fv_width_mut.sv:0$686'.
+Removing empty process `fv_width.$proc$fv_width_mut.sv:31$675'.
+Cleaned up 64 empty switches.
+
+4.3.12. Executing OPT_EXPR pass (perform const folding).
+Optimizing module $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.
+<suppressed ~1 debug messages>
+Optimizing module $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.
+<suppressed ~1 debug messages>
+Optimizing module fv_width.
+<suppressed ~91 debug messages>
+
+4.4. Executing OPT_EXPR pass (perform const folding).
+Optimizing module $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.
+Optimizing module $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.
+Optimizing module fv_width.
+
+4.5. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope..
+Finding unused cells or wires in module $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane..
+Finding unused cells or wires in module \fv_width..
+Removed 41 unused cells and 544 unused wires.
+<suppressed ~44 debug messages>
+
+4.6. Executing CHECK pass (checking for obvious problems).
+Checking module $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane...
+Checking module $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope...
+Checking module fv_width...
+Found and reported 0 problems.
+
+4.7. Executing OPT pass (performing simple optimizations).
+
+4.7.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.
+Optimizing module $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.
+Optimizing module fv_width.
+
+4.7.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane'.
+Finding identical cells in module `$paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope'.
+Finding identical cells in module `\fv_width'.
+<suppressed ~111 debug messages>
+Removed a total of 37 cells.
+
+4.7.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \fv_width..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~136 debug messages>
+
+4.7.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.
+  Optimizing cells in module $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.
+  Optimizing cells in module \fv_width.
+Performed a total of 0 changes.
+
+4.7.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane'.
+Finding identical cells in module `$paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope'.
+Finding identical cells in module `\fv_width'.
+<suppressed ~141 debug messages>
+Removed a total of 47 cells.
+
+4.7.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane..
+Finding unused cells or wires in module $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope..
+Finding unused cells or wires in module \fv_width..
+Removed 0 unused cells and 84 unused wires.
+<suppressed ~1 debug messages>
+
+4.7.7. Executing OPT_EXPR pass (perform const folding).
+Optimizing module $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.
+Optimizing module $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.
+Optimizing module fv_width.
+
+4.7.8. Rerunning OPT passes. (Maybe there is more to do..)
+
+4.7.9. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \fv_width..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~89 debug messages>
+
+4.7.10. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.
+  Optimizing cells in module $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.
+  Optimizing cells in module \fv_width.
+Performed a total of 0 changes.
+
+4.7.11. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane'.
+Finding identical cells in module `$paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope'.
+Finding identical cells in module `\fv_width'.
+Removed a total of 0 cells.
+
+4.7.12. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane..
+Finding unused cells or wires in module $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope..
+Finding unused cells or wires in module \fv_width..
+
+4.7.13. Executing OPT_EXPR pass (perform const folding).
+Optimizing module $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.
+Optimizing module $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.
+Optimizing module fv_width.
+
+4.7.14. Finished OPT passes. (There is nothing left to do.)
+
+4.8. Executing WREDUCE pass (reducing word size of cells).
+Removed top 4 bits (of 16) from port B of cell $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.$sub$hush_arith.sv:46$1196 ($sub).
+Removed top 2 bits (of 18) from port A of cell $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.$add$hush_arith.sv:47$1197 ($add).
+Removed top 2 bits (of 18) from port B of cell $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.$gt$hush_arith.sv:48$1199 ($gt).
+Removed top 2 bits (of 18) from port B of cell $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.$lt$hush_arith.sv:48$1200 ($lt).
+Removed top 24 bits (of 32) from port B of cell $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.$ge$hush_arith.sv:49$1204 ($ge).
+Removed top 11 bits (of 18) from mux cell $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.$ternary$hush_arith.sv:50$1206 ($mux).
+Removed top 10 bits (of 18) from port B of cell $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.$sub$hush_arith.sv:50$1207 ($sub).
+Removed top 2 bits (of 18) from port Y of cell $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.$sub$hush_arith.sv:50$1207 ($sub).
+Removed top 2 bits (of 18) from port A of cell $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.$sub$hush_arith.sv:50$1207 ($sub).
+Removed top 11 bits (of 18) from wire $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.$ternary$hush_arith.sv:50$1206_Y.
+Removed top 4 bits (of 16) from port B of cell $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.$sub$hush_arith.sv:22$1210 ($sub).
+Removed top 31 bits (of 32) from port B of cell $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.$gt$hush_arith.sv:23$1211 ($gt).
+Removed top 2 bits (of 18) from port A of cell $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.$add$hush_arith.sv:23$1213 ($add).
+Removed top 2 bits (of 18) from port B of cell $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.$gt$hush_arith.sv:24$1214 ($gt).
+Removed top 2 bits (of 18) from port B of cell $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.$lt$hush_arith.sv:24$1215 ($lt).
+Removed top 24 bits (of 32) from port B of cell $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.$ge$hush_arith.sv:25$1218 ($ge).
+Removed top 10 bits (of 26) from port A of cell fv_width.$sub$fv_width_mut.sv:43$682 ($sub).
+Removed top 14 bits (of 26) from port B of cell fv_width.$sub$fv_width_mut.sv:43$682 ($sub).
+Removed top 9 bits (of 26) from port Y of cell fv_width.$sub$fv_width_mut.sv:43$682 ($sub).
+Removed top 31 bits (of 32) from port B of cell fv_width.$gt$fv_width_mut.sv:44$683 ($gt).
+Removed top 9 bits (of 26) from port A of cell fv_width.$add$fv_width_mut.sv:44$685 ($add).
+Removed top 10 bits (of 26) from port B of cell fv_width.$gt$fv_width_mut.sv:50$702 ($gt).
+Removed top 10 bits (of 26) from port B of cell fv_width.$lt$fv_width_mut.sv:50$703 ($lt).
+Removed top 8 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:50$706 ($eq).
+Removed top 2 bits (of 18) from port A of cell fv_width.$add$fv_width_mut.sv:61$749 ($add).
+Removed top 2 bits (of 18) from port B of cell fv_width.$gt$fv_width_mut.sv:64$751 ($gt).
+Removed top 2 bits (of 18) from port B of cell fv_width.$lt$fv_width_mut.sv:64$752 ($lt).
+Removed top 10 bits (of 26) from port A of cell fv_width.$sub$fv_width_mut.sv:65$756 ($sub).
+Removed top 14 bits (of 26) from port B of cell fv_width.$sub$fv_width_mut.sv:65$756 ($sub).
+Removed top 9 bits (of 26) from port Y of cell fv_width.$sub$fv_width_mut.sv:65$756 ($sub).
+Removed top 9 bits (of 26) from port A of cell fv_width.$add$fv_width_mut.sv:70$779 ($add).
+Removed top 8 bits (of 26) from port B of cell fv_width.$add$fv_width_mut.sv:70$779 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:70$779 ($add).
+Removed top 8 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:70$780 ($eq).
+Removed top 7 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:70$780 ($eq).
+Removed top 2 bits (of 18) from port A of cell fv_width.$add$fv_width_mut.sv:71$782 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:71$782 ($add).
+Removed top 9 bits (of 26) from port A of cell fv_width.$add$fv_width_mut.sv:71$783 ($add).
+Removed top 8 bits (of 26) from port B of cell fv_width.$add$fv_width_mut.sv:71$783 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:71$783 ($add).
+Removed top 7 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:71$784 ($eq).
+Removed top 7 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:71$784 ($eq).
+Removed top 10 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:72$786 ($eq).
+Removed top 9 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:72$786 ($eq).
+Removed top 24 bits (of 32) from port B of cell fv_width.$lt$fv_width_mut.sv:73$790 ($lt).
+Removed top 2 bits (of 18) from port A of cell fv_width.$add$fv_width_mut.sv:61$795 ($add).
+Removed top 2 bits (of 18) from port B of cell fv_width.$gt$fv_width_mut.sv:64$797 ($gt).
+Removed top 2 bits (of 18) from port B of cell fv_width.$lt$fv_width_mut.sv:64$798 ($lt).
+Removed top 10 bits (of 26) from port A of cell fv_width.$sub$fv_width_mut.sv:65$802 ($sub).
+Removed top 14 bits (of 26) from port B of cell fv_width.$sub$fv_width_mut.sv:65$802 ($sub).
+Removed top 9 bits (of 26) from port Y of cell fv_width.$sub$fv_width_mut.sv:65$802 ($sub).
+Removed top 9 bits (of 26) from port A of cell fv_width.$add$fv_width_mut.sv:70$825 ($add).
+Removed top 8 bits (of 26) from port B of cell fv_width.$add$fv_width_mut.sv:70$825 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:70$825 ($add).
+Removed top 8 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:70$826 ($eq).
+Removed top 7 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:70$826 ($eq).
+Removed top 2 bits (of 18) from port A of cell fv_width.$add$fv_width_mut.sv:71$828 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:71$828 ($add).
+Removed top 9 bits (of 26) from port A of cell fv_width.$add$fv_width_mut.sv:71$829 ($add).
+Removed top 8 bits (of 26) from port B of cell fv_width.$add$fv_width_mut.sv:71$829 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:71$829 ($add).
+Removed top 7 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:71$830 ($eq).
+Removed top 7 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:71$830 ($eq).
+Removed top 10 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:72$832 ($eq).
+Removed top 9 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:72$832 ($eq).
+Removed top 24 bits (of 32) from port B of cell fv_width.$lt$fv_width_mut.sv:73$836 ($lt).
+Removed top 2 bits (of 18) from port A of cell fv_width.$add$fv_width_mut.sv:61$841 ($add).
+Removed top 2 bits (of 18) from port B of cell fv_width.$gt$fv_width_mut.sv:64$843 ($gt).
+Removed top 2 bits (of 18) from port B of cell fv_width.$lt$fv_width_mut.sv:64$844 ($lt).
+Removed top 10 bits (of 26) from port A of cell fv_width.$sub$fv_width_mut.sv:65$848 ($sub).
+Removed top 14 bits (of 26) from port B of cell fv_width.$sub$fv_width_mut.sv:65$848 ($sub).
+Removed top 9 bits (of 26) from port Y of cell fv_width.$sub$fv_width_mut.sv:65$848 ($sub).
+Removed top 9 bits (of 26) from port A of cell fv_width.$add$fv_width_mut.sv:70$871 ($add).
+Removed top 8 bits (of 26) from port B of cell fv_width.$add$fv_width_mut.sv:70$871 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:70$871 ($add).
+Removed top 8 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:70$872 ($eq).
+Removed top 7 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:70$872 ($eq).
+Removed top 2 bits (of 18) from port A of cell fv_width.$add$fv_width_mut.sv:71$874 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:71$874 ($add).
+Removed top 9 bits (of 26) from port A of cell fv_width.$add$fv_width_mut.sv:71$875 ($add).
+Removed top 8 bits (of 26) from port B of cell fv_width.$add$fv_width_mut.sv:71$875 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:71$875 ($add).
+Removed top 7 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:71$876 ($eq).
+Removed top 7 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:71$876 ($eq).
+Removed top 10 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:72$878 ($eq).
+Removed top 9 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:72$878 ($eq).
+Removed top 24 bits (of 32) from port B of cell fv_width.$lt$fv_width_mut.sv:73$882 ($lt).
+Removed top 2 bits (of 18) from port A of cell fv_width.$add$fv_width_mut.sv:61$887 ($add).
+Removed top 2 bits (of 18) from port B of cell fv_width.$gt$fv_width_mut.sv:64$889 ($gt).
+Removed top 2 bits (of 18) from port B of cell fv_width.$lt$fv_width_mut.sv:64$890 ($lt).
+Removed top 10 bits (of 26) from port A of cell fv_width.$sub$fv_width_mut.sv:65$894 ($sub).
+Removed top 14 bits (of 26) from port B of cell fv_width.$sub$fv_width_mut.sv:65$894 ($sub).
+Removed top 9 bits (of 26) from port Y of cell fv_width.$sub$fv_width_mut.sv:65$894 ($sub).
+Removed top 9 bits (of 26) from port A of cell fv_width.$add$fv_width_mut.sv:70$917 ($add).
+Removed top 8 bits (of 26) from port B of cell fv_width.$add$fv_width_mut.sv:70$917 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:70$917 ($add).
+Removed top 8 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:70$918 ($eq).
+Removed top 7 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:70$918 ($eq).
+Removed top 2 bits (of 18) from port A of cell fv_width.$add$fv_width_mut.sv:71$920 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:71$920 ($add).
+Removed top 9 bits (of 26) from port A of cell fv_width.$add$fv_width_mut.sv:71$921 ($add).
+Removed top 8 bits (of 26) from port B of cell fv_width.$add$fv_width_mut.sv:71$921 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:71$921 ($add).
+Removed top 7 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:71$922 ($eq).
+Removed top 7 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:71$922 ($eq).
+Removed top 10 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:72$924 ($eq).
+Removed top 9 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:72$924 ($eq).
+Removed top 24 bits (of 32) from port B of cell fv_width.$lt$fv_width_mut.sv:73$928 ($lt).
+Removed top 2 bits (of 18) from port A of cell fv_width.$add$fv_width_mut.sv:61$933 ($add).
+Removed top 2 bits (of 18) from port B of cell fv_width.$gt$fv_width_mut.sv:64$935 ($gt).
+Removed top 2 bits (of 18) from port B of cell fv_width.$lt$fv_width_mut.sv:64$936 ($lt).
+Removed top 10 bits (of 26) from port A of cell fv_width.$sub$fv_width_mut.sv:65$940 ($sub).
+Removed top 14 bits (of 26) from port B of cell fv_width.$sub$fv_width_mut.sv:65$940 ($sub).
+Removed top 9 bits (of 26) from port Y of cell fv_width.$sub$fv_width_mut.sv:65$940 ($sub).
+Removed top 9 bits (of 26) from port A of cell fv_width.$add$fv_width_mut.sv:70$963 ($add).
+Removed top 8 bits (of 26) from port B of cell fv_width.$add$fv_width_mut.sv:70$963 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:70$963 ($add).
+Removed top 8 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:70$964 ($eq).
+Removed top 7 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:70$964 ($eq).
+Removed top 2 bits (of 18) from port A of cell fv_width.$add$fv_width_mut.sv:71$966 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:71$966 ($add).
+Removed top 9 bits (of 26) from port A of cell fv_width.$add$fv_width_mut.sv:71$967 ($add).
+Removed top 8 bits (of 26) from port B of cell fv_width.$add$fv_width_mut.sv:71$967 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:71$967 ($add).
+Removed top 7 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:71$968 ($eq).
+Removed top 7 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:71$968 ($eq).
+Removed top 10 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:72$970 ($eq).
+Removed top 9 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:72$970 ($eq).
+Removed top 24 bits (of 32) from port B of cell fv_width.$lt$fv_width_mut.sv:73$974 ($lt).
+Removed top 2 bits (of 18) from port A of cell fv_width.$add$fv_width_mut.sv:61$979 ($add).
+Removed top 2 bits (of 18) from port B of cell fv_width.$gt$fv_width_mut.sv:64$981 ($gt).
+Removed top 2 bits (of 18) from port B of cell fv_width.$lt$fv_width_mut.sv:64$982 ($lt).
+Removed top 10 bits (of 26) from port A of cell fv_width.$sub$fv_width_mut.sv:65$986 ($sub).
+Removed top 14 bits (of 26) from port B of cell fv_width.$sub$fv_width_mut.sv:65$986 ($sub).
+Removed top 9 bits (of 26) from port Y of cell fv_width.$sub$fv_width_mut.sv:65$986 ($sub).
+Removed top 9 bits (of 26) from port A of cell fv_width.$add$fv_width_mut.sv:70$1009 ($add).
+Removed top 8 bits (of 26) from port B of cell fv_width.$add$fv_width_mut.sv:70$1009 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:70$1009 ($add).
+Removed top 8 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:70$1010 ($eq).
+Removed top 7 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:70$1010 ($eq).
+Removed top 2 bits (of 18) from port A of cell fv_width.$add$fv_width_mut.sv:71$1012 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:71$1012 ($add).
+Removed top 9 bits (of 26) from port A of cell fv_width.$add$fv_width_mut.sv:71$1013 ($add).
+Removed top 8 bits (of 26) from port B of cell fv_width.$add$fv_width_mut.sv:71$1013 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:71$1013 ($add).
+Removed top 7 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:71$1014 ($eq).
+Removed top 7 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:71$1014 ($eq).
+Removed top 10 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:72$1016 ($eq).
+Removed top 9 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:72$1016 ($eq).
+Removed top 24 bits (of 32) from port B of cell fv_width.$lt$fv_width_mut.sv:73$1020 ($lt).
+Removed top 2 bits (of 18) from port A of cell fv_width.$add$fv_width_mut.sv:61$1025 ($add).
+Removed top 2 bits (of 18) from port B of cell fv_width.$gt$fv_width_mut.sv:64$1027 ($gt).
+Removed top 2 bits (of 18) from port B of cell fv_width.$lt$fv_width_mut.sv:64$1028 ($lt).
+Removed top 10 bits (of 26) from port A of cell fv_width.$sub$fv_width_mut.sv:65$1032 ($sub).
+Removed top 14 bits (of 26) from port B of cell fv_width.$sub$fv_width_mut.sv:65$1032 ($sub).
+Removed top 9 bits (of 26) from port Y of cell fv_width.$sub$fv_width_mut.sv:65$1032 ($sub).
+Removed top 9 bits (of 26) from port A of cell fv_width.$add$fv_width_mut.sv:70$1055 ($add).
+Removed top 8 bits (of 26) from port B of cell fv_width.$add$fv_width_mut.sv:70$1055 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:70$1055 ($add).
+Removed top 8 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:70$1056 ($eq).
+Removed top 7 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:70$1056 ($eq).
+Removed top 2 bits (of 18) from port A of cell fv_width.$add$fv_width_mut.sv:71$1058 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:71$1058 ($add).
+Removed top 9 bits (of 26) from port A of cell fv_width.$add$fv_width_mut.sv:71$1059 ($add).
+Removed top 8 bits (of 26) from port B of cell fv_width.$add$fv_width_mut.sv:71$1059 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:71$1059 ($add).
+Removed top 7 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:71$1060 ($eq).
+Removed top 7 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:71$1060 ($eq).
+Removed top 10 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:72$1062 ($eq).
+Removed top 9 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:72$1062 ($eq).
+Removed top 24 bits (of 32) from port B of cell fv_width.$lt$fv_width_mut.sv:73$1066 ($lt).
+Removed top 2 bits (of 18) from port A of cell fv_width.$add$fv_width_mut.sv:61$1071 ($add).
+Removed top 2 bits (of 18) from port B of cell fv_width.$gt$fv_width_mut.sv:64$1073 ($gt).
+Removed top 2 bits (of 18) from port B of cell fv_width.$lt$fv_width_mut.sv:64$1074 ($lt).
+Removed top 10 bits (of 26) from port A of cell fv_width.$sub$fv_width_mut.sv:65$1078 ($sub).
+Removed top 14 bits (of 26) from port B of cell fv_width.$sub$fv_width_mut.sv:65$1078 ($sub).
+Removed top 9 bits (of 26) from port Y of cell fv_width.$sub$fv_width_mut.sv:65$1078 ($sub).
+Removed top 9 bits (of 26) from port A of cell fv_width.$add$fv_width_mut.sv:70$1101 ($add).
+Removed top 8 bits (of 26) from port B of cell fv_width.$add$fv_width_mut.sv:70$1101 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:70$1101 ($add).
+Removed top 8 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:70$1102 ($eq).
+Removed top 7 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:70$1102 ($eq).
+Removed top 2 bits (of 18) from port A of cell fv_width.$add$fv_width_mut.sv:71$1104 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:71$1104 ($add).
+Removed top 9 bits (of 26) from port A of cell fv_width.$add$fv_width_mut.sv:71$1105 ($add).
+Removed top 8 bits (of 26) from port B of cell fv_width.$add$fv_width_mut.sv:71$1105 ($add).
+Removed top 7 bits (of 26) from port Y of cell fv_width.$add$fv_width_mut.sv:71$1105 ($add).
+Removed top 7 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:71$1106 ($eq).
+Removed top 7 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:71$1106 ($eq).
+Removed top 10 bits (of 26) from port A of cell fv_width.$eq$fv_width_mut.sv:72$1108 ($eq).
+Removed top 9 bits (of 26) from port B of cell fv_width.$eq$fv_width_mut.sv:72$1108 ($eq).
+Removed top 24 bits (of 32) from port B of cell fv_width.$lt$fv_width_mut.sv:73$1112 ($lt).
+
+4.9. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane..
+Finding unused cells or wires in module $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope..
+Finding unused cells or wires in module \fv_width..
+Removed 0 unused cells and 2 unused wires.
+<suppressed ~1 debug messages>
+
+4.10. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+4.11. Executing OPT pass (performing simple optimizations).
+
+4.11.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane.
+Optimizing module $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope.
+Optimizing module fv_width.
+
+4.11.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `$paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane'.
+Finding identical cells in module `$paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope'.
+Finding identical cells in module `\fv_width'.
+Removed a total of 0 cells.
+
+4.11.3. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane..
+Finding unused cells or wires in module $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope..
+Finding unused cells or wires in module \fv_width..
+
+4.11.4. Finished fast OPT passes.
+
+4.12. Printing statistics.
+
+=== $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane ===
+
+   Number of wires:                 17
+   Number of wire bits:            181
+   Number of public wires:          10
+   Number of public wire bits:     123
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 12
+     $add                            1
+     $ge                             1
+     $gt                             1
+     $logic_and                      2
+     $lt                             1
+     $mux                            4
+     $sub                            2
+
+=== $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope ===
+
+   Number of wires:                 11
+   Number of wire bits:            126
+   Number of public wires:           6
+   Number of public wire bits:      87
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                  9
+     $add                            1
+     $ge                             1
+     $gt                             2
+     $lt                             1
+     $mux                            3
+     $sub                            1
+
+=== fv_width ===
+
+   Number of wires:                326
+   Number of wire bits:           2852
+   Number of public wires:          92
+   Number of public wire bits:    1717
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                351
+     $add                           33
+     $anyseq                         5
+     $assert                        57
+     $assume                        18
+     $dff                            1
+     $eq                            25
+     $ge                            10
+     $gt                            17
+     $le                            35
+     $logic_and                     20
+     $logic_not                      2
+     $lt                            17
+     $mux                           93
+     $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane      8
+     $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope      1
+     $sub                            9
+
+=== design hierarchy ===
+
+   fv_width                          1
+     $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane      8
+     $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope      1
+
+   Number of wires:                473
+   Number of wire bits:           4426
+   Number of public wires:         178
+   Number of public wire bits:    2788
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                447
+     $add                           42
+     $anyseq                         5
+     $assert                        57
+     $assume                        18
+     $dff                            1
+     $eq                            25
+     $ge                            19
+     $gt                            27
+     $le                            35
+     $logic_and                     36
+     $logic_not                      2
+     $lt                            26
+     $mux                          128
+     $sub                           26
+
+4.13. Executing CHECK pass (checking for obvious problems).
+Checking module $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane...
+Checking module $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope...
+Checking module fv_width...
+Found and reported 0 problems.
+
+5. Executing HIERARCHY pass (managing design hierarchy).
+
+5.1. Analyzing design hierarchy..
+Top module:  \fv_width
+Used module:     $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane
+Used module:     $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope
+
+5.2. Analyzing design hierarchy..
+Top module:  \fv_width
+Used module:     $paramod$1cc10a6932fdadc9d07433bdcb6569a2af7309ef\hush_lane
+Used module:     $paramod$a347759de2dbdbca65abfb04f2167e82f358ab42\hush_envelope
+Removed 0 unused modules.
+Module fv_width directly or indirectly contains formal properties -> setting "keep" attribute.
+
+6. Executing jny backend.
+
+7. Executing RTLIL backend.
+Output filename: ../model/design.il
+
+Warnings: 1 unique messages, 2 total
+End of script. Logfile hash: 5964e96ae5, CPU: user 0.31s system 0.01s, MEM: 15.50 MB peak
+Yosys 0.33 (git sha1 2584903a060)
+Time spent: 19% 5x opt_clean (0 sec), 18% 2x check (0 sec), ...

@@ -1,0 +1,15 @@
+[options]
+mode prove
+
+[engines]
+abc pdr
+
+[script]
+read -formal -sv hush_arith.sv
+read -formal -sv fv_width.sv
+chparam -set M 256 fv_width
+prep -top fv_width
+
+[files]
+../rtl/hush_arith.sv
+fv_width.sv

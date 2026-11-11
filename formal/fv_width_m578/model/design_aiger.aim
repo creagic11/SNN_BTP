@@ -1,0 +1,2 @@
+input 75 0 clk
+invlatch 0 0 init

@@ -1,0 +1,49 @@
+SBY 15:21:33 [fv_width_mut_m578] Removing directory '/home/claude/snn_btp/formal/fv_width_mut_m578'.
+SBY 15:21:33 [fv_width_mut_m578] Copy '/home/claude/snn_btp/rtl/hush_arith.sv' to '/home/claude/snn_btp/formal/fv_width_mut_m578/src/hush_arith.sv'.
+SBY 15:21:33 [fv_width_mut_m578] Copy '/home/claude/snn_btp/formal/fv_width_mut.sv' to '/home/claude/snn_btp/formal/fv_width_mut_m578/src/fv_width_mut.sv'.
+SBY 15:21:33 [fv_width_mut_m578] engine_0: abc pdr
+SBY 15:21:33 [fv_width_mut_m578] base: starting process "cd fv_width_mut_m578/src; yosys -ql ../model/design.log ../model/design.ys"
+SBY 15:21:33 [fv_width_mut_m578] base: Warning: Replacing memory \vn with list of registers. See fv_width_mut.sv:66
+SBY 15:21:33 [fv_width_mut_m578] base: finished (returncode=0)
+SBY 15:21:33 [fv_width_mut_m578] prep: starting process "cd fv_width_mut_m578/model; yosys -ql design_prep.log design_prep.ys"
+SBY 15:21:33 [fv_width_mut_m578] prep: finished (returncode=0)
+SBY 15:21:33 [fv_width_mut_m578] aig: starting process "cd fv_width_mut_m578/model; yosys -ql design_aiger.log design_aiger.ys"
+SBY 15:21:43 [fv_width_mut_m578] aig: finished (returncode=0)
+SBY 15:21:43 [fv_width_mut_m578] engine_0: starting process "cd fv_width_mut_m578; yosys-abc -c 'read_aiger model/design_aiger.aig; fold; strash; pdr -v -I engine_0/invariants.pla; write_cex -a engine_0/trace.aiw'"
+SBY 15:21:43 [fv_width_mut_m578] engine_0: ABC command line: "read_aiger model/design_aiger.aig; fold; strash; pdr -v -I engine_0/invariants.pla; write_cex -a engine_0/trace.aiw".
+SBY 15:21:43 [fv_width_mut_m578] engine_0: Warning: The last 19 outputs are interpreted as constraints.
+SBY 15:21:43 [fv_width_mut_m578] engine_0: VarMax = 300. FrameMax = 10000. QueMax = 0. TimeMax = 0. MonoCNF = no. SkipGen = no. SolveAll = no.
+SBY 15:21:43 [fv_width_mut_m578] engine_0: Frame Clauses                                                     Max Queue Flops Cex      Time
+SBY 15:21:43 [fv_width_mut_m578] engine_0: 1 : 0 0                                                                 2     0      0.09 sec
+SBY 15:21:43 [fv_width_mut_m578] engine_0: Block =    1  Oblig =     3  Clause =     0  Call =    84 (sat=2.4%)  Cex =   0  Start =   0
+SBY 15:21:43 [fv_width_mut_m578] engine_0: SAT solving =     0.05 sec ( 51.08 %)
+SBY 15:21:43 [fv_width_mut_m578] engine_0: unsat     =     0.04 sec ( 37.80 %)
+SBY 15:21:43 [fv_width_mut_m578] engine_0: sat       =     0.01 sec ( 13.28 %)
+SBY 15:21:43 [fv_width_mut_m578] engine_0: Generalize  =     0.01 sec ( 10.71 %)
+SBY 15:21:43 [fv_width_mut_m578] engine_0: Push clause =     0.00 sec (  0.00 %)
+SBY 15:21:43 [fv_width_mut_m578] engine_0: Ternary sim =     0.00 sec (  0.59 %)
+SBY 15:21:43 [fv_width_mut_m578] engine_0: Containment =     0.00 sec (  0.00 %)
+SBY 15:21:43 [fv_width_mut_m578] engine_0: CNF compute =     0.00 sec (  0.01 %)
+SBY 15:21:43 [fv_width_mut_m578] engine_0: Refinement  =     0.00 sec (  0.24 %)
+SBY 15:21:43 [fv_width_mut_m578] engine_0: TOTAL       =     0.10 sec (100.00 %)
+SBY 15:21:43 [fv_width_mut_m578] engine_0: Output 25 of miter "model/design_aiger" was asserted in frame 1.  Time =     0.10 sec
+SBY 15:21:43 [fv_width_mut_m578] engine_0: finished (returncode=0)
+SBY 15:21:43 [fv_width_mut_m578] engine_0: Status returned by engine: FAIL
+SBY 15:21:43 [fv_width_mut_m578] smt2: starting process "cd fv_width_mut_m578/model; yosys -ql design_smt2.log design_smt2.ys"
+SBY 15:21:43 [fv_width_mut_m578] engine_0: Engine did not produce a counter example.
+SBY 15:21:43 [fv_width_mut_m578] engine_0: starting process "cd fv_width_mut_m578; yosys-witness aiw2yw engine_0/trace.aiw model/design_aiger.ywa engine_0/trace_aiw.yw"
+SBY 15:21:43 [fv_width_mut_m578] smt2: finished (returncode=0)
+SBY 15:21:43 [fv_width_mut_m578] engine_0: Converting AIGER witness trace 'engine_0/trace.aiw' to Yosys witness trace 'engine_0/trace_aiw.yw'...
+SBY 15:21:43 [fv_width_mut_m578] engine_0: Using Yosys witness AIGER map file 'model/design_aiger.ywa'
+SBY 15:21:43 [fv_width_mut_m578] engine_0: Converted 2 time steps.
+SBY 15:21:43 [fv_width_mut_m578] engine_0: finished (returncode=0)
+SBY 15:21:43 [fv_width_mut_m578] engine_0: starting process "cd fv_width_mut_m578; yosys-smtbmc -s yices --noprogress --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc --yw engine_0/trace_aiw.yw model/design_smt2.smt2"
+SBY 15:21:43 [fv_width_mut_m578] engine_0: ##   0:00:00  Solver: yices
+SBY 15:21:43 [fv_width_mut_m578] engine_0: ##   0:00:00  SMT Solver 'yices-smt2' not found in path.
+SBY 15:21:43 [fv_width_mut_m578] engine_0: finished (returncode=1)
+SBY 15:21:43 [fv_width_mut_m578] ERROR: engine_0: Could not determine aigsmt status.
+SBY 15:21:43 [fv_width_mut_m578] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:10 (10)
+SBY 15:21:43 [fv_width_mut_m578] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:10 (10)
+SBY 15:21:43 [fv_width_mut_m578] summary: engine_0 (abc pdr) returned FAIL
+SBY 15:21:43 [fv_width_mut_m578] summary: engine_0 did not produce any traces
+SBY 15:21:43 [fv_width_mut_m578] DONE (ERROR, rc=16)

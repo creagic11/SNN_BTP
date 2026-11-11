@@ -1,0 +1,9 @@
+# running in fv_width_m578/src/
+read -formal -sv hush_arith.sv
+read -formal -sv fv_width.sv
+chparam -set M 578 fv_width
+prep -top fv_width
+
+hierarchy -smtcheck
+write_jny -no-connections ../model/design.json
+write_rtlil ../model/design.il

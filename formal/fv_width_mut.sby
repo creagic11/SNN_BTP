@@ -1,0 +1,19 @@
+[tasks]
+m578
+
+
+[options]
+mode prove
+
+[engines]
+abc pdr
+
+[script]
+read -formal -sv hush_arith.sv
+read -formal -sv fv_width_mut.sv
+m578: chparam -set M 578 fv_width
+prep -top fv_width
+
+[files]
+../rtl/hush_arith.sv
+fv_width_mut.sv
