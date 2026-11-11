@@ -283,7 +283,7 @@ Spiker+~\cite{spikerplus} & 13,548$^a$ & 70.5 & +0.005$^a$ & 818.4 & 311 & 254.5
 \textbf{Accuracy--savings front.} Table~\ref{tab:front}. The gated networks are fine-tuned for 12 epochs from the
 10-epoch ungated network; the same fine-tuning without the gate raises the ungated network from 97.66\,\% to
 98.21\,\%, so we use that network as BASE. Against it the gate costs 1.7--5.9 points and reads 7--20\,\% of the
-weight columns. Training longer with the gate (12 instead of 6 epochs) improved every
+weight columns (32--45\,\% of BASE's weight-memory bytes once its own $P$ and $Q$ reads are counted). Training longer with the gate (12 instead of 6 epochs) improved every
 axis of the gentle point (95.37\,\%, 1.98$\times$ $\rightarrow$ 95.74\,\%, 2.44$\times$). In a single-seed test, a wider hidden layer (384) raised the ungated accuracy to 98.0\,\% but not the gated one
 (95.9\,\%, 6 epochs).
 
