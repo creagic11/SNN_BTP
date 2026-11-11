@@ -11,11 +11,12 @@ XC7A100T-1CSG324C, Vivado 2024.1, 100 MHz. From `util_hier.rpt` of each routed b
 | HUSH, stream build (sensor input) | real-time configuration | 10,365 / 56.5 | 3,122 / 6 | 947 | 181 | **14,606** | **62.5** | 0 | +0.256 ns |
 
 ¹ spike FIFO + drain + classifier; in stream builds also the sensor front-end (pooling, de-duplication bitmap of
-578 FFs, 128-entry input FIFO). ² UART loader, LED fold, autorun / pseudo-random sensor.
+578 FFs, 128-entry input FIFO). ² UART loader, LED fold, autorun / pseudo-random sensor. Module rows can sum to
+a few LUTs more or less than the total (≤ 11 here) because Vivado optimises across module boundaries.
 
 Why the two pairs differ:
 - **Block RAM:** a power build stores the events of 20 test recordings on chip (53,094 events in a 64 K × 16 b
-  memory, ≈ 32 tiles, plus their 2,020 window boundaries) so that power can be simulated over 20 inferences
+  memory plus their 2,020 window boundaries: 32.5–33 tiles) so that power can be simulated over 20 inferences
   without a host. A stream build has instead a ring of 1,024 events (one RAMB18) fed by the sensor port. Hence
   80 → 48.5 (BASE) and 95 → 62.5 (HUSH) tiles: the weight, proxy and mean memories are identical.
 - **LUTs:** the stream builds add the sensor front-end (≈ 310 LUTs of glue) and ring addressing (≈ 450–600 LUTs in
