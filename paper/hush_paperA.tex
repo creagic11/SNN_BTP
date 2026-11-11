@@ -317,12 +317,27 @@ awake sub-blocks), and needs 6.0$\times$ the energy of BASE and 13.8$\times$ tha
 Table~\ref{tab:hw} use the latency of the same 20 inferences (e.g.\ gentler 151.2\,\textmu s vs.\ 159.8\,\textmu s over
 500 samples); the speedups of Table~\ref{tab:front} use the 500-sample means.
 
-\textbf{Heuristic gates.} On the 6-epoch gentle network and 200 test samples, we replaced only the predictor and
-bisected each heuristic's threshold to HUSH's read fraction (0.157): a state-free proxy inspired by SITRA (count of
-negative weights of the active inputs; not SITRA's MSB dot product) reaches 66.0\,\% and suppresses 15,121 spikes; an
-Early-style predictor ($L(V)$ plus the top-8 active weights) 93.5\,\% with 36; HUSH 95.5\,\% with none. Two caveats
-favour HUSH: the network was trained with the HUSH gate, not with the heuristics, and the Early-style predictor's own
-weight reads are not charged.
+\textbf{Heuristic gates (exploratory).} To show what the proof buys, we keep the HUSH-trained gentle network and swap only
+the predictor, charging each its own memory reads: HUSH 2\,B ($P$, $Q$) per sub-block and active input; a
+state-free proxy inspired by SITRA (count of negative weights among the active inputs; not SITRA's MSB dot
+product) 1\,B of sign bits; an Early-style predictor ($L(V)$ plus the 8 largest active weights) the 8 weight
+columns it needs before deciding. Thresholds are bisected to HUSH's column reads or total traffic
+(Table~\ref{tab:heur}, 1,000 samples). At equal traffic the Early-style predictor loses 1.2 points and suppresses
+409 spikes; the state-free one loses 7.4 points. The networks were trained for HUSH, not for the heuristics, so
+this measures the predictors, not the best network each could reach.
+
+\begin{table}[t]\centering\caption{Swapping the predictor (gentle network, 1,000 samples).}\label{tab:heur}
+\setlength{\tabcolsep}{2.5pt}\footnotesize
+\begin{tabular}{llcccc}\toprule
+Matched on & Predictor & Acc.\ (\%) & Reads & Traffic & Suppr.\ spikes\\\midrule
+-- & \textbf{HUSH} & \textbf{94.8} & 0.105 & 0.355 & \textbf{0}\\
+reads & Early-style & 92.4 & 0.103 & 0.350 & 485\\
+reads & SITRA-inspired & 68.1 & 0.102 & 0.227 & 117,450\\
+traffic & Early-style & 93.6 & 0.116 & 0.359 & 409\\
+traffic & SITRA-inspired & 87.4 & 0.279 & 0.404$^g$ & 74,095\\\bottomrule
+\multicolumn{6}{p{0.95\columnwidth}}{\footnotesize Reads and traffic relative to BASE. $^g$ integer threshold; the
+next step gives 0.23.}
+\end{tabular}\end{table}
 
 \section{Real-time operation}
 N-MNIST recordings deliver on average 41.9 raw events per 3\,ms window (26.5 distinct pooled inputs; maximum 96).
