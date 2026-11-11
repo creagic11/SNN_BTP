@@ -143,3 +143,12 @@ Work through this in order. Each item says what you must be able to do at the bo
 - [ ] Explain why HUSH draws 3–8 % more power but 44–66 % less energy per inference, and why Spiker+ spends 140 mW in BRAM. [`results/power_l1/README.md`]
 - [ ] Explain what Theorem 1 does and does not guarantee end to end ("from the same state"). [`paper/hush_paperA.tex` § III]
 - [ ] Explain why energy at sensor speed is ≈ 30 mJ per recording for both designs (static power) and where HUSH's energy gain appears instead. [`paper/hush_paperA.tex` § VII]
+
+## Phase 5 — Answers to the external review (added 11 Nov 2026)
+
+- [ ] State the two properties exactly: (A) per-timestep spike equality with the ungated update from HUSH's own state (proved); (B) trajectory equivalence with BASE (not guaranteed). Quote the measured numbers (0 violations of A; divergence from window 4; 90–96 % same class). [`results/drift.json`, paper § III]
+- [ ] Explain the two formal checks: full-width inductive step (VB 16, AB 18) and reduced-width sequential PDR; why "no wrap-around" needs the 8-bit-wider reference. Derive the 18-bit accumulator bound 2¹⁵ + 128·578. [`formal/README.md`]
+- [ ] Explain why the power and stream builds differ in BRAM (20 stored recordings vs a 1,024-event ring) and what HUSH adds in both. [`results/resources.md`]
+- [ ] Explain why HUSH's weight-memory traffic is 0.32–0.45 of BASE while its column reads are 0.07–0.20 (2 B of P/Q per sub-block and input). [paper Table II note]
+- [ ] Explain "active energy per inference" vs always-on energy at sensor speed (< 0.03 % saving). [paper § VII]
+- [ ] Describe Early, SITRA and PS4 each by its own mechanism and accuracy cost. [paper § II]
