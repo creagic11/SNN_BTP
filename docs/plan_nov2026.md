@@ -46,6 +46,16 @@ A8.3 (internal review applied), A8.4 (comparison report v3: "Update v3" section 
 OPEN: two reference entries (Early authors, SPARSH co-authors); venue and author-name spelling (questions for the
 user at the end); A7 board measurement (blocked: board + power meter); Paper B (GPU).
 
+## Status, 11 Nov 2026 evening (after two external reviews)
+
+Both review rounds applied to Paper A (`paper/hush_paperA.tex`, 6 pages): scope of the guarantee (per-timestep
+safety proved; trajectory drift measured: ungated run of the same weights emits 1.8–1.9× the hidden spikes, gentle
+94.8 % gated vs 93.5 % ungated), full-width formal check of the envelope/lane arithmetic (assumption drive ≤ D_c
+discharged by table construction), aggressive point labelled 6 epochs, heuristic comparison with charged reads
+(exploratory), real-time energy at a common 750× speed (BASE 54.7 µJ vs HUSH 47.5 µJ), references completed.
+OPEN: venue (6 pages fits FCCM; TCAS-II brief needs cuts) and author-name spelling/affiliation (to ask at the end);
+A7 board measurement (blocked); Paper B (GPU).
+
 ## Stage 0 — housekeeping (3 Nov, ~30 min, Claude)
 
 | ID | Step | Done when |
