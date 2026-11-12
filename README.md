@@ -4,7 +4,6 @@ B.Tech thesis project, IIT Kharagpur (Anubhav Jha; supervisor Prof. Rajat Subhra
 
 HUSH puts a group of 8 neurons to sleep for a timestep only when an integer bound **proves** that none of them can fire, and then skips their weight reads. Target: Xilinx Artix-7 XC7A100T, 100 MHz.
 
-**Start here:** `docs/primer.md` (the whole project explained from scratch, with every current number), then `study.md` (self-test checklist), then the paper `paper/hush_paperA.pdf`.
 
 ## Status (11 Nov 2026)
 
