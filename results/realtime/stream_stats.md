@@ -1,4 +1,4 @@
-# A9.1 — N-MNIST stream at sensor timing (3 Nov 2026)
+# N-MNIST event stream at sensor timing (task A9.1; 3 November 2026)
 
 Script: `scripts/stream_stats.py results/nmnist_T100_mf_e05_d025/weights.npz --n_raw 10000 --n_work 500`
 Raw data: `stream_stats.json`. Bin = 3 ms (300 ms window, T = 100). Clock 100 MHz → 300,000 cycles per bin.

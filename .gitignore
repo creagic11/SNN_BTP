@@ -9,3 +9,6 @@ formal/fv_hush_*/
 formal/fv_hush/
 formal/fv_hush_mut/
 *.pt
+*.vcd
+*.fst
+out_*/

@@ -1,29 +1,26 @@
-# Formal verification of the HUSH safety arithmetic (T2.3)
+# Formal verification of the HUSH safety arithmetic
 
-`fv_hush.sv` wraps the RTL modules `hush_envelope` and `hush_lane` from `rtl/hush_arith.sv` (the same modules `rtl/hush_layer.sv` instantiates) into one sub-block of 4 lanes driven by 3 inputs, with arbitrary constant 4-bit weights and arbitrary input spikes every cycle. Widths are reduced (VB = 8, AB = 12, K = 2, θ = 20) so the solver finishes; the argument does not depend on width because both clips are the same monotone function.
+Two complementary SymbiYosys checks verify the arithmetic of the gate on the RTL modules that the design
+instantiates (`hush_envelope` and `hush_lane` in `rtl/hush_arith.sv`). The first works at the exact bit widths of
+the implementation for one timestep; the second works at reduced widths over unbounded time. Memories, sequencing
+and the remaining datapath are verified by bit-exact simulation against the golden model (`rtl/sim/`).
 
-Properties (assertions on every reachable state):
+Requirements: Yosys 0.33, SymbiYosys at tag `yosys-0.33`, ABC (engine `abc pdr`). Run from this directory:
 
-1. A gated sub-block contains no lane whose ungated update reaches θ (no suppressed spike).
-2. R equals the exact max V of the sub-block (exact resync invariant).
-3. Every lane's new pre-reset potential, awake or asleep (incl. mean-field drive), is ≤ the envelope E.
-4. A spike implies the sub-block is awake.
+```
+sby -f fv_width.sby m578        # full width, hidden layer (578 inputs)
+sby -f fv_width.sby m256        # full width, output-layer widths (256 inputs)
+sby -f fv_width_mut.sby m578    # mutant: must FAIL
+sby -f fv_hush.sby prove_mf     # reduced width, mean-field drive for sleeping lanes
+sby -f fv_hush.sby prove_drop   # reduced width, sleeping lanes receive no drive
+sby -f fv_hush_mut.sby          # mutant: must FAIL
+```
 
-| Task | Engine | Result |
-| --- | --- | --- |
-| `prove_mf` (mean-field) | ABC PDR (unbounded) | **PASS**, 1,128 s |
-| `prove_drop` (drop semantics) | ABC PDR (unbounded) | **PASS** |
-| `fv_hush_mut.sby` (proxy replaced by the sub-block mean: unsafe) | ABC BMC3, depth 8 | **FAIL** found immediately: the properties are not vacuous |
+The `fv_width_m256`, `fv_width_m578` and `fv_width_mut_m578` directories hold the solver outputs of the full-width runs (status files and logs). The outputs of the reduced-width runs are not tracked.
 
-Run: `sby -f fv_hush.sby prove_mf` (needs SymbiYosys at tag `yosys-0.33` to match Yosys 0.33; SMT engines boolector 1.5 and z3 4.8 did not finish here).
+## 1. Full-width inductive step — `fv_width.sv`, `fv_width.sby` (11 November 2026)
 
-Scope note: the formal proof covers the safety arithmetic and the resync recursion for one sub-block. The full layer (memories, sequencing, counters) is checked by bit-exact simulation against the golden model (`rtl/sim/regress.py`).
-
-Note (27 Oct 2026, timing fixes). `hush_layer` now registers the saturated pre-reset potential U (output `u` of `hush_lane`) and the awake bits at FIN, and applies spike = awake ∧ (U ≥ θ) and Vnew = U − θ·spike in a second stage (FIN2). The formula is identical to `hush_lane`'s; the proven safety arithmetic (U and the envelope) is unchanged. R is refreshed from the registered word through a two-stage max tree, so it lands 2 cycles after FIN2 and is first read ≥ 3 cycles after it, at COMBINE. Bit-exact simulation covers both changes (40/40 random + N-MNIST in all modes). The formal harness still instantiates `hush_lane` / `hush_envelope` directly.
-
-## Full-width check (11 Nov 2026) — `fv_width.sv`, `fv_width.sby`
-
-The reduced-width proof above covers the sequential behaviour (the R recursion over time). This second check runs
+This check runs
 the same RTL modules (`hush_envelope`, `hush_lane`) at the **exact widths of the implementation**: VB = 16,
 K = 4, θ = θ_h = 64, and AB = clog2(2¹⁵ + 128·M + 1) + 1 = 18 bits for both layers (M = 578 hidden, M = 256
 output). It is the inductive step of Theorem 1 for one 8-lane sub-block with every value free: assuming
@@ -42,7 +39,7 @@ Engine ABC PDR, 72 s for both tasks. Mutant `fv_width_mut.sv` (drops the assumpt
 weights) FAILs immediately, so the check is not vacuous. With V = R = 0 at reset, F5 + F2 make V_l ≤ R an invariant
 of all reachable states and F1 holds at every timestep, at full width.
 
-**Scope (second review, 11 Nov 2026).** What this check covers and what it does not:
+**Scope.** What this check covers and what it does not:
 - It proves the envelope and lane arithmetic (`hush_envelope`, `hush_lane`) at the real widths, *given* the assumption
   that each neuron's drive is at most D_c (and q_c ≤ D_c). That assumption holds by construction of the P and Q tables,
   which are generated offline from the weights; the bit-exact simulations check the tables and the memories.
@@ -50,7 +47,32 @@ of all reachable states and F1 holds at every timestep, at full width.
   second finalise stage are not in this harness; they are covered by the bit-exact RTL-vs-golden simulations.
 - The m256 task matters only for F4 (no wrap-around at the output layer's widths); the output layer is not gated.
 
-### Width and value bounds of the implementation (`rtl/hush_layer.sv`, `rtl/hush_net.sv`)
+
+## 2. Reduced-width sequential proof — `fv_hush.sv`, `fv_hush.sby` (24–25 October 2026)
+
+`fv_hush.sv` wraps `hush_envelope` and `hush_lane` into one sub-block of 4 lanes driven by 3 inputs, with
+arbitrary constant 4-bit weights and arbitrary input spikes every cycle. Widths are reduced (VB = 8, AB = 12,
+K = 2, θ = 20) so that the unbounded proof completes; the argument does not depend on the width because both clips
+are the same non-decreasing function. Properties, asserted on every reachable state:
+
+1. A sleeping sub-block contains no lane whose ungated update reaches θ (no suppressed spike).
+2. R equals the exact maximum V of the sub-block (exact resynchronisation).
+3. Every lane's new pre-reset potential, awake or asleep (including the mean-field drive), is at most E.
+4. A spike implies that the sub-block is awake.
+
+| Task | Engine | Result |
+| --- | --- | --- |
+| `prove_mf` (mean-field drive) | ABC PDR (unbounded) | PASS, 1,128 s |
+| `prove_drop` (no drive while asleep) | ABC PDR (unbounded) | PASS |
+| `fv_hush_mut.sby` (proxy replaced by the sub-block mean, which is unsafe) | ABC BMC3, depth 8 | FAIL at once, so the properties are not vacuous |
+
+SMT engines (Boolector 1.5, Z3 4.8) did not complete within the time available.
+
+The RTL registers U and the awake bits at the first finalise stage and applies spike = awake ∧ (U ≥ θ) and
+V′ = U − θ·spike in a second stage; the formula is the one in `hush_lane`. R is refreshed through a two-stage max
+tree and is first read at least 3 cycles after it is written. Both stages are covered by the bit-exact simulations.
+
+## 3. Width and value bounds of the implementation (`rtl/hush_layer.sv`, `rtl/hush_net.sv`)
 
 | Quantity | Width | Range of values that can occur | Headroom |
 |---|---|---|---|

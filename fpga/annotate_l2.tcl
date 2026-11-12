@@ -1,4 +1,4 @@
-# Laptop run L2, step 3: annotate the whole-network and Spiker+ power builds with their gate-level SAIF and write
+# Implementation run L2, step 3: annotate the whole-network and Spiker+ power builds with their gate-level SAIF and write
 # ../out_l2/energy_l2.csv (energy per inference = total power x mean latency over inferences 1..19).
 set here [file dirname [file normalize [info script]]]
 set out  [file normalize $here/../out_l2]

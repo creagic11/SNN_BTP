@@ -1,8 +1,10 @@
+> **Superseded (10–11 November 2026)** by the whole-network runs in `results/power_l1/` and `results/power_l2/`. Kept for traceability.
+
 # A3b: SAIF power and area, hush_layer v5, XC7A100T-1CSG324C @ 100 MHz, Vivado 2024.1 (28 Oct 2026, run out_v5c)
 
-**This supersedes results/vivado_2024_1 and results/power_saif** (those builds pruned BASE lanes 6-25 through a
+**This supersedes results/archive/vivado_2024_1 and results/archive/power_saif** (those builds pruned BASE lanes 6-25 through a
 too-narrow LED fold, stored weights as trimmed ROMs, had no per-column weight enables and carried a +10k-LUT
-harness ROM in HUSH only; see progress.md 28 Oct).
+harness ROM in HUSH only; see notes/development_log.md 28 Oct).
 
 Design (v5): every table is a writable BRAM with a UART host load port; weights in four 64-bit column RAMs read
 only when the sub-block is awake; ts pairs in TDP BRAM; `ram_decomp = "power"` on the deep event and weight RAMs;

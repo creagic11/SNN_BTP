@@ -4,7 +4,7 @@
 State as of 11 Nov 2026 (Paper A draft after three review rounds).*
 
 How to use this: read §0 first (5 minutes). Then go section by section; each ends with **Check yourself**
-questions. After each section, tick the matching items in `study.md`. §12 maps every paper section, figure and
+questions. After each section, tick the matching items in `notes/study_checklist.md`. §12 maps every paper section, figure and
 table to the repo file that produced it.
 
 Numbers here are the current ones (whole network on chip, 10–11 Nov). Older numbers in the repo history are
@@ -331,14 +331,14 @@ HUSH's extra 6k LUTs go?
    board measurement.
 6. **Gate-level simulation = cycle model** for every inference (+3 cycles of restart).
 
-Laptop runs (Vivado is on the laptop): **L1** (10 Nov; four whole-network power builds, two stream builds,
+Implementation runs (Vivado 2024.1 on a Windows build machine): **L1** (10 Nov; four whole-network power builds, two stream builds,
 Spiker+) and **L2** (11 Nov; 22-epoch BASE power, Spiker+ high-effort build, stream builds after the marker fix).
 Results are in `results/power_l1/` and `results/power_l2/` with a README each.
 
 Three review rounds were applied to the paper (10–11 Nov): an internal fresh-eyes review (20 items), an external
 review (scope of the safety claim, full-width proof, resource accounting, charged heuristic comparison, energy
 wording), a second fresh-eyes review (epoch counts, drift metric, proof scope, energy at a common speed), and a
-final strict pass (area cost up front, energy attribution, SnaPEA, more figures). See `progress.md`.
+final strict pass (area cost up front, energy attribution, SnaPEA, more figures). See `notes/development_log.md`.
 
 **Check yourself.** Why is gate-level simulation better than RTL simulation for power? What does "active
 energy" include? What would a board measurement add? Which parts of the design are proved and which simulated?
@@ -491,7 +491,7 @@ Knowing this history is a strength in a viva: the numbers were attacked before a
 |---|---|
 | Venue for Paper A (TCAS-II brief needs cuts; FCCM-style 8 pages fits) | open, your decision |
 | Departments in the author block | not given yet |
-| Aggressive point re-trained at 12 epochs (+ its power on the laptop) | optional |
+| Aggressive point re-trained at 12 epochs (+ its power on the build machine) | optional |
 | A7: board power measurement | blocked: needs a Nexys A7-100T and a power meter |
 | Paper B: convolutional layers, DVS-Gesture | needs a GPU |
 
@@ -560,7 +560,7 @@ Knowing this history is a strength in a viva: the numbers were attacked before a
 | PDR | property-directed reachability: an unbounded model-checking engine |
 | (A) / (B) | per-timestep safety (proved) / trajectory equivalence with an ungated run (not guaranteed) |
 | Headroom | how far the most excited neuron of a sub-block sits below θ |
-| L1, L2 | the two laptop Vivado runs of 10 and 11 Nov |
+| L1, L2 | the two build machine Vivado runs of 10 and 11 Nov |
 
 ---
 
@@ -574,7 +574,7 @@ Knowing this history is a strength in a viva: the numbers were attacked before a
 | §V, Table I | verification and width bounds | `formal/fv_width.sby`, `formal/fv_hush.sby`, `rtl/sim/regress.py`, `rtl/sim/run_net.py`, `rtl/sim/run_stream.py` | `formal/README.md`, `results/net/` |
 | Table II | training setup | `train/train_snn.py`, `train/qsnn.py`, `scripts/seed_run.sh` | `results/nmnist_T100*/` |
 | Table III, Fig. 4 | accuracy, reads, latency, speedup | `scripts/acc_integer.py`, `scripts/net_perf.py`, `scripts/net_table.py`, `scripts/fig_paper.py` | `results/acc_integer.json`, `results/net_latency.md` |
-| Table IV, Fig. 5 | area, timing, power, energy | laptop: `fpga/run_l1.bat`, `fpga/run_l2.bat` | `results/power_l1/`, `results/power_l2/` |
+| Table IV, Fig. 5 | area, timing, power, energy | Vivado: `fpga/run_l1.bat`, `fpga/run_l2.bat` | `results/power_l1/`, `results/power_l2/` |
 | Table V | resources of the four builds | routed `util_hier.rpt` | `results/resources.md` |
 | Table VI | heuristic predictors | `scripts/heuristic_gates.py --match reads|traffic` | `results/heuristic_gates.md` |
 | §VII, Fig. 6 | cycles per window vs activity | `scripts/activity_buckets.py`, `scripts/stream_stats.py` | `results/realtime/stream_stats.md` |
@@ -585,4 +585,4 @@ Knowing this history is a strength in a viva: the numbers were attacked before a
 
 Figures 4–7 are regenerated with `python scripts/fig_paper.py`, Fig. 8 with `python scripts/fig_early.py` (both
 from the repo root). The paper is built in `paper/` with `pdflatex hush_paperA`, `bibtex hush_paperA`, then
-`pdflatex` twice. The dated log of every step is `progress.md`.
+`pdflatex` twice. The dated log of every step is `notes/development_log.md`.

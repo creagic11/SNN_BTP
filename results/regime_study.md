@@ -1,4 +1,4 @@
-# T0.9 Regime study (in progress)
+# T0.9 Regime study: Spiking Heidelberg Digits
 
 ## SHD 700-256-20, feed-forward, T = 250 (4 ms bins over 1 s), k = 5, θ = 64, INT8
 
@@ -26,7 +26,7 @@ Mean active inputs per timestep 32.4; hidden firing rate 5%.
 
 ## Co-design: gate in the training loop (SHD, T = 250)
 
-Fine-tuned 15 epochs from the baseline with the HUSH-8/32 gate in the forward pass (bit-exact with the golden GATED model, checked on 200 samples: 0 spike and 0 prediction mismatches), exceedance loss λ = 2, envelope-drive loss λ = 1, 5% rate target (`results/train_shd_T250_gated.log`).
+Fine-tuned 15 epochs from the baseline with the HUSH-8/32 gate in the forward pass (bit-exact with the golden GATED model, checked on 200 samples: 0 spike and 0 prediction mismatches), exceedance loss λ = 2, envelope-drive loss λ = 1, 5% rate target (`results/logs/train_shd_T250_gated.log`).
 
 | Network | Gate at inference | Accuracy | Column reads vs BASE | Cycle speedup |
 | --- | --- | --- | --- | --- |

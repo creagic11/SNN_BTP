@@ -1,6 +1,6 @@
 @echo off
-rem Laptop run L2 (about 2.5-3 hours). From the Vivado 2024.1 Tcl Shell:
-rem     cd C:/Users/Anubhav/hush_fpga/fpga
+rem Implementation run L2 (about 2.5-3 hours). From the Vivado 2024.1 Tcl Shell:
+rem     cd <repository>/fpga
 rem     exec -ignorestderr cmd /c run_l2.bat
 rem Progress and results: ..\out_l2\summary.txt, ..\out_l2\energy_l2.csv
 setlocal

@@ -1,6 +1,6 @@
 # A3 (proper flow): gate-level SAIF power for BASE, HUSH-MF gentle and HUSH-MF aggressive on the XC7A100T.
 # One command, unattended (~1.5-3 h). From the Vivado Tcl Shell:
-#     cd C:/Users/Anubhav/hush_fpga/fpga
+#     cd <repository>/fpga
 #     vivado -mode batch -source run_power.tcl
 # Per case: (1) build with NSMP = 20 on-chip N-MNIST samples (autorun steps through them); (2) write the routed
 # functional netlist; (3) xsim the netlist over the 20 samples, recording switching activity (SAIF); (4) annotate

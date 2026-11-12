@@ -17,7 +17,7 @@ Conventions (shared with the RTL and the trainer):
 * Leak:  L(x) = x - (x >> k)   (arithmetic shift, i.e. floor(x / 2**k)).
 * Every potential is clipped to the signed ``vbits`` range with the same
   monotone clip. Because the clip is non-decreasing, it preserves every
-  inequality used in the safety proof (see docs/proposal_v2.md, Theorem 1).
+  inequality used in the safety proof (see paper/hush_paperA.tex, Theorem 1, and docs/theorem1_prime.md).
 * Neuron i belongs to sub-block i // b_env and to block i // b_blk.
   N must be a multiple of b_blk, and b_blk a multiple of b_env.
 """

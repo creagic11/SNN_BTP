@@ -1,12 +1,12 @@
 # Execution plan, 3 Nov 2026 → Paper A draft (no GPU, no board)
 
-Decisions behind this plan (3 Nov, with the user):
+Decisions behind this plan (3 Nov, with the author):
 - GPU work is deferred, not dropped: everything below is reused when a GPU arrives (same trainer, same RTL).
 - Paper A uses simulation and Vivado activity-based power only; board measurement (A7) stays open.
 - Professor: results must clearly beat the state of the art on some axes and be comparable on others, and
   inference must keep up with a **live sensor stream** (real time).
 
-Status of every item is tracked in `progress.md` (table "Paper A track" + dated log). A task is DONE only when
+Status of every item is tracked in `notes/development_log.md` (table "Paper A track" + dated log). A task is DONE only when
 every check in its "Done when" column passes; the evidence (file, log line, number) is written into the log.
 
 ## Update, 10 Nov 2026 (status + decision on real time)
@@ -14,7 +14,7 @@ every check in its "Done when" column passes; the evidence (file, log line, numb
 **Done since 3 Nov:** S0, A5 (3 seeds), A10.1–A10.3, A4.1–A4.4 (Spiker+ bit-exact in GHDL, 814 µs), A6.1–A6.2 and the
 3-seed runs of the two new points (gentle 12 ep: 95.74 ± 0.06 %, 2.38×, reads 0.118; gentler 12 ep: 96.55 ± 0.07 %,
 1.75×, reads 0.204 → A6 target met), A9.1 (+ A9.1b: speedup vs bin activity, multi-stream memory bound).
-**Not done on time:** laptop run L1 (planned 6–7 Nov), so A4.5/A4.6/A6.3/A9.5/A9.6 wait; draft date 12 Nov moved.
+**Not done on time:** implementation run L1 (planned 6–7 Nov), so A4.5/A4.6/A6.3/A9.5/A9.6 wait; draft date 12 Nov moved.
 
 **Real-time decision (10 Nov):**
 - The paper's real-time guarantee is stated in **sensor time**: every 3 ms window is processed, and the decision
@@ -33,7 +33,7 @@ every check in its "Done when" column passes; the evidence (file, log line, numb
 **Status at end of 10 Nov:** A9.2 DONE (whole network on chip, 4 × 50 samples bit- and cycle-exact; latency table
 `results/net_latency.md`), A9.3 DONE (stream mode, bit-exact at sensor timing and 1,000–2,000× replay), L1 package
 delivered and md5-verified (whole-network power ×4 replaces the planned A6.3 single-layer runs; 2 stream builds;
-Spiker+), A8.1 outline (`paper/outline.md`). Running: A9.4 sweep + sensor-timing runs, A9.7 curve.
+Spiker+), A8.1 outline (`notes/paper_outline.md`). Running: A9.4 sweep + sensor-timing runs, A9.7 curve.
 
 ---
 
@@ -41,10 +41,10 @@ Spiker+), A8.1 outline (`paper/outline.md`). Running: A9.4 sweep + sensor-timing
 
 DONE: S0, A5, A6 (+ fair-baseline control, 3 seeds: 98.21 %), A4.1–A4.6 (Spiker+ same chip: 818 µs, 254.5 µJ;
 meets 100 MHz with high effort), A9.1–A9.7 (whole network on chip, stream mode, real-time tables, energy at
-sensor rate, early-decision curve), laptop runs L1 and L2, A10, A8.1 (outline), A8.2 (draft, 4 pages, IEEEtran),
-A8.3 (internal review applied), A8.4 (comparison report v3: "Update v3" section in the Claude Doc).
+sensor rate, early-decision curve), implementation runs L1 and L2, A10, A8.1 (outline), A8.2 (draft, 4 pages, IEEEtran),
+A8.3 (internal review applied), A8.4 (comparison report v3: "Update v3" section in the project report document).
 OPEN: two reference entries (Early authors, SPARSH co-authors); venue and author-name spelling (questions for the
-user at the end); A7 board measurement (blocked: board + power meter); Paper B (GPU).
+author at the end); A7 board measurement (blocked: board + power meter); Paper B (GPU).
 
 ## Status, 11 Nov 2026 evening (after two external reviews)
 
@@ -58,20 +58,20 @@ A7 board measurement (blocked); Paper B (GPU).
 
 ## Status, 11 Nov 2026 night (final review pass)
 
-Author line set (Rajat Subhra Chakraborty; IIT Kharagpur, departments still to add). Venue left open by the user;
+Author line set (Rajat Subhra Chakraborty; IIT Kharagpur, departments still to add). Venue left open by the author;
 limit 8 pages without references, paper is ≈ 6.5. Final strict pass applied: area cost (+79 % LUT, +19 % BRAM) in
 the abstract, energy attribution (two thirds of BASE's active energy is static), LUT × latency (3 / 26 / 44 %),
 SnaPEA in related work, limitations extended, five new figures (schedule, accuracy vs latency, energy split,
-cycles vs activity, replay sweep). `docs/primer.md` rewritten for the current state, `study.md` Phase 6 added,
-README and `paper/outline.md` rewritten.
+cycles vs activity, replay sweep). `notes/primer.md` rewritten for the current state, `notes/study_checklist.md` Phase 6 added,
+README and `notes/paper_outline.md` rewritten.
 OPEN: venue; departments; optional 12-epoch aggressive point; A7 (board); Paper B (GPU).
 
-## Stage 0 — housekeeping (3 Nov, ~30 min, Claude)
+## Stage 0 — housekeeping (3 Nov, ~30 min, AI assistant)
 
 | ID | Step | Done when |
 |---|---|---|
-| S0.1 | This plan committed; progress.md table extended with A4.x, A5, A9.x, A6, A8.x | both files on GitHub |
-| S0.2 | Tier-1 plan Claude Doc: short "v5 numbers, 28 Oct" note | note visible in the doc |
+| S0.1 | This plan committed; notes/development_log.md table extended with A4.x, A5, A9.x, A6, A8.x | both files on GitHub |
+| S0.2 | Tier-1 plan project report document: short "v5 numbers, 28 Oct" note | note visible in the doc |
 | S0.3 | Start A5 trainings in the background (CPU queue, see A5) | first run's log shows epoch 1 |
 
 ---
@@ -101,12 +101,12 @@ baseline only, not redistributed.
 
 | ID | Step | Who | Done when |
 |---|---|---|---|
-| A4.1 | Install `spikerplus`; run its VHDL-generation tutorial unchanged; compile the generated VHDL (GHDL here) | Claude | tutorial VHDL compiles and its testbench runs |
-| A4.2 | Build the 578-256-10 net in Spiker+ (β 0.9375, threshold, subtract reset), load **our ungated INT8 weights** (`results/nmnist_T100`); readout = its output voter | Claude | its Python quantised model reaches ≥ 97.0 % on the N-MNIST test set (ours: 97.59 %), or the gap is explained (readout/quantiser) |
-| A4.3 | Generate VHDL; simulate 20 test samples (the A3 samples); compare its spikes/classes with its Python model; record cycles per inference | Claude | 20/20 classes equal to its Python model; cycles/inference logged |
-| A4.4 | Wrapper: on-chip store of the same 20 samples (spike rasters), autorun, every output observed on LEDs (the lesson of 28 Oct); writable weight memory if Spiker+ allows, else noted | Claude | iverilog/GHDL run of the wrapper = A4.3 result |
-| A4.5 | Vivado build on XC7A100T at 100 MHz + gate-level SAIF power over the 20 samples (same flow as run_v5) | **User** (one command, part of laptop run L1) | WNS ≥ 0 (else report its Fmax and energy at that clock); nets matched ≥ 99 %; netlist cycles = A4.3 |
-| A4.6 | Add a "same chip" row to the report and the paper table: accuracy, LUT/FF/BRAM/DSP, latency, power, energy, energy per SOP | Claude | row in report v3 + `results/spikerplus_a100t/README.md` |
+| A4.1 | Install `spikerplus`; run its VHDL-generation tutorial unchanged; compile the generated VHDL (GHDL here) | AI assistant | tutorial VHDL compiles and its testbench runs |
+| A4.2 | Build the 578-256-10 net in Spiker+ (β 0.9375, threshold, subtract reset), load **our ungated INT8 weights** (`results/nmnist_T100`); readout = its output voter | AI assistant | its Python quantised model reaches ≥ 97.0 % on the N-MNIST test set (ours: 97.59 %), or the gap is explained (readout/quantiser) |
+| A4.3 | Generate VHDL; simulate 20 test samples (the A3 samples); compare its spikes/classes with its Python model; record cycles per inference | AI assistant | 20/20 classes equal to its Python model; cycles/inference logged |
+| A4.4 | Wrapper: on-chip store of the same 20 samples (spike rasters), autorun, every output observed on LEDs (the lesson of 28 Oct); writable weight memory if Spiker+ allows, else noted | AI assistant | iverilog/GHDL run of the wrapper = A4.3 result |
+| A4.5 | Vivado build on XC7A100T at 100 MHz + gate-level SAIF power over the 20 samples (same flow as run_v5) | **Author** (one command, part of implementation run L1) | WNS ≥ 0 (else report its Fmax and energy at that clock); nets matched ≥ 99 %; netlist cycles = A4.3 |
+| A4.6 | Add a "same chip" row to the report and the paper table: accuracy, LUT/FF/BRAM/DSP, latency, power, energy, energy per SOP | AI assistant | row in report v3 + `results/spikerplus_a100t/README.md` |
 
 Risks and fallbacks:
 - Spiker+ may not scale cleanly to 578 inputs × 256 neurons (its neurons are clock-driven, inputs processed
@@ -134,17 +134,17 @@ Two facts to state honestly in the paper (they shape the claim):
 
 | ID | Step | Who | Done when |
 |---|---|---|---|
-| A9.1 | Stream statistics: events per bin (mean, p99, max), events/s, required input bandwidth; interface choice (AER-style event port; UART needs ≥ 1 Mbaud at the peak rate, 115,200 baud is too slow) | Claude | `results/realtime/stream_stats.md` |
-| A9.2 | **Full network on chip**: output layer as a second `hush_layer` (gate off, 256 → 32 padded) fed by hidden spikes, plus the integer class decision (most output spikes, tie → larger summed U, then lower index — `golden.hush.predict`) | Claude | regression 80/80 still passes; 50 N-MNIST samples: predicted class = golden for all, both layers' write-backs bit-exact |
-| A9.3 | **Stream mode** in the RTL (revised 10 Nov): events written by an input port into a double-buffered window store; a window is closed by an end-of-window marker; the ETU for window t starts when t closes (no look-ahead) | Claude | stream-mode simulation bit-exact to batch mode on 20 samples; cycle model extended with the stream-mode costs |
-| A9.4 | Streaming testbench, two modes: (a) events at true sensor times → worst per-window busy time, slack, decision delay after window close; (b) replay speed swept → fastest speed with no buffer overflow for a one-RAMB36 buffer, p99 decision delay; BASE and HUSH. Plus `scripts/stream_queue.py` (queue model) predicting (b) over all 10,000 samples | Claude | (a) worst window ≪ 3 ms for both; (b) RTL = queue model on the simulated samples; table in `results/realtime/` |
-| A9.7 | Accuracy vs elapsed sensor time (class decided after 50, 100, …, 300 ms), golden model, BASE and HUSH points | Claude | `results/realtime/early_decision.md` |
-| A9.5 | Vivado: full-network stream-mode build for BASE and HUSH-MF (timing + area) | **User** (part of laptop run L1) | WNS ≥ 0 at 100 MHz |
-| A9.6 | Energy in real-time operation = static × window + dynamic energy (from A3 SAIF), and stream capacity per chip; report section "Real-time operation" | Claude | numbers in report v3 and paper |
+| A9.1 | Stream statistics: events per bin (mean, p99, max), events/s, required input bandwidth; interface choice (AER-style event port; UART needs ≥ 1 Mbaud at the peak rate, 115,200 baud is too slow) | AI assistant | `results/realtime/stream_stats.md` |
+| A9.2 | **Full network on chip**: output layer as a second `hush_layer` (gate off, 256 → 32 padded) fed by hidden spikes, plus the integer class decision (most output spikes, tie → larger summed U, then lower index — `golden.hush.predict`) | AI assistant | regression 80/80 still passes; 50 N-MNIST samples: predicted class = golden for all, both layers' write-backs bit-exact |
+| A9.3 | **Stream mode** in the RTL (revised 10 Nov): events written by an input port into a double-buffered window store; a window is closed by an end-of-window marker; the ETU for window t starts when t closes (no look-ahead) | AI assistant | stream-mode simulation bit-exact to batch mode on 20 samples; cycle model extended with the stream-mode costs |
+| A9.4 | Streaming testbench, two modes: (a) events at true sensor times → worst per-window busy time, slack, decision delay after window close; (b) replay speed swept → fastest speed with no buffer overflow for a one-RAMB36 buffer, p99 decision delay; BASE and HUSH. Plus `scripts/stream_queue.py` (queue model) predicting (b) over all 10,000 samples | AI assistant | (a) worst window ≪ 3 ms for both; (b) RTL = queue model on the simulated samples; table in `results/realtime/` |
+| A9.7 | Accuracy vs elapsed sensor time (class decided after 50, 100, …, 300 ms), golden model, BASE and HUSH points | AI assistant | `results/realtime/early_decision.md` |
+| A9.5 | Vivado: full-network stream-mode build for BASE and HUSH-MF (timing + area) | **Author** (part of implementation run L1) | WNS ≥ 0 at 100 MHz |
+| A9.6 | Energy in real-time operation = static × window + dynamic energy (from A3 SAIF), and stream capacity per chip; report section "Real-time operation" | AI assistant | numbers in report v3 and paper |
 
 ---
 
-## A10 — published FPGA results on our dataset (Claude, 3–4 Nov, ~2 h, alongside A5)
+## A10 — published FPGA results on our dataset (AI assistant, 3–4 Nov, ~2 h, alongside A5)
 
 Gap: only one published FPGA design in our table reports N-MNIST (Wu, Song & So, FPT 2023). The other rows are
 MNIST or SHD (context only).
@@ -156,16 +156,16 @@ MNIST or SHD (context only).
 | A10.3 | Include the TCAS-I 2025 DVS accelerator (resource table still missing) | its row filled or marked "not reported" |
 | A10.4 | Add the rows to Zotero ("HUSH – Literature") and to comparison report v3 | ≥ 3 N-MNIST rows (or every one found, if fewer exist) |
 
-## Laptop run L1 (one command for the user, ~3–4 h unattended, target 6–7 Nov)
+## Implementation run L1 (one command for the author, ~3–4 h unattended, target 6–7 Nov)
 
 Contents: A4.5 (Spiker+ build + netlist simulation + SAIF), A6.3 (SAIF power for the gentle-12ep and gentler-12ep
 weights, same flow as run_v5) and A9.5 (two full-network stream-mode builds).
 Delivered as one `.bat` with md5-checked files, the same command form as before:
 
-    cd C:/Users/Anubhav/hush_fpga/fpga
+    cd <repository>/fpga
     exec -ignorestderr cmd /c run_l1.bat
 
-Checks Claude runs on the outputs before any number is used: WNS ≥ 0 for every build; all outputs observable
+Checks AI assistant runs on the outputs before any number is used: WNS ≥ 0 for every build; all outputs observable
 (no pruned lanes: lane and BRAM counts as expected); nets matched ≥ 99 %; netlist cycles = model.
 
 ---
@@ -178,13 +178,13 @@ Target: gated ≥ 96.5 % at column reads ≤ 0.25 (gentle is 95.32 % at 0.168 no
 |---|---|---|
 | A6.1 | Gentler losses: exceedance 0.25 / drive 0.1, and 12 instead of 6 fine-tune epochs | accuracy/reads pair logged |
 | A6.2 | Wider hidden layer 384 (BRAM still fits: weights 578 × 384 B ≈ 1.8 Mbit) — ungated + gentle | pair logged; area estimate noted |
-| A6.3 | If a point beats gentle on the accuracy–reads front: rtl_perf + one SAIF power run (laptop run L2) | point added to the tables with its own hardware numbers |
+| A6.3 | If a point beats gentle on the accuracy–reads front: rtl_perf + one SAIF power run (implementation run L2) | point added to the tables with its own hardware numbers |
 
 If nothing beats the current front, report the sweep as the Pareto front and stop (no further CPU spend).
 
 ---
 
-## A8 — Paper A draft (8–12 Nov, Claude; professor review after)
+## A8 — Paper A draft (8–12 Nov, AI assistant; professor review after)
 
 | ID | Step | Done when |
 |---|---|---|
@@ -198,7 +198,7 @@ If nothing beats the current front, report the sweep as the Pareto front and sto
 
 ## Calendar (re-dated 10 Nov)
 
-| Date | Claude | User |
+| Date | AI assistant | Author |
 |---|---|---|
 | 10 Nov | plan update; A9.2 | — |
 | 11 Nov | A9.3; A9.7 | confirm venue with the professor |
@@ -208,11 +208,11 @@ If nothing beats the current front, report the sweep as the Pareto front and sto
 
 ## Calendar (original, 3 Nov — superseded)
 
-| Date | Claude | User |
+| Date | AI assistant | Author |
 |---|---|---|
 | 3 Nov | S0; A5 starts; A10.1–A10.2; A4.1–A4.2 | — |
 | 4–5 Nov | A10.3–A10.4; A4.3–A4.4; A9.1–A9.3 | — |
-| 6 Nov | A9.4; prepare and deliver laptop run L1 | run L1 (~3–4 h) |
+| 6 Nov | A9.4; prepare and deliver implementation run L1 | run L1 (~3–4 h) |
 | 7 Nov | check L1; A4.6, A9.6; A5.3 table; A6 starts in background | — |
 | 8–11 Nov | A8.0–A8.3 | confirm venue with the professor |
 | 12 Nov | report v3 + draft to the professor | review |

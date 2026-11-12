@@ -1,4 +1,4 @@
-> **Superseded (28 Oct 2026)** by `results/power_saif_v5/`. These builds pruned BASE lanes 6-25 (too-narrow LED fold), stored weights as trimmed ROMs and had no per-column weight enables; do not quote these numbers.
+> **Superseded (28 Oct 2026)** by `results/archive/power_saif_v5/`. These builds pruned BASE lanes 6-25 (too-narrow LED fold), stored weights as trimmed ROMs and had no per-column weight enables; do not quote these numbers.
 
 # A3: activity-based (SAIF) power, XC7A100T-1CSG324C, 100 MHz, Vivado 2024.1 (28 Oct 2026)
 

@@ -1,4 +1,4 @@
-# Laptop run L1 (10 Nov 2026), step 1 of run_l1.bat (Vivado batch). Output: ../out_l1/
+# Implementation run L1 (10 Nov 2026), step 1 of run_l1.bat (Vivado batch). Output: ../out_l1/
 #   netpwr/<case>   : whole network (top_net, STREAM = 0), 20 N-MNIST samples on chip -> build, routed functional
 #                     netlist, xsim snapshot (simulation runs outside Vivado)   [A6.3 + whole-network power]
 #   netstream/<case>: whole network in stream mode (STREAM = 1, ring of 1,024 events) -> timing/area only   [A9.5]

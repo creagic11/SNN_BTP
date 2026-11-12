@@ -1,15 +1,15 @@
 # HUSH v2 — Study Checklist for Defense and Conference
 
-> **State: 11 Nov 2026.** Current numbers are in `docs/primer.md` §0 and §7 (whole network on chip). Items below that still quote the 28 Oct "v5" hidden-layer numbers are marked *superseded*; learn the history (primer §8) but quote only the current numbers. Suggested order for a first full pass: primer §0 → Phases 0–2 here → Phase 4 → Phase 5 → Phase 6 → Presentation drills.
+> **State: 11 Nov 2026.** Current numbers are in `notes/primer.md` §0 and §7 (whole network on chip). Items below that still quote the 28 Oct "v5" hidden-layer numbers are marked *superseded*; learn the history (primer §8) but quote only the current numbers. Suggested order for a first full pass: primer §0 → Phases 0–2 here → Phase 4 → Phase 5 → Phase 6 → Presentation drills.
 
-> Learn the project from `docs/primer.md` first; use this checklist after each primer section to test yourself and to go deeper (each item names the repo file with the detail).
+> Learn the project from `notes/primer.md` first; use this checklist after each primer section to test yourself and to go deeper (each item names the repo file with the detail).
 
 Work through this in order. Each item says what you must be able to do at the board without notes. Items are added as the project reaches each phase; the repo file that holds the material is given in brackets.
 
 ## Phase 0 — Foundations and the core idea
 
 ### A. SNN basics
-- [ ] Write the discrete-time LIF update with soft reset (reset by subtraction) and explain why soft reset preserves supra-threshold residue. [`docs/proposal_v2.md` § Formulation]
+- [ ] Write the discrete-time LIF update with soft reset (reset by subtraction) and explain why soft reset preserves supra-threshold residue. [`notes/proposal_v2.md` § Formulation]
 - [ ] Explain the shift-subtract leak L(x) = x − (x >> k): which λ it implements, why it needs no multiplier, and what floor rounding does to negative values.
 - [ ] Explain rate coding vs event (DVS / cochlea) inputs: what MNIST, N-MNIST and SHD each look like as spike rasters.
 - [ ] Explain surrogate-gradient training (BPTT, fast-sigmoid / arctan surrogates) in two minutes.
@@ -86,7 +86,7 @@ Work through this in order. Each item says what you must be able to do at the bo
 ## Phase 3 — Power methodology (added at T3.x)
 - [ ] Timing closure story: three critical paths found and fixed (lane + serial max in one cycle → pipelined R refresh → two-stage finalize → balanced two-stage max tree); why each change is bit-exact and why R's late write is safe (read ≥ 3 cycles later at COMBINE).
 - [ ] Vectorless vs SAIF vs board power: why vectorless charges HUSH's extra logic and cannot credit skipped reads; why static power (~100 mW) makes energy track latency on the XC7A100T.
-- [ ] Our numbers by heart (**current, 11 Nov, whole network**): BASE 98.21 % / 7,745 LUT / 80 BRAM / 279.5 µs / 152 mW / 42.5 µJ; HUSH 13,885 LUT / 95 BRAM; gentler 96.54 % / 159.8 µs (1.75×) / 23.7 µJ (−44 %); gentle 95.74 % / 114.9 µs (2.44×) / 18.4 µJ (−57 %); aggressive (6 ep) 92.32 % / 82.9 µs (3.39×) / 14.4 µJ (−66 %); Spiker+ 818.4 µs / 311 mW / 254.5 µJ; 100 MHz met. (*Superseded, never quote:* v5 hidden-layer numbers 3.8k LUT / 303 µs / 44 µJ and 9.8k / 153 µs / 23 µJ; v1's pruned 1.3k-LUT BASE.) [`docs/primer.md` §7, §8]
+- [ ] Our numbers by heart (**current, 11 Nov, whole network**): BASE 98.21 % / 7,745 LUT / 80 BRAM / 279.5 µs / 152 mW / 42.5 µJ; HUSH 13,885 LUT / 95 BRAM; gentler 96.54 % / 159.8 µs (1.75×) / 23.7 µJ (−44 %); gentle 95.74 % / 114.9 µs (2.44×) / 18.4 µJ (−57 %); aggressive (6 ep) 92.32 % / 82.9 µs (3.39×) / 14.4 µJ (−66 %); Spiker+ 818.4 µs / 311 mW / 254.5 µJ; 100 MHz met. (*Superseded, never quote:* v5 hidden-layer numbers 3.8k LUT / 303 µs / 44 µJ and 9.8k / 153 µs / 23 µJ; v1's pruned 1.3k-LUT BASE.) [`notes/primer.md` §7, §8]
 - [ ] SAIF-based power estimation: what it captures, what it misses.
 - [ ] Differential board measurement: why static power cancels; error bars.
 
@@ -139,7 +139,7 @@ Work through this in order. Each item says what you must be able to do at the bo
 ## Phase 4 — Whole network, real time, paper (added 11 Nov 2026)
 
 - [ ] Explain how the output layer runs one timestep behind the hidden layer through a spike FIFO and a drain, and why the output layer then costs only ≈ 0.3 µs extra. [`rtl/hush_net.sv`, `rtl/sim/net_cycle_model.py`]
-- [ ] Explain the stream front-end: 2×2 pooling, per-window de-duplication, ring of 1,024 events, end-of-window marker, and why markers need reserved FIFO space. [`rtl/hush_net.sv`, progress.md 10 Nov]
+- [ ] Explain the stream front-end: 2×2 pooling, per-window de-duplication, ring of 1,024 events, end-of-window marker, and why markers need reserved FIFO space. [`rtl/hush_net.sv`, notes/development_log.md 10 Nov]
 - [ ] State the real-time guarantee in sensor time (worst window 4.5–6.6 µs of 3 ms) and the separate throughput metric (750× BASE vs 1,000× HUSH on the heaviest recordings). Explain why HUSH helps the average window but not the busiest one. [`results/realtime/realtime.md`]
 - [ ] Explain why the fair baseline is the 22-epoch ungated net (98.21 %), and what the control fine-tune showed about early decisions. [`results/net_latency.md`, `results/realtime/early_decision.json`]
 - [ ] Explain why HUSH draws 3–8 % more power but 44–66 % less energy per inference, and why Spiker+ spends 140 mW in BRAM. [`results/power_l1/README.md`]
@@ -157,7 +157,7 @@ Work through this in order. Each item says what you must be able to do at the bo
 
 ## Phase 6 — Second review and final strict pass (added 11 Nov 2026, night)
 
-- [ ] Say which point was trained for 6 epochs (aggressive) and which for 12 (gentler, gentle), and why BASE is the 22-epoch net. [`docs/primer.md` §4.1–4.2]
+- [ ] Say which point was trained for 6 epochs (aggressive) and which for 12 (gentler, gentle), and why BASE is the 22-epoch net. [`notes/primer.md` §4.1–4.2]
 - [ ] Explain why the gated network is "a network in its own right", not an approximation of an ungated one, using the drift table (spike counts, and gentle / aggressive accuracy *falling* when the gate is removed). [`results/drift.json`, primer §3.4]
 - [ ] State exactly what the full-width formal check assumes (V_i ≤ R_c; drive ≤ D_c; q_c ≤ D_c; bounded drives), how the drive assumption is discharged (construction of P and Q + bit-exact simulation), and what is outside the proof (R max tree, second finalise stage, memories, sequencing). Explain why F5 is only a sanity check and why the m256 task matters only for no-wrap. [`formal/README.md`]
 - [ ] Derive the real-time energy at a common speed: 750× → 0.40 ms per recording → BASE 101 mW × 0.40 ms + 14.3 µJ = 54.7 µJ; HUSH 102 mW × 0.40 ms + 6.7 µJ = 47.5 µJ (−13 %); HUSH at 1,000×: 37.3 µJ. Explain why comparing the designs at different speeds was wrong. [primer §7.6]

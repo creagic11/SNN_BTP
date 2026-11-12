@@ -1,4 +1,4 @@
-# A9.2 — whole network on chip: latency per inference (3 seeds × 500 test samples)
+# Whole network on chip: latency per inference (task A9.2; 3 seeds × 500 test samples)
 
 hush_net: hidden layer → spike FIFO → output layer (overlapped, one timestep behind) → integer class on chip.
 Exact cycle model (`rtl/sim/net_cycle_model.py`), equal to the RTL cycle for cycle on 8 random nets and

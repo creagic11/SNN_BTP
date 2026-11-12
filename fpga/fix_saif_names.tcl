@@ -1,4 +1,4 @@
-# Tcl twin of scripts/fix_saif_names.py (runs inside Vivado, no Python needed on the laptop).
+# Tcl twin of scripts/fix_saif_names.py (runs inside Vivado, no Python needed on the build machine).
 # xsim writes escaped netlist identifiers as  \\name\[i\]_n_0\   and escaped buses as  \\name\ \[k\] ;
 # read_saif matches  name\[i\]_n_0  and  name\[k\] . Lines with "(null)" scope names cannot be parsed and are
 # dropped. Returns {bus scalar dropped left_escaped paren_balance}.

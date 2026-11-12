@@ -14,4 +14,4 @@ net of the same seed; energy = gate-level SAIF power of the seed-0 builds × lat
 | HUSH-MF gentler, 12 ep (A6)* | 96.54 ± 0.07 | 173.7 ± 8.1 | 1.75 ± 0.08× | 0.204 ± 0.003 | 26.2 ± 1.2 | 96.61, 96.48, 96.54 |
 | HUSH-MF gentle, 12 ep (A6)* | 95.74 ± 0.07 | 127.7 ± 6.9 | 2.38 ± 0.12× | 0.118 ± 0.002 | 19.3 ± 1.0 | 95.73, 95.81, 95.68 |
 
-\* Energy of the A6 rows uses the gentle build's SAIF power (0.151 W); their own SAIF power is pending (laptop run L1).
+\* Energy of the A6 rows uses the gentle build's SAIF power (0.151 W); their own gate-level power was measured later in run L1 (`results/power_l1/`).

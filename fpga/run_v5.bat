@@ -1,11 +1,11 @@
 @echo off
 rem A3b (28 Oct 2026): full rebuild + gate-level SAIF power for hush_layer v5, unattended (about 4 hours).
 rem From the Vivado 2024.1 Tcl Shell:
-rem     cd C:/Users/Anubhav/hush_fpga/fpga
+rem     cd <repository>/fpga
 rem     exec -ignorestderr cmd /c run_v5.bat
 rem Progress: ..\out_v5c\summary.txt   Results: ..\out_v5c\energy.csv
 rem (1) prep_v5.tcl in Vivado: 3 timing builds + 3 power builds, netlists, xsim snapshots
-rem (2) xsim outside Vivado (it crashed when launched from inside Vivado on this laptop)
+rem (2) xsim outside Vivado (it crashed when launched from inside Vivado)
 rem (3) annotate_v5.tcl in a fresh Vivado: SAIF name fix, read_saif, report_power, energy table
 setlocal
 set "OUT=%~dp0..\out_v5c"

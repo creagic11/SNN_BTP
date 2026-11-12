@@ -1,6 +1,6 @@
 # A3: activity-based (SAIF) power for BASE and HUSH-MF on the XC7A100T at 100 MHz.
 # Run from the Vivado Tcl Shell:
-#     cd C:/Users/Anubhav/hush_fpga/fpga
+#     cd <repository>/fpga
 #     vivado -mode batch -source run_saif.tcl
 # Steps: (1) rebuild BASE and HUSH-MF with the fixed autorun top (back-to-back inferences);
 # (2) xsim RTL simulation over NS N-MNIST samples per case, recording switching activity (SAIF);

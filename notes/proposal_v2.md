@@ -1,10 +1,10 @@
-> **Status note (27 Oct 2026):** this is the 24 Oct proposal. Scope has since changed: see `docs/tier1_plan.md` (update of 27 Oct) and the Paper A / Paper B tracks in `progress.md`.
+> **Status note (27 Oct 2026):** this is the 24 Oct proposal. Scope has since changed: see `notes/plan_tier1.md` (update of 27 Oct) and the Paper A / Paper B tracks in `notes/development_log.md`.
 
 # HUSH v2 — Revised BTP Research Proposal
 
 Oct 15, 2026 · Anubhav Jha (23EE10091), IIT Kharagpur · Supervisor: Prof. Rajat Subhra Chakraborty
 
-Repository copy of the Claude Doc of the same name. Diagrams live in the Claude Doc.
+Repository copy of the proposal document; its diagrams are kept in the original document.
 
 ## Summary
 

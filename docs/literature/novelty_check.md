@@ -42,7 +42,7 @@ The claim to avoid: "first to exploit output sparsity" or "first to skip silent 
 ## Implications for the design and the paper
 
 - **Cite SITRA, Early and PS4 as the closest prior art** in the introduction and in a "related work: output-side skipping" paragraph. SITRA's overlap of detection with the previous token's compute is the same scheduling idea as HUSH's decoupled envelope; credit it.
-- **Make the guarantee the headline.** The experiment that sells it: run SITRA-style and Early-style heuristic gates in the same Python model at equal skip rate and report their false-negative spikes and accuracy loss next to HUSH's zero false negatives. This is a cheap, convincing table (added as T1.5 in progress.md).
+- **Make the guarantee the headline.** The experiment that sells it: run SITRA-style and Early-style heuristic gates in the same Python model at equal skip rate and report their false-negative spikes and accuracy loss next to HUSH's zero false negatives. This is a cheap, convincing table (added as T1.5 in notes/development_log.md).
 - **PS4 is composable with HUSH** (time-window merging vs neuron-block gating). Mention as future work rather than compete.
 - **SPARSH's refractory skip is a special case** of state-driven skipping: a neuron that just reset with V = 0 and weak drive is exactly what the envelope catches, and more.
 

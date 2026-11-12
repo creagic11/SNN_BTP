@@ -2,7 +2,7 @@
 latency / column reads from rtl_perf.json, 500 samples, v5 cycle model; energy = seed-0 SAIF power × latency)."""
 import json, statistics as st
 R = "results/"
-P = {"base": 0.145, "gentle": 0.151, "aggr": 0.157,         # W, gate-level SAIF (results/power_saif_v5)
+P = {"base": 0.145, "gentle": 0.151, "aggr": 0.157,         # W, gate-level SAIF (results/archive/power_saif_v5)
      "gentler12": 0.151, "gentle12": 0.151}                   # A6 points: gentle SAIF power reused (estimate, L1 pending)
 tags = {"base": "nmnist_T100{}", "gentle": "nmnist_T100_mf_e05_d025{}", "aggr": "nmnist_T100_mf_e2_d1{}",
         "gentler12": "nmnist_T100_mf_e025_d01_ep12{}", "gentle12": "nmnist_T100_mf_e05_d025_ep12{}"}

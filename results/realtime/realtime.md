@@ -1,4 +1,4 @@
-# A9.4 — real-time operation on a live N-MNIST stream (RTL simulation, 100 MHz)
+# Real-time operation on an N-MNIST event stream (task A9.4; RTL simulation, 100 MHz)
 
 ## (a) True sensor timing: events presented at their recorded times (3 ms windows)
 

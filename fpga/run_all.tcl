@@ -1,6 +1,6 @@
 # One-shot Phase-3 build: BASE, HUSH-drop and HUSH-MF on XC7A100T (N-MNIST layer 578x256, T=100, k=4).
 # Run from the Vivado Tcl Shell (Windows: Start menu -> "Vivado <ver> Tcl Shell"):
-#     cd C:/path/to/hush_fpga/fpga
+#     cd <repository>/fpga
 #     vivado -mode batch -source run_all.tcl
 # or, inside an already open Vivado Tcl console:   cd .../hush_fpga/fpga ; source run_all.tcl
 # Reports land in ../out_base, ../out_hush_drop, ../out_hush_mf ; a summary in ../out_summary.txt.

@@ -1,4 +1,4 @@
-# Laptop run L2 (10–11 Nov 2026, 23:09–01:10 IST)
+# Implementation run L2 (10–11 November 2026)
 
 | Build | Purpose | LUT | BRAM | WNS (ns) | Result |
 |---|---|---|---|---|---|
@@ -9,4 +9,4 @@
 
 Spiker+ power: the SAIF numbers (311 mW, 254.5 µJ) were measured on the L1 default-effort netlist. The high-effort
 netlist's vectorless estimate is 4.3 % higher than the default one's (0.555 vs 0.532 W), so its energy would be
-≈ 265 µJ; we report the measured 254.5 µJ (favouring Spiker+) and note this.
+≈ 265 µJ. The paper reports the measured 254.5 µJ, which favours Spiker+.

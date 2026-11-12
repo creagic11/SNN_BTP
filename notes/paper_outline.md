@@ -2,7 +2,7 @@
 
 Title: **HUSH: Provably Safe Sub-Block Hibernation for Real-Time Event-Driven SNN Inference on FPGAs**
 Authors: Anubhav Jha and Rajat Subhra Chakraborty, Indian Institute of Technology Kharagpur (departments to add).
-Format: IEEEtran conference, 7 pages with references (≈ 6.5 without). Limit set by the user: 8 pages without
+Format: IEEEtran conference, 7 pages with references (≈ 6.5 without). Limit set by the author: 8 pages without
 references. Venue not chosen (a TCAS-II brief would need cuts).
 
 Rule for every number: it comes from a file in `results/` (column "Source").
@@ -39,7 +39,7 @@ Rule for every number: it comes from a file in `results/` (column "Source").
 
 Figures 4–7: `python scripts/fig_paper.py`. Fig. 8: `python scripts/fig_early.py`. Figs. 1–3 are TikZ in the source.
 
-## Review history (details in `progress.md`)
+## Review history (details in `notes/development_log.md`)
 
 1. 10 Nov — internal fresh-eyes review, 20 items (number audit, objections).
 2. 11 Nov — external review: scope of the safety claim, full-width proof, resource reconciliation, traffic
@@ -53,5 +53,5 @@ Figures 4–7: `python scripts/fig_paper.py`. Fig. 8: `python scripts/fig_early.
 
 - Venue, template and page limit; departments in the author block.
 - Check the SnaPEA entry in `paper/refs.bib` (authors, pages, DOI) against the published record.
-- Optional: aggressive point at 12 epochs (training here, power on the laptop).
+- Optional: aggressive point at 12 epochs (training here, power on the build machine).
 - Not in Paper A: board power (A7), convolutional layers and DVS-Gesture (Paper B).

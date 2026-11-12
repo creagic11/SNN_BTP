@@ -1,6 +1,6 @@
 @echo off
-rem Laptop run L1 (10 Nov 2026), unattended (estimate 5-7 hours). From the Vivado 2024.1 Tcl Shell:
-rem     cd C:/Users/Anubhav/hush_fpga/fpga
+rem Implementation run L1 (10 Nov 2026), unattended (estimate 5-7 hours). From the Vivado 2024.1 Tcl Shell:
+rem     cd <repository>/fpga
 rem     exec -ignorestderr cmd /c run_l1.bat
 rem Progress: ..\out_l1\summary.txt   Results: ..\out_l1\energy_l1.csv
 rem (1) prep_l1.tcl in Vivado: 4 whole-network power builds (+ netlists, xsim snapshots), 2 stream-mode builds,

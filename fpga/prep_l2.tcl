@@ -1,4 +1,4 @@
-# Laptop run L2 (prepared 10 Nov 2026), Vivado batch, ~1-1.5 h. Output: ../out_l2/
+# Implementation run L2 (prepared 10 Nov 2026), Vivado batch, ~1-1.5 h. Output: ../out_l2/
 #   spiker_hi          : Spiker+ with high-effort directives (does it close 100 MHz?)            [A4.5 fairness]
 #   netstream/<case>   : stream-mode builds again with the marker-reserve fix (IN_D 128, EVQ 64) [A9.5]
 #   netpwr/base_ctrl   : power build of the paper's BASE (22-epoch control weights) + netlist + xsim snapshot
